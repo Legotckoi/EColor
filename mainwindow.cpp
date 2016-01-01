@@ -7,10 +7,7 @@
 
 #include "about.h"
 #include "dialogsettings.h"
-
-// stringize macro
-#define _STR(X) #X
-#define STR(X) _STR(X)
+#include "dialogupdate.h"
 
 HHOOK hMouseHook;
 
@@ -50,9 +47,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     setWindowFlags(Qt::WindowStaysOnTopHint);
     setFixedWidth(540);
     setFixedHeight(440);
+
+    QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
+    if(!settings.contains(KEY_SEQUENCE_PIXEL)){
+        settings.setValue(KEY_SEQUENCE_PIXEL, QKeySequence("Ctrl+E").toString());
+        settings.sync();
+    }
 
     colorDialog = new QColorDialog(this);
     colorDialog->setOptions(QColorDialog::NoButtons);
@@ -86,6 +90,15 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
 
+    versionChecker = new VersionChecker();
+    connect(versionChecker, SIGNAL(signalNewVersion(QString)), this, SLOT(showDialogUpdate(QString)));
+    versionChecker->setSoftName(APPLICATION_NAME);
+    versionChecker->setMajVersion(VER_MAJOR);
+    versionChecker->setMinVersion(VER_MINOR);
+    versionChecker->setPatVersion(VER_PATHES);
+    versionChecker->setUrl(QUrl("http://www.evileg.ru/software/ecolor/ecolor.json"));
+    versionChecker->startChecker();
+
     HINSTANCE hInstance = GetModuleHandle(NULL);
 
     hMouseHook = SetWindowsHookEx(WH_MOUSE_LL, grabberMouseProc, hInstance, 0);
@@ -94,10 +107,6 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         qDebug() << "Hook failed";
     }
-
-    hide();
-
-    qDebug() << "MyApp revision " STR(APP_REVISION) << endl;
 }
 
 MainWindow::~MainWindow()
@@ -116,9 +125,11 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
     }
 }
 
-void MainWindow::showPicker()
+void MainWindow::showDialogUpdate(QString newVersion)
 {
-
+    DialogUpdate *dialogUpdate = new DialogUpdate();
+    dialogUpdate->setNewVersion(APPLICATION_NAME " v" + newVersion);
+    dialogUpdate->show();
 }
 
 void MainWindow::setColor(const QColor &color)

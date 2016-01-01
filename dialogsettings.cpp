@@ -32,7 +32,7 @@ void DialogSettings::on_buttonBox_clicked(QAbstractButton *button)
         QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
         settings.setValue(SETTINGS_TRAY, ui->checkTray->isChecked());
         settings.setValue(SETTINGS_AUTORUN, ui->checkAutoRun->isChecked());
-        settings.setValue(KEY_SEQUENCE_PIXEL, ui->keySequenceEdit->keySequence());
+        settings.setValue(KEY_SEQUENCE_PIXEL, ui->keySequenceEdit->keySequence().toString());
         settings.sync();
 
         #ifdef Q_OS_WIN32

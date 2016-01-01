@@ -8,6 +8,7 @@
 #include "windows.h"
 
 #include "settings.h"
+#include "versionchecker.h"
 
 namespace Ui {
 class MainWindow;
@@ -29,7 +30,7 @@ protected:
 
 private slots:
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
-    void showPicker();
+    void showDialogUpdate(QString newVersion);
 
     void on_about_triggered();
     void on_quit_triggered();
@@ -40,6 +41,8 @@ private:
     QSystemTrayIcon *trayIcon;
     QColor          *color;
     QColorDialog    *colorDialog;
+    VersionChecker  *versionChecker;
+
     bool needToClose = false;
 
 };

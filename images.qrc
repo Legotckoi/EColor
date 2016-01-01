@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
         <file>images/ecolor.png</file>
-        <file>images/logo.png</file>
     </qresource>
 </RCC>

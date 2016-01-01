@@ -53,30 +53,17 @@
    <property name="spacing">
     <number>6</number>
    </property>
-   <item row="4" column="2">
-    <widget class="QPushButton" name="pushButton">
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
+   <item row="2" column="1" colspan="2">
+    <widget class="QLabel" name="label_3">
      <property name="text">
-      <string>Закрыть</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;WEB-сайт разработчика: &lt;a href=&quot;http://www.evileg.ru&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://www.evileg.ru&lt;/span&gt;&lt;/a&gt; E-mail: legotckoi@evileg.ru&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="margin">
+      <number>5</number>
      </property>
     </widget>
    </item>
-   <item row="4" column="1">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="3" column="1" colspan="2">
+   <item row="4" column="1" colspan="2">
     <widget class="QLabel" name="label_5">
      <property name="text">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;The program is provided AS IS with NO WARRANTY OF ANY KIND,&lt;br/&gt; INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY &lt;br/&gt;AND FITNESS FOR A PARTICULAR PURPOSE&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -92,13 +79,13 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="1" colspan="2">
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;WEB-сайт: &lt;a href=&quot;http://www.evileg.ru&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://www.evileg.ru&lt;/span&gt;&lt;/a&gt; E-mail: legotckoi@evileg.ru&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   <item row="5" column="2">
+    <widget class="QPushButton" name="pushButton">
+     <property name="styleSheet">
+      <string notr="true"/>
      </property>
-     <property name="margin">
-      <number>5</number>
+     <property name="text">
+      <string>Закрыть</string>
      </property>
     </widget>
    </item>
@@ -112,29 +99,7 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1" colspan="2">
-    <widget class="QLabel" name="label_2">
-     <property name="font">
-      <font>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-     <property name="text">
-      <string>EColor v1.0.0</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-     </property>
-     <property name="margin">
-      <number>5</number>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0" rowspan="5">
+   <item row="0" column="0" rowspan="6">
     <widget class="QLabel" name="label">
      <property name="minimumSize">
       <size>
@@ -159,6 +124,51 @@
      </property>
      <property name="margin">
       <number>10</number>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="0" column="1" colspan="2">
+    <widget class="QLabel" name="labelVersion">
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+     <property name="margin">
+      <number>5</number>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1" colspan="2">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;WEB-страница EColor: &lt;a href=&quot;http://www.evileg.ru&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://www.evileg.ru/ecolor&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="margin">
+      <number>5</number>
      </property>
     </widget>
    </item>
