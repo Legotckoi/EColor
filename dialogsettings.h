@@ -16,8 +16,12 @@ public:
     explicit DialogSettings(QWidget *parent = 0);
     ~DialogSettings();
 
+signals:
+    void reloadKeySequence();
+
 private slots:
     void on_buttonBox_clicked(QAbstractButton *button);
+    void on_buttonBox_accepted();
 
 private:
     Ui::DialogSettings *ui;

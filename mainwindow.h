@@ -31,6 +31,8 @@ protected:
 private slots:
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void showDialogUpdate(QString newVersion);
+    void initKeySequence();
+    void timerTrayTimeout();
 
     void on_about_triggered();
     void on_quit_triggered();
@@ -39,10 +41,17 @@ private slots:
 private:
     Ui::MainWindow  *ui;
     QSystemTrayIcon *trayIcon;
-    QColor          *color;
     QColorDialog    *colorDialog;
     VersionChecker  *versionChecker;
+    QTimer          *timer;
 
+    // Переменные для работы с Хуками
+    QStringList     keySequence;
+    int             keySequenceLength;
+    bool            copyBuffer;
+    int             typeCopyBuffer;
+
+    // Закрытие приложения
     bool needToClose = false;
 
 };

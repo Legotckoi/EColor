@@ -4,6 +4,8 @@
 #include <QScreen>
 #include <QDebug>
 #include <QSettings>
+#include <QClipboard>
+#include <QPainter>
 
 #include "about.h"
 #include "dialogsettings.h"
@@ -14,31 +16,30 @@ HHOOK hMouseHook;
 LRESULT CALLBACK grabberMouseProc(int Code, WPARAM wParam, LPARAM lParam)
 {
     MOUSEHOOKSTRUCT * pMouseStruct = (MOUSEHOOKSTRUCT *)lParam;
-        if (pMouseStruct != NULL){
-            if(wParam == WM_LBUTTONDOWN)
+
+    if (pMouseStruct != NULL){
+        if(wParam == WM_LBUTTONDOWN)
+        {
+            QWidgetList wl = QApplication::topLevelWidgets ();
+            foreach (QWidget *widget, wl)
             {
-                QWidgetList wl = QApplication::topLevelWidgets ();
-                foreach (QWidget *widget, wl)
-                {
-                    if (MainWindow *mw = qobject_cast<MainWindow *>(widget)) {
-                        if(mw->checkKeySequence()){
-                            QScreen *screen = QApplication::primaryScreen();
-                            QPixmap pixmap = screen->grabWindow( 0 );
-                            QImage *img = new QImage;
-                            *img = pixmap.toImage();
-                            QRgb b = img->pixel(QCursor::pos());
-                            QColor c;
-
-                            c.setRgb(b);
-
-
-                            mw->setColor(c);
-                        }
-                        break;
+                if (MainWindow *mw = qobject_cast<MainWindow *>(widget)) {
+                    if(mw->checkKeySequence()){
+                        QScreen *screen = QApplication::primaryScreen();
+                        QPixmap pixmap = screen->grabWindow( 0 );
+                        QImage *img = new QImage();
+                        *img = pixmap.toImage();
+                        QRgb b = img->pixel(QCursor::pos());
+                        QColor c;
+                        c.setRgb(b);
+                        mw->setColor(c);
                     }
+                    break;
                 }
             }
         }
+    }
+
     return CallNextHookEx(hMouseHook, Code, wParam, lParam);
 }
 
@@ -75,12 +76,15 @@ MainWindow::MainWindow(QWidget *parent) :
     QFont font;
     font.setBold(true);
     actionShow->setFont(font);
+    QAction *actionConfig = new QAction(trUtf8("Настройки"), this);
     QAction * actionQuit = new QAction(trUtf8("Выход"), this);
 
     connect(actionShow, SIGNAL(triggered()), this, SLOT(show()));
+    connect(actionConfig, SIGNAL(triggered(bool)), this, SLOT(on_config_triggered()));
     connect(actionQuit, SIGNAL(triggered()), this, SLOT(on_quit_triggered()));
 
     menu->addAction(actionShow);
+    menu->addAction(actionConfig);
     menu->addSeparator();
     menu->addAction(actionQuit);
 
@@ -98,6 +102,11 @@ MainWindow::MainWindow(QWidget *parent) :
     versionChecker->setPatVersion(VER_PATHES);
     versionChecker->setUrl(QUrl("http://www.evileg.ru/software/ecolor/ecolor.json"));
     versionChecker->startChecker();
+
+    timer = new QTimer();
+    connect(timer, &QTimer::timeout, this, &MainWindow::timerTrayTimeout);
+
+    initKeySequence();
 
     HINSTANCE hInstance = GetModuleHandle(NULL);
 
@@ -132,6 +141,21 @@ void MainWindow::showDialogUpdate(QString newVersion)
     dialogUpdate->show();
 }
 
+void MainWindow::initKeySequence()
+{
+    QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
+    keySequence = settings.value(KEY_SEQUENCE_PIXEL, QVariant()).toString().split("+");
+    keySequenceLength = keySequence.length();
+    copyBuffer = settings.value(SETTINGS_COPY_BUFF, false).toBool();
+    typeCopyBuffer = settings.value(SETTINGS_TYPE_BUFF, 0).toInt();
+}
+
+void MainWindow::timerTrayTimeout()
+{
+    timer->stop();
+    trayIcon->setIcon(QIcon(":/images/ecolor.png"));
+}
+
 void MainWindow::setColor(const QColor &color)
 {
     trayIcon->showMessage("EColor",
@@ -145,38 +169,76 @@ void MainWindow::setColor(const QColor &color)
                           QString::number(color.cyan()) + " " +
                           QString::number(color.magenta()) + " " +
                           QString::number(color.yellow()) + " " +
-                          QString::number(color.black()),
+                          QString::number(color.black()) + "\n"
+                          "HSV: \t " +
+                          QString::number(color.hue()) + " " +
+                          QString::number(color.saturation()) + " " +
+                          QString::number(color.value()),
                           QSystemTrayIcon::Information,
                           2000);
     colorDialog->setCurrentColor(color);
+
+    QImage image(1, 1, QImage::Format_RGB32);
+    QRgb value = color.rgb();
+    image.setPixel(0, 0, value);
+
+    QPixmap pic;
+    pic.convertFromImage(image);
+
+    trayIcon->setIcon(QIcon(pic));
+    timer->start(2000);
+
+    if(copyBuffer){
+        switch (typeCopyBuffer) {
+        case 0: // HEX
+            QApplication::clipboard()->setText(color.name());
+            break;
+        case 1: // RGB
+            QApplication::clipboard()->setText(QString::number(color.red()) + " " +
+                                               QString::number(color.green()) + " " +
+                                               QString::number(color.blue()));
+            break;
+        case 2: // CMYK
+            QApplication::clipboard()->setText(QString::number(color.cyan()) + " " +
+                                               QString::number(color.magenta()) + " " +
+                                               QString::number(color.yellow()) + " " +
+                                               QString::number(color.black()));
+            break;
+        case 3: // HSV
+            QApplication::clipboard()->setText(QString::number(color.hue()) + " " +
+                                               QString::number(color.saturation()) + " " +
+                                               QString::number(color.value()));
+            break;
+        default:
+            break;
+        }
+
+    }
 }
 
 bool MainWindow::checkKeySequence()
 {
-    QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
-    QStringList list = settings.value(KEY_SEQUENCE_PIXEL, QVariant()).toString().split("+");
-
-    switch (list.length()) {
+    switch (keySequenceLength) {
     case 1: {
-        return (GetAsyncKeyState(list.at(0).at(0).unicode())) ? true : false;
+        return (GetAsyncKeyState(keySequence.at(0).at(0).unicode())) ? true : false;
         break;
     }
     case 2: {
-        return (checkKeyModifier(list.at(0)) &&
-                GetAsyncKeyState(list.at(1).at(0).unicode())) ? true : false;
+        return (checkKeyModifier(keySequence.at(0)) &&
+                GetAsyncKeyState(keySequence.at(1).at(0).unicode())) ? true : false;
         break;
     }
     case 3: {
-        return (checkKeyModifier(list.at(0)) &&
-                checkKeyModifier(list.at(1)) &&
-                GetAsyncKeyState(list.at(2).at(0).unicode())) ? true : false;
+        return (checkKeyModifier(keySequence.at(0)) &&
+                checkKeyModifier(keySequence.at(1)) &&
+                GetAsyncKeyState(keySequence.at(2).at(0).unicode())) ? true : false;
         break;
     }
     case 4: {
-        return (checkKeyModifier(list.at(0)) &&
-                checkKeyModifier(list.at(1)) &&
-                checkKeyModifier(list.at(2)) &&
-                GetAsyncKeyState(list.at(3).at(0).unicode())) ? true : false;
+        return (checkKeyModifier(keySequence.at(0)) &&
+                checkKeyModifier(keySequence.at(1)) &&
+                checkKeyModifier(keySequence.at(2)) &&
+                GetAsyncKeyState(keySequence.at(3).at(0).unicode())) ? true : false;
         break;
     }
     default:
@@ -232,5 +294,6 @@ void MainWindow::on_quit_triggered()
 void MainWindow::on_config_triggered()
 {
     DialogSettings *dialogSettings = new DialogSettings();
+    connect(dialogSettings, SIGNAL(reloadKeySequence()), this, SLOT(initKeySequence()));
     dialogSettings->show();
 }

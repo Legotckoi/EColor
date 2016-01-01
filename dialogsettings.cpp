@@ -19,6 +19,8 @@ DialogSettings::DialogSettings(QWidget *parent) :
     ui->checkTray->setChecked(settings.value(SETTINGS_TRAY, false).toBool());
     ui->checkAutoRun->setChecked(settings.value(SETTINGS_AUTORUN, false).toBool());
     ui->keySequenceEdit->setKeySequence(QKeySequence(settings.value(KEY_SEQUENCE_PIXEL, QVariant()).toString()));
+    ui->checkCopyBuffer->setChecked(settings.value(SETTINGS_COPY_BUFF, false).toBool());
+    ui->cBoxBufferType->setCurrentIndex(settings.value(SETTINGS_TYPE_BUFF, 0).toInt());
 }
 
 DialogSettings::~DialogSettings()
@@ -33,6 +35,8 @@ void DialogSettings::on_buttonBox_clicked(QAbstractButton *button)
         settings.setValue(SETTINGS_TRAY, ui->checkTray->isChecked());
         settings.setValue(SETTINGS_AUTORUN, ui->checkAutoRun->isChecked());
         settings.setValue(KEY_SEQUENCE_PIXEL, ui->keySequenceEdit->keySequence().toString());
+        settings.setValue(SETTINGS_COPY_BUFF, ui->checkCopyBuffer->isChecked());
+        settings.setValue(SETTINGS_TYPE_BUFF, ui->cBoxBufferType->currentIndex());
         settings.sync();
 
         #ifdef Q_OS_WIN32
@@ -46,5 +50,13 @@ void DialogSettings::on_buttonBox_clicked(QAbstractButton *button)
         }
         delete autorun;
         #endif
+
+        emit reloadKeySequence();
     }
+}
+
+void DialogSettings::on_buttonBox_accepted()
+{
+    this->hide();
+    this->deleteLater();
 }
