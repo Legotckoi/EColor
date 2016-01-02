@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QAbstractButton>
+#include <QCloseEvent>
 
 namespace Ui {
 class DialogSettings;
@@ -18,6 +19,9 @@ public:
 
 signals:
     void reloadKeySequence();
+
+protected:
+    void closeEvent(QCloseEvent *event);
 
 private slots:
     void on_buttonBox_clicked(QAbstractButton *button);

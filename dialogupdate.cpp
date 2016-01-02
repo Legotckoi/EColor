@@ -20,6 +20,13 @@ void DialogUpdate::setNewVersion(QString str)
     ui->labelVersion->setText(str);
 }
 
+void DialogUpdate::closeEvent(QCloseEvent *event)
+{
+    event->ignore();
+    this->hide();
+    this->deleteLater();
+}
+
 void DialogUpdate::on_buttonBox_clicked(QAbstractButton *button)
 {
     if(ui->buttonBox->standardButton(button) == QDialogButtonBox::Yes) {

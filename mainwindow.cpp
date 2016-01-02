@@ -116,6 +116,8 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         qDebug() << "Hook failed";
     }
+
+    RegisterHotKey((HWND)MainWindow::winId(), 100, 0, 'A');
 }
 
 MainWindow::~MainWindow()
@@ -170,7 +172,7 @@ void MainWindow::setColor(const QColor &color)
                           QString::number(color.magenta()) + " " +
                           QString::number(color.yellow()) + " " +
                           QString::number(color.black()) + "\n"
-                          "HSV: \t " +
+                          "HSV: \t" +
                           QString::number(color.hue()) + " " +
                           QString::number(color.saturation()) + " " +
                           QString::number(color.value()),
@@ -212,7 +214,6 @@ void MainWindow::setColor(const QColor &color)
         default:
             break;
         }
-
     }
 }
 
@@ -276,6 +277,27 @@ void MainWindow::closeEvent(QCloseEvent * event)
     } else {
         trayIcon->hide();
     }
+}
+
+bool MainWindow::nativeEvent(const QByteArray &eventType, void *message, long *result)
+{
+    MSG* msg = reinterpret_cast<MSG*>(message);
+
+    if (msg->message == WM_HOTKEY){ // Была нажата одна из горячих клавиш
+
+           if (msg->wParam == 100){ // Идентификатор хоткея, который мы указали при
+                                                           // регистрации (не код клавиши, это вам не WM_KEYUP!)
+
+               qDebug() << " This is Work!!!";
+             //  MainWindow::on_pushButton_clicked();
+
+               // Еще одна WinApi функция, всё равно работать будет костыль только в винде :)
+            //   MessageBox(MainWindow::winId(), L"We have the screenshot", L"Done!", MB_OK);
+
+               return true;
+           }
+       }
+       return false;
 }
 
 void MainWindow::on_about_triggered()

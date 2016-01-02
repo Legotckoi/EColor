@@ -27,6 +27,7 @@ public:
 
 protected:
     void closeEvent(QCloseEvent * event);
+    bool nativeEvent(const QByteArray &eventType, void *message, long *result);
 
 private slots:
     void iconActivated(QSystemTrayIcon::ActivationReason reason);

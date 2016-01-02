@@ -60,3 +60,10 @@ void DialogSettings::on_buttonBox_accepted()
     this->hide();
     this->deleteLater();
 }
+
+void DialogSettings::closeEvent(QCloseEvent *event)
+{
+    event->ignore();
+    this->hide();
+    this->deleteLater();
+}
