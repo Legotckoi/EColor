@@ -21,6 +21,7 @@ DialogSettings::DialogSettings(QWidget *parent) :
     ui->keySequenceEdit->setKeySequence(QKeySequence(settings.value(KEY_SEQUENCE_PIXEL, QVariant()).toString()));
     ui->checkCopyBuffer->setChecked(settings.value(SETTINGS_COPY_BUFF, false).toBool());
     ui->cBoxBufferType->setCurrentIndex(settings.value(SETTINGS_TYPE_BUFF, 0).toInt());
+    ui->pathScreenShots->setText(settings.value(SETTINGS_PATH_SCREENSHOTS, QVariant()).toString());
 }
 
 DialogSettings::~DialogSettings()
@@ -37,18 +38,18 @@ void DialogSettings::on_buttonBox_clicked(QAbstractButton *button)
         settings.setValue(KEY_SEQUENCE_PIXEL, ui->keySequenceEdit->keySequence().toString());
         settings.setValue(SETTINGS_COPY_BUFF, ui->checkCopyBuffer->isChecked());
         settings.setValue(SETTINGS_TYPE_BUFF, ui->cBoxBufferType->currentIndex());
+        settings.setValue(SETTINGS_PATH_SCREENSHOTS, ui->pathScreenShots->text());
         settings.sync();
 
         #ifdef Q_OS_WIN32
         //Добавляем в автозагрузку пользователя
-        QSettings *autorun = new QSettings("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", QSettings::NativeFormat);
+        QSettings autorun("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", QSettings::NativeFormat);
         if(ui->checkAutoRun->isChecked()) {
-            autorun->setValue(APPLICATION_NAME, QDir::toNativeSeparators(QCoreApplication::applicationFilePath()));
-            autorun->sync();
+            autorun.setValue(APPLICATION_NAME, QDir::toNativeSeparators(QCoreApplication::applicationFilePath()));
+            autorun.sync();
         } else {
-            autorun->remove(APPLICATION_NAME);
+            autorun.remove(APPLICATION_NAME);
         }
-        delete autorun;
         #endif
 
         emit reloadKeySequence();

@@ -6,6 +6,7 @@
 #include <QSettings>
 #include <QClipboard>
 #include <QPainter>
+#include <QDir>
 
 #include "about.h"
 #include "dialogsettings.h"
@@ -24,16 +25,7 @@ LRESULT CALLBACK grabberMouseProc(int Code, WPARAM wParam, LPARAM lParam)
             foreach (QWidget *widget, wl)
             {
                 if (MainWindow *mw = qobject_cast<MainWindow *>(widget)) {
-                    if(mw->checkKeySequence()){
-                        QScreen *screen = QApplication::primaryScreen();
-                        QPixmap pixmap = screen->grabWindow( 0 );
-                        QImage *img = new QImage();
-                        *img = pixmap.toImage();
-                        QRgb b = img->pixel(QCursor::pos());
-                        QColor c;
-                        c.setRgb(b);
-                        mw->setColor(c);
-                    }
+                    mw->signalLMHook();
                     break;
                 }
             }
@@ -58,6 +50,10 @@ MainWindow::MainWindow(QWidget *parent) :
         settings.setValue(KEY_SEQUENCE_PIXEL, QKeySequence("Ctrl+E").toString());
         settings.sync();
     }
+    if(!settings.contains(SETTINGS_PATH_SCREENSHOTS)){
+        settings.setValue(SETTINGS_PATH_SCREENSHOTS, QDir::currentPath());
+        settings.sync();
+    }
 
     colorDialog = new QColorDialog(this);
     colorDialog->setOptions(QColorDialog::NoButtons);
@@ -65,7 +61,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->gridLayout->addWidget(colorDialog, 0,0,1,1);
 
     trayIcon = new QSystemTrayIcon(this);
-    trayIcon->setIcon(this->style()->standardIcon(QStyle::SP_ComputerIcon));
     trayIcon->setToolTip("EColor \n"
                          "Приложение для захвата цвета пикселя \n"
                          "на экране монитора");
@@ -116,8 +111,9 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         qDebug() << "Hook failed";
     }
+    connect(this, &MainWindow::signalLMHook, this, &MainWindow::slotLMHook);
 
-    RegisterHotKey((HWND)MainWindow::winId(), 100, 0, 'A');
+    RegisterHotKey((HWND)MainWindow::winId(), 100, 0, VK_SNAPSHOT);
 }
 
 MainWindow::~MainWindow()
@@ -156,6 +152,20 @@ void MainWindow::timerTrayTimeout()
 {
     timer->stop();
     trayIcon->setIcon(QIcon(":/images/ecolor.png"));
+}
+
+void MainWindow::slotLMHook()
+{
+    if(checkKeySequence()){
+        QScreen *screen = QApplication::primaryScreen();
+        QPixmap pixmap = screen->grabWindow(0);
+        QImage *img = new QImage();
+        *img = pixmap.toImage();
+        QRgb b = img->pixel(QCursor::pos());
+        QColor c;
+        c.setRgb(b);
+        setColor(c);
+    }
 }
 
 void MainWindow::setColor(const QColor &color)
@@ -281,23 +291,22 @@ void MainWindow::closeEvent(QCloseEvent * event)
 
 bool MainWindow::nativeEvent(const QByteArray &eventType, void *message, long *result)
 {
+    Q_UNUSED(eventType)
+    Q_UNUSED(result)
     MSG* msg = reinterpret_cast<MSG*>(message);
 
-    if (msg->message == WM_HOTKEY){ // Была нажата одна из горячих клавиш
+    if(msg->message == WM_HOTKEY){
 
-           if (msg->wParam == 100){ // Идентификатор хоткея, который мы указали при
-                                                           // регистрации (не код клавиши, это вам не WM_KEYUP!)
-
-               qDebug() << " This is Work!!!";
-             //  MainWindow::on_pushButton_clicked();
-
-               // Еще одна WinApi функция, всё равно работать будет костыль только в винде :)
-            //   MessageBox(MainWindow::winId(), L"We have the screenshot", L"Done!", MB_OK);
-
-               return true;
-           }
-       }
-       return false;
+        if(msg->wParam == 100){
+            QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
+            QPixmap pixmap = QApplication::primaryScreen()->grabWindow(0);
+            pixmap.save(settings.value(SETTINGS_PATH_SCREENSHOTS, QVariant()).toString() +
+                        QDateTime::currentDateTime().toString("/Screen_yyyy-MM-dd_hh-mm-ss") +
+                        ".png", "PNG");
+            return true;
+        }
+    }
+    return false;
 }
 
 void MainWindow::on_about_triggered()

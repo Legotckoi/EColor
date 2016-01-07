@@ -25,6 +25,9 @@ public:
     bool checkKeySequence();
     bool checkKeyModifier(QString str);
 
+signals:
+    void signalLMHook();
+
 protected:
     void closeEvent(QCloseEvent * event);
     bool nativeEvent(const QByteArray &eventType, void *message, long *result);
@@ -34,6 +37,7 @@ private slots:
     void showDialogUpdate(QString newVersion);
     void initKeySequence();
     void timerTrayTimeout();
+    void slotLMHook();
 
     void on_about_triggered();
     void on_quit_triggered();

@@ -9,6 +9,7 @@
 #define SETTINGS_AUTORUN    "settings/autorun"
 #define SETTINGS_COPY_BUFF  "settings/copyBuffer"
 #define SETTINGS_TYPE_BUFF  "settings/typeCopyBuffer"
+#define SETTINGS_PATH_SCREENSHOTS "settings/pathScreenshots"
 
 #define KEY_SEQUENCE_PIXEL  "shortcut/pixel_1"
 
