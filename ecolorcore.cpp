@@ -33,7 +33,7 @@ EColorCore::EColorCore(QObject *parent) : QObject(parent)
     QAction *actionQuit = new QAction(trUtf8("Выход"), this);
 
     connect(actionConfig, &QAction::triggered, this, &EColorCore::configTriggered);
-    connect(actionAbout, QAction::triggered, this, &EColorCore::aboutTriggered);
+    connect(actionAbout, &QAction::triggered, this, &EColorCore::aboutTriggered);
     connect(actionQuit, &QAction::triggered, this, &EColorCore::quitTriggered);
 
     menu->addAction(actionConfig);

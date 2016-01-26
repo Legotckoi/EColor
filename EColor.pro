@@ -8,8 +8,19 @@ QT       += core
 QT       += gui
 QT       += network
 
-QMAKE_CXXFLAGS += -std=c++0x
-QMAKE_CXXFLAGS += -Wliteral-suffix
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+win32-mingw{
+    QMAKE_CXXFLAGS += -std=c++0x
+    QMAKE_CXXFLAGS += -Wliteral-suffix
+    message("win32-mingw")
+}
+win32-msvc*{
+    #QMAKE_CXXFLAGS += -std=c++1x
+    #LIBS += -luser32
+    #QMAKE_CXXFLAGS += -Wliteral-suffix
+    LIBS += -luser32
+}
 
 VER_MAJ = 0
 VER_MIN = 1
@@ -23,12 +34,12 @@ DEFINES += VER_MAJOR=$${VER_MAJ}
 DEFINES += VER_MINOR=$${VER_MIN}
 DEFINES += VER_PATHES=$${VER_PAT}
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
 
 TARGET = EColor
 TEMPLATE = app
 
-RC_ICONS = myappico.ico
+#RC_ICONS = myappico.ico
 
 SOURCES += main.cpp\
     about.cpp \

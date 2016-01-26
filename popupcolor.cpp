@@ -1,6 +1,6 @@
 #include "popupcolor.h"
 #include "settings.h"
-#include "windows.h"
+#include <windows.h>
 #include <QSettings>
 #include <QDir>
 #include <QPainter>
