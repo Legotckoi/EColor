@@ -1,7 +1,10 @@
-#include "mainwindow.h"
 #include <QApplication>
+#include <QSystemSemaphore>
+#include <QSharedMemory>
+#include <QMessageBox>
 
 #include "settings.h"
+#include "ecolorcore.h"
 
 int main(int argc, char *argv[])
 {
@@ -9,8 +12,29 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain(ORGANIZATION_DOMAIN);
     QCoreApplication::setApplicationName(APPLICATION_NAME);
     QApplication a(argc, argv);
-    MainWindow w;
- //   w.show();
+
+    QSystemSemaphore semaphore("EColor Semaphore", 1);
+    semaphore.acquire();
+
+    QSharedMemory sharedMemory("EColor Shared Memory");
+    bool is_running;
+    if (sharedMemory.attach()){
+        is_running = true;
+    }else{
+        sharedMemory.create(1);
+        is_running = false;
+    }
+    semaphore.release();
+
+    if(is_running){
+        QMessageBox msgBox;
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.setText(QObject::trUtf8("Приложение EColor уже запущено."
+                        "\r\nВы можете запустить только один экземпляр приложения."));
+        msgBox.exec();
+        return 1;
+    }
+    EColorCore eColorCore;
 
     return a.exec();
 }

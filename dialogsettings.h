@@ -26,9 +26,13 @@ protected:
 private slots:
     void on_buttonBox_clicked(QAbstractButton *button);
     void on_buttonBox_accepted();
+    void on_buttonBox_rejected();
+    void on_keySequenceEdit_editingFinished();
+    void on_pBScreenPath_clicked();
 
 private:
     Ui::DialogSettings *ui;
+    void saveSettings();
 };
 
 #endif // DIALOGSETTINGS_H

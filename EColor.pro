@@ -13,7 +13,7 @@ QMAKE_CXXFLAGS += -Wliteral-suffix
 
 VER_MAJ = 0
 VER_MIN = 1
-VER_PAT = 1
+VER_PAT = 4
 
 VERSION = $${VER_MAJ}.$${VER_MIN}.$${VER_PAT} # major.minor.patch
 
@@ -31,20 +31,25 @@ TEMPLATE = app
 RC_ICONS = myappico.ico
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
     about.cpp \
     dialogsettings.cpp \
     versionchecker.cpp \
-    dialogupdate.cpp
+    dialogupdate.cpp \
+    popupcolor.cpp \
+    ecolorcore.cpp \
+    popupmessage.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += \
     about.h \
     settings.h \
     dialogsettings.h \
     versionchecker.h \
-    dialogupdate.h
+    dialogupdate.h \
+    popupcolor.h \
+    ecolorcore.h \
+    popupmessage.h
 
-FORMS    += mainwindow.ui \
+FORMS    += \
     about.ui \
     dialogsettings.ui \
     dialogupdate.ui

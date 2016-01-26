@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>210</height>
+    <height>220</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,26 +19,37 @@
   <property name="minimumSize">
    <size>
     <width>500</width>
-    <height>210</height>
+    <height>220</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>16000</width>
-    <height>16000</height>
+    <width>500</width>
+    <height>220</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>Настройки</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="2" column="0" colspan="4">
-    <widget class="QLabel" name="label_3">
+   <item row="6" column="3">
+    <widget class="QPushButton" name="pBScreenPath">
      <property name="text">
-      <string>Поддерживаются модификаторы Ctrl, Shift, Alt</string>
+      <string>Выбрать</string>
      </property>
-     <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="4">
+    <widget class="QCheckBox" name="checkAutoRun">
+     <property name="text">
+      <string>Автоматически запускать приложение при запуске системы</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1" colspan="2">
+    <widget class="QLineEdit" name="pathScreenShots">
+     <property name="readOnly">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -48,39 +59,35 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Apply|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>
-   <item row="3" column="3">
-    <widget class="QLabel" name="label_2">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>40</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>40</width>
-       <height>16777215</height>
-      </size>
-     </property>
+   <item row="5" column="0" colspan="4">
+    <widget class="QCheckBox" name="cBoxAllowScreen">
      <property name="text">
-      <string>+ ЛКМ</string>
+      <string>Перехватывать событие клавиши PrintScreen</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>Папка для скриншотов</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="4">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Поддерживаются модификаторы Ctrl, Shift, Alt</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignCenter</set>
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
+   <item row="2" column="0">
     <widget class="QLabel" name="label">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -93,31 +100,10 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="1" colspan="2">
+   <item row="2" column="1" colspan="3">
     <widget class="QKeySequenceEdit" name="keySequenceEdit"/>
    </item>
-   <item row="0" column="0" colspan="4">
-    <widget class="QCheckBox" name="checkTray">
-     <property name="text">
-      <string>Сворачивать приложение в трей при закрытии окна</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0" colspan="4">
-    <widget class="QCheckBox" name="checkAutoRun">
-     <property name="text">
-      <string>Автоматически запускать приложение при запуске системы</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1">
-    <widget class="QCheckBox" name="checkCopyBuffer">
-     <property name="text">
-      <string>Копировать в буфер обмена</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="2">
+   <item row="3" column="3">
     <widget class="QComboBox" name="cBoxBufferType">
      <item>
       <property name="text">
@@ -141,37 +127,17 @@
      </item>
     </widget>
    </item>
-   <item row="6" column="0" colspan="4">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="5" column="0">
-    <widget class="QLabel" name="label_4">
+   <item row="3" column="1" colspan="2">
+    <widget class="QCheckBox" name="checkCopyBuffer">
      <property name="text">
-      <string>Папка для скриншотов</string>
+      <string>Копировать в буфер обмена</string>
      </property>
     </widget>
    </item>
-   <item row="5" column="1" colspan="2">
-    <widget class="QLineEdit" name="pathScreenShots">
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="3">
-    <widget class="QPushButton" name="pushButton">
+   <item row="4" column="1" colspan="3">
+    <widget class="QCheckBox" name="checkFollowCursor">
      <property name="text">
-      <string>Выбрать</string>
+      <string>Следовать за курсором</string>
      </property>
     </widget>
    </item>
