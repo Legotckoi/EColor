@@ -13,12 +13,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 win32-mingw{
     QMAKE_CXXFLAGS += -std=c++0x
     QMAKE_CXXFLAGS += -Wliteral-suffix
-    message("win32-mingw")
 }
 win32-msvc*{
-    #QMAKE_CXXFLAGS += -std=c++1x
-    #LIBS += -luser32
-    #QMAKE_CXXFLAGS += -Wliteral-suffix
     LIBS += -luser32
 }
 
