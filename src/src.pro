@@ -35,7 +35,7 @@ DEFINES += VER_PATHES=$${VER_PAT}
 TARGET = EColor
 TEMPLATE = app
 
-#RC_ICONS = myappico.ico
+RC_ICONS = images/myappico.ico
 
 SOURCES += main.cpp\
     about.cpp \

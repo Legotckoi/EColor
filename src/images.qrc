@@ -4,5 +4,6 @@
         <file>images/close-circle.png</file>
         <file>images/close-circle-outline.png</file>
         <file>images/eyedropper.png</file>
+        <file>images/myappico.ico</file>
     </qresource>
 </RCC>
