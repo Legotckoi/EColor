@@ -10,6 +10,7 @@
 #include <QGridLayout>
 #include <QPropertyAnimation>
 #include <QTimer>
+#include <QComboBox>
 
 class PopUpColor : public QWidget
 {
@@ -39,16 +40,11 @@ private slots:
     void dropperbuttonClicked();
     void hideAnimation();
     void hide();
+    void changeIndexComboBoxColor(int index);
 
 private:
     QLabel label;
-    QLabel colorLabel;
-    QGroupBox groupBox;
-    QVBoxLayout vBox;
-    QRadioButton rHex;
-    QRadioButton rRGB;
-    QRadioButton rCMYK;
-    QRadioButton rHSV;
+    QComboBox comboBox;
     QToolButton dropperButton;
     QGridLayout layout;
     QPropertyAnimation animation;
@@ -64,6 +60,9 @@ private:
     bool            followCursor;
 
     void setColor(const QColor &color);
+    void changeComboBoxColor();
+    void setLabelText();
+    void slotCopyBuffer();
     unsigned int winKeyModificator(QKeySequence sequence);
     char winHotKey(QKeySequence sequence);
 };

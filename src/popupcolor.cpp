@@ -11,6 +11,12 @@
 #include <QScreen>
 #include <QClipboard>
 #include <QDateTime>
+#include <QPolygonF>
+#include <QLineEdit>
+#include <QGraphicsDropShadowEffect>
+#include <cmath>
+#include "popupmessage.h"
+#include "qmessagebox.h"
 
 PopUpColor::PopUpColor(QWidget *parent) : QWidget(parent)
 {
@@ -25,35 +31,11 @@ PopUpColor::PopUpColor(QWidget *parent) : QWidget(parent)
     connect(&animation, &QAbstractAnimation::finished, this, &PopUpColor::hide);
     setLayout(&layout);
 
-    groupBox.setStyleSheet("QGroupBox { "
-                           "border: 0px;"
-                           "padding: 0px;"
-                           "margin: 0px; }");
-    layout.addWidget(&groupBox,1,1,2,1);
-    groupBox.setLayout(&vBox);
-    QPalette palette;
-    palette.setColor(QPalette::Foreground,Qt::white);
-    rHex.setPalette(palette);
-    rRGB.setPalette(palette);
-    rCMYK.setPalette(palette);
-    rHSV.setPalette(palette);
-    rHex.setText("HEX:\t");
-    rRGB.setText("RGB:\t");
-    rCMYK.setText("CMYK:\t");
-    rHSV.setText("HSV:\t");
-    vBox.addWidget(&rHex);
-    vBox.addWidget(&rRGB);
-    vBox.addWidget(&rCMYK);
-    vBox.addWidget(&rHSV);
+    comboBox.addItems(QStringList() << "HEX" << "RGB" << "CMYK" << "HSV" << "HSL");
+    comboBox.setCurrentIndex(0);
+    layout.addWidget(&comboBox,1,0);
 
-    colorLabel.setStyleSheet("QLabel {"
-                             "margin: 6px;"
-                             "width: 32px;"
-                             "height: 32px; "
-                             "border: 1px solid grey; }");
-    layout.addWidget(&colorLabel,0,0,2,1,Qt::AlignTop);
-
-    dropperButton.setIcon(QIcon(":/images/eyedropper.png"));
+   /* dropperButton.setIcon(QIcon(":/images/eyedropper.png"));
     dropperButton.setStyleSheet("QToolButton { margin: 6px;"
                                 "height: 30px;"
                                 "width: 30px; "
@@ -62,15 +44,21 @@ PopUpColor::PopUpColor(QWidget *parent) : QWidget(parent)
                                 "QToolButton:pressed {"
                                 "background-color: grey;}");
     layout.addWidget(&dropperButton,2,0);
-    connect(&dropperButton, &QAbstractButton::clicked, this, &PopUpColor::dropperbuttonClicked);
+    connect(&dropperButton, &QAbstractButton::clicked, this, &PopUpColor::dropperbuttonClicked);*/
 
     label.setStyleSheet("QLabel { color: white;"
                         "margin-top: 6px;"
                         "margin-right: 6px; "
                         "margin-left: 6px; "
-                        "margin-bottom: 0px;}");
-    label.setText(trUtf8("Цвет пикселя"));
-    layout.addWidget(&label,0,1);
+                        "margin-bottom: 0px;"
+                        "font-size: 16px;"
+                        "font-weight: 500; }");
+    QGraphicsDropShadowEffect *labelEffect = new QGraphicsDropShadowEffect(this);
+    labelEffect->setBlurRadius(16);
+    labelEffect->setOffset(0);
+    label.setGraphicsEffect(labelEffect);
+    label.setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    layout.addWidget(&label,0,0);
 
     reloadSettings();
 
@@ -78,6 +66,7 @@ PopUpColor::PopUpColor(QWidget *parent) : QWidget(parent)
 
     timer = new QTimer();
     connect(timer, &QTimer::timeout, this, &PopUpColor::hideAnimation);
+    connect(&comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeIndexComboBoxColor(int)));
 }
 
 void PopUpColor::paintEvent(QPaintEvent *event)
@@ -87,16 +76,39 @@ void PopUpColor::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    QRect roundedRect;
+    painter.setBrush(QBrush(currentColor));
+    QColor penColor;
+    qreal lightness = currentColor.lightnessF();
+
+    if(lightness < 0.5){
+        lightness += 0.09;
+    } else {
+        lightness -= 0.09;
+    }
+    penColor.setHslF(currentColor.hslHueF(),
+                     currentColor.hslSaturationF(),
+                     lightness);
+
+    QPen pen(QBrush(penColor),1);
+    painter.setPen(pen);
+
+    QRectF roundedRect;
     roundedRect.setX(rect().x() + 5);
     roundedRect.setY(rect().y() + 5);
     roundedRect.setWidth(rect().width() - 10);
-    roundedRect.setHeight(rect().height() - 10);
+    roundedRect.setHeight(rect().height() - 14.5);
 
-    painter.setBrush(QBrush(QColor(0,0,0,180)));
-    painter.setPen(Qt::NoPen);
+    painter.drawRoundedRect(roundedRect, 2, 2);
 
-    painter.drawRoundedRect(roundedRect, 10, 10);
+    QPolygonF triangle;
+    triangle << QPoint(rect().x() + rect().width() / 2 - 10, rect().y() + rect().height() - 10)
+             << QPoint(rect().x() + rect().width() / 2, rect().y() + rect().height())
+             << QPoint(rect().x() + rect().width() / 2 + 10, rect().y() + rect().height() - 10);
+
+    QPainterPath trianglePath;
+    trianglePath.addPolygon(triangle);
+
+    painter.drawPath(trianglePath);
 }
 
 bool PopUpColor::nativeEvent(const QByteArray &eventType, void *message, long *result)
@@ -150,31 +162,9 @@ void PopUpColor::leaveEvent(QEvent *event)
 void PopUpColor::setPopupColor(const QColor &color)
 {
     currentColor = color;
-    QImage image(34, 34, QImage::Format_RGB32);
-    QRgb value = color.rgb();
-    for(int i = 0; i < 34; i++){
-        for(int j = 0; j < 34; j++){
-            image.setPixel(i, j, value);
-        }
-    }
-
-    QPixmap pic;
-    pic.convertFromImage(image);
-    colorLabel.setPixmap(pic);
-    rHex.setText("HEX:\t" + color.name());
-    rRGB.setText("RGB:\t" +
-                 QString::number(color.red()) + " " +
-                 QString::number(color.green()) + " " +
-                 QString::number(color.blue()));
-    rCMYK.setText("CMYK:\t" +
-                  QString::number(color.cyan()) + " " +
-                  QString::number(color.magenta()) + " " +
-                  QString::number(color.yellow()) + " " +
-                  QString::number(color.black()));
-    rHSV.setText("HSV:\t" +
-                 QString::number(color.hue()) + " " +
-                 QString::number(color.saturation()) + " " +
-                 QString::number(color.value()));
+    changeComboBoxColor();
+    setLabelText();
+    this->repaint();
 }
 
 void PopUpColor::show()
@@ -245,20 +235,7 @@ void PopUpColor::reloadSettings()
     keys = QKeySequence(settings.value(KEY_SEQUENCE_PIXEL, QVariant()).toString());
     UnregisterHotKey((HWND)PopUpColor::winId(), 100);
     RegisterHotKey((HWND)PopUpColor::winId(), 100, winKeyModificator(keys), winHotKey(keys));
-    switch(typeCopyBuffer){
-    case 0:
-        rHex.setChecked(true);
-        break;
-    case 1:
-        rRGB.setChecked(true);
-        break;
-    case 2:
-        rCMYK.setChecked(true);
-        break;
-    case 3:
-        rHSV.setChecked(true);
-        break;
-    }
+    comboBox.setCurrentIndex(typeCopyBuffer);
 }
 
 void PopUpColor::dropperbuttonClicked()
@@ -282,35 +259,120 @@ void PopUpColor::hide()
     }
 }
 
+void PopUpColor::changeIndexComboBoxColor(int index)
+{
+    typeCopyBuffer = index;
+    setLabelText();
+    adjustSize();
+    slotCopyBuffer();
+    this->repaint();
+}
+
 void PopUpColor::setColor(const QColor &color)
 {
     setPopupColor(color);
     (followCursor) ? showPos(QCursor::pos()) : show();
+    slotCopyBuffer();
+}
 
+void PopUpColor::changeComboBoxColor()
+{
+    QColor color;
+    qreal lightness = currentColor.lightnessF();
+    if(lightness < 0.5){
+        lightness += 0.09;
+    } else {
+        lightness -= 0.09;
+    }
+
+    color.setHslF(currentColor.hslHueF(),
+                  currentColor.hslSaturationF(),
+                  lightness);
+    QString strColor = color.name();
+    QString fontColor = (currentColor.lightnessF() > 0.5) ? "#000000" : "#ffffff";
+    comboBox.setStyleSheet("QComboBox { color: " + fontColor + "; background-color: " + strColor + "; "
+                           "border: none; border-radius: 2px; margin: 6px; padding: 6px;"
+                           "font-size: 14px; }"
+                           "QComboBox::drop-down {border: none;} "
+                           "QComboBox::down-arrow {image: url(noimg); border: none;}"
+                           "QComboBox QAbstractItemView { "
+                           "border: none;"
+                           "color: " + fontColor + "; "
+                           "background-color: " + strColor + "; "
+                           "border-radius: 2px;"
+                           "padding: 6px;"
+                           "selection-color: " + fontColor + ";"
+                           "selection-background-color: " + currentColor.name() + ";}");
+}
+
+void PopUpColor::setLabelText()
+{
+    switch (typeCopyBuffer) {
+    case 0:
+        label.setText(currentColor.name());
+        break;
+    case 1:
+        label.setText("RGB:\t" +
+                      QString::number(currentColor.red()) + " " +
+                      QString::number(currentColor.green()) + " " +
+                      QString::number(currentColor.blue()));
+        break;
+    case 2:
+        label.setText("CMYK:\t" +
+                      QString::number(currentColor.cyan()) + " " +
+                      QString::number(currentColor.magenta()) + " " +
+                      QString::number(currentColor.yellow()) + " " +
+                      QString::number(currentColor.black()));
+        break;
+    case 3:
+        label.setText("HSV:\t" +
+                      QString::number(currentColor.hsvHue()) + " " +
+                      QString::number(round(currentColor.hsvSaturationF()*100)) + "% " +
+                      QString::number(round(currentColor.valueF()*100)) + "%");
+        break;
+    case 4:
+        label.setText("HSL:\t" +
+                      QString::number(currentColor.hslHue()) + " " +
+                      QString::number(round(currentColor.hslSaturationF()*100)) + "% " +
+                      QString::number(round(currentColor.lightnessF()*100)) + "%");
+        break;
+    default:
+        break;
+    }
+}
+
+void PopUpColor::slotCopyBuffer()
+{
     if(copyBuffer){
         switch (typeCopyBuffer) {
         case 0: // HEX
-            QApplication::clipboard()->setText(color.name());
+            QApplication::clipboard()->setText(currentColor.name());
             break;
         case 1: // RGB
-            QApplication::clipboard()->setText(QString::number(color.red()) + " " +
-                                               QString::number(color.green()) + " " +
-                                               QString::number(color.blue()));
+            QApplication::clipboard()->setText(QString::number(currentColor.red()) + " " +
+                                               QString::number(currentColor.green()) + " " +
+                                               QString::number(currentColor.blue()));
             break;
         case 2: // CMYK
-            QApplication::clipboard()->setText(QString::number(color.cyan()) + " " +
-                                               QString::number(color.magenta()) + " " +
-                                               QString::number(color.yellow()) + " " +
-                                               QString::number(color.black()));
+            QApplication::clipboard()->setText(QString::number(currentColor.cyan()) + " " +
+                                               QString::number(currentColor.magenta()) + " " +
+                                               QString::number(currentColor.yellow()) + " " +
+                                               QString::number(currentColor.black()));
             break;
         case 3: // HSV
-            QApplication::clipboard()->setText(QString::number(color.hue()) + " " +
-                                               QString::number(color.saturation()) + " " +
-                                               QString::number(color.value()));
+            QApplication::clipboard()->setText(QString::number(currentColor.hue()) + " " +
+                                               QString::number(round(currentColor.hsvSaturationF()*100)) + " " +
+                                               QString::number(round(currentColor.valueF()*100)));
+            break;
+        case 4: // HSL
+            QApplication::clipboard()->setText(QString::number(currentColor.hslHue()) + " " +
+                                               QString::number(round(currentColor.hslSaturationF()*100)) + " " +
+                                               QString::number(round(currentColor.lightnessF()*100)));
             break;
         default:
             break;
         }
+        PopUpMessage::information(this, "Скопировано в буфер обмена");
     }
 }
 

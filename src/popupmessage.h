@@ -18,6 +18,8 @@ class PopUpMessage : public QWidget
 
 public:
     explicit PopUpMessage(QWidget *parent = 0);
+    ~PopUpMessage();
+    static void information(QWidget *parent, const QString text);
 
 protected:
     void paintEvent(QPaintEvent *event);

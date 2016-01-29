@@ -5,6 +5,13 @@
 #include <QDebug>
 #include <QVBoxLayout>
 
+static void showNewMessage(QWidget *parent, const QString text)
+{
+    PopUpMessage *msg = new PopUpMessage(parent);
+    msg->setPopupText(text);
+    msg->show();
+}
+
 PopUpMessage::PopUpMessage(QWidget *parent) : QWidget(parent)
 {
     setWindowFlags(Qt::FramelessWindowHint |
@@ -28,6 +35,16 @@ PopUpMessage::PopUpMessage(QWidget *parent) : QWidget(parent)
 
     timer = new QTimer();
     connect(timer, &QTimer::timeout, this, &PopUpMessage::hideAnimation);
+}
+
+PopUpMessage::~PopUpMessage()
+{
+    delete timer;
+}
+
+void PopUpMessage::information(QWidget *parent, const QString text)
+{
+    showNewMessage(parent, text);
 }
 
 void PopUpMessage::paintEvent(QPaintEvent *event)
@@ -94,6 +111,7 @@ void PopUpMessage::hide()
 {
     if(getPopupOpacity() == 0.0){
         QWidget::hide();
+        this->deleteLater();
     }
 }
 

@@ -106,4 +106,3 @@ void EColorCore::showDialogUpdate(QString newVersion)
     dialogUpdate->setNewVersion(APPLICATION_NAME " v" + newVersion);
     dialogUpdate->show();
 }
-
