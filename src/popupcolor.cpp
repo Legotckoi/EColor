@@ -46,7 +46,8 @@ PopUpColor::PopUpColor(QWidget *parent) : QWidget(parent)
     layout.addWidget(&dropperButton,2,0);
     connect(&dropperButton, &QAbstractButton::clicked, this, &PopUpColor::dropperbuttonClicked);*/
 
-    label.setStyleSheet("QLabel { color: white;"
+    label = new CodeLabel(this);
+    label->setStyleSheet("QLabel { color: white;"
                         "margin-top: 6px;"
                         "margin-right: 6px; "
                         "margin-left: 6px; "
@@ -56,9 +57,9 @@ PopUpColor::PopUpColor(QWidget *parent) : QWidget(parent)
     QGraphicsDropShadowEffect *labelEffect = new QGraphicsDropShadowEffect(this);
     labelEffect->setBlurRadius(16);
     labelEffect->setOffset(0);
-    label.setGraphicsEffect(labelEffect);
-    label.setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    layout.addWidget(&label,0,0);
+    label->setGraphicsEffect(labelEffect);
+    label->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    layout.addWidget(label,0,0);
 
     reloadSettings();
 
@@ -67,6 +68,13 @@ PopUpColor::PopUpColor(QWidget *parent) : QWidget(parent)
     timer = new QTimer();
     connect(timer, &QTimer::timeout, this, &PopUpColor::hideAnimation);
     connect(&comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeIndexComboBoxColor(int)));
+    connect(label, &CodeLabel::setPos, this, &PopUpColor::showPos);
+}
+
+PopUpColor::~PopUpColor()
+{
+    delete timer;
+    delete label;
 }
 
 void PopUpColor::paintEvent(QPaintEvent *event)
@@ -309,29 +317,29 @@ void PopUpColor::setLabelText()
 {
     switch (typeCopyBuffer) {
     case 0:
-        label.setText(currentColor.name());
+        label->setText(currentColor.name());
         break;
     case 1:
-        label.setText("RGB:\t" +
+        label->setText("RGB:\t" +
                       QString::number(currentColor.red()) + " " +
                       QString::number(currentColor.green()) + " " +
                       QString::number(currentColor.blue()));
         break;
     case 2:
-        label.setText("CMYK:\t" +
+        label->setText("CMYK:\t" +
                       QString::number(currentColor.cyan()) + " " +
                       QString::number(currentColor.magenta()) + " " +
                       QString::number(currentColor.yellow()) + " " +
                       QString::number(currentColor.black()));
         break;
     case 3:
-        label.setText("HSV:\t" +
+        label->setText("HSV:\t" +
                       QString::number(currentColor.hsvHue()) + " " +
                       QString::number(round(currentColor.hsvSaturationF()*100)) + "% " +
                       QString::number(round(currentColor.valueF()*100)) + "%");
         break;
     case 4:
-        label.setText("HSL:\t" +
+        label->setText("HSL:\t" +
                       QString::number(currentColor.hslHue()) + " " +
                       QString::number(round(currentColor.hslSaturationF()*100)) + "% " +
                       QString::number(round(currentColor.lightnessF()*100)) + "%");

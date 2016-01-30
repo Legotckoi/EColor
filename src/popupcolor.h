@@ -12,6 +12,8 @@
 #include <QTimer>
 #include <QComboBox>
 
+#include "codelabel.h"
+
 class PopUpColor : public QWidget
 {
     Q_OBJECT
@@ -23,6 +25,7 @@ class PopUpColor : public QWidget
 
 public:
     explicit PopUpColor(QWidget *parent = 0);
+    ~PopUpColor();
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -43,7 +46,7 @@ private slots:
     void changeIndexComboBoxColor(int index);
 
 private:
-    QLabel label;
+    CodeLabel *label;
     QComboBox comboBox;
     QToolButton dropperButton;
     QGridLayout layout;
