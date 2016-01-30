@@ -30,8 +30,6 @@ public:
 protected:
     void paintEvent(QPaintEvent *event);
     bool nativeEvent(const QByteArray &eventType, void *message, long *result);
-    void enterEvent(QEvent *event);
-    void leaveEvent(QEvent *event);
 
 public slots:
     void setPopupColor(const QColor& color);
@@ -42,17 +40,16 @@ public slots:
 private slots:
     void dropperbuttonClicked();
     void hideAnimation();
-    void hide();
     void changeIndexComboBoxColor(int index);
 
 private:
-    CodeLabel *label;
+    CodeLabel label;
     QComboBox comboBox;
     QToolButton dropperButton;
+    QToolButton closeButton;
     QGridLayout layout;
     QPropertyAnimation animation;
     float popupOpacity;
-    QTimer *timer;
 
     QColor currentColor;
 
@@ -63,7 +60,7 @@ private:
     bool            followCursor;
 
     void setColor(const QColor &color);
-    void changeComboBoxColor();
+    void changeStyleSheets();
     void setLabelText();
     void slotCopyBuffer();
     unsigned int winKeyModificator(QKeySequence sequence);
