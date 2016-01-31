@@ -40,7 +40,7 @@ PopUpColor::PopUpColor(QWidget *parent) : QWidget(parent)
 
     connect(&comboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &PopUpColor::changeIndexComboBoxColor);
     connect(&label, &CodeLabel::setPos, this, &PopUpColor::showPos);
-    connect(&closeButton, &QToolButton::clicked, this, &PopUpColor::hide);
+    connect(&closeButton, &QToolButton::clicked, this, &PopUpColor::slotHide);
     connect(&closeButton, &QToolButton::clicked, &dummyTransparentWindow, &TransparentWindow::hide);
     connect(&closeButton, &QToolButton::clicked, this, &PopUpColor::backColor);
     connect(&pickerButton, &QToolButton::clicked, this, &PopUpColor::pickerButtonClicked);
@@ -54,9 +54,17 @@ PopUpColor::PopUpColor(QWidget *parent) : QWidget(parent)
     setCurrentColor(QColor(Qt::white));
 }
 
+void PopUpColor::saveSettings()
+{
+    qDebug()<<"sdsdff";
+    QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
+    settings.setValue(SETTINGS_POS_X,posWin.x());
+    settings.setValue(SETTINGS_POS_Y,posWin.y());
+    qDebug()<<posWin;
+}
+
 PopUpColor::~PopUpColor()
 {
-
 }
 
 void PopUpColor::paintEvent(QPaintEvent *event)
@@ -143,10 +151,17 @@ bool PopUpColor::nativeEvent(const QByteArray &eventType, void *message, long *r
 void PopUpColor::show()
 {
     adjustSize();
-    setGeometry(QApplication::desktop()->availableGeometry().width() - 36 - width() + QApplication::desktop() -> availableGeometry().x(),
-                QApplication::desktop()->availableGeometry().height() - 36 - height() + QApplication::desktop() -> availableGeometry().y(),
-                width(),
-                height());
+    int x,y;
+    if(posWin==QPoint(0,0)){
+        x=QApplication::desktop()->availableGeometry().width() - 36 - width() + QApplication::desktop() -> availableGeometry().x();
+        y=QApplication::desktop()->availableGeometry().height() - 36 - height() + QApplication::desktop() -> availableGeometry().y();
+    }else{
+        x=posWin.x();
+        y=posWin.y();
+    }
+        setGeometry(x,y,
+                    width(),
+                    height());
     if(!isVisible()){
         setWindowOpacity(0.0);
 
@@ -186,6 +201,7 @@ void PopUpColor::showPos(QPoint point)
         animation.setEndValue(1.0);
         animation.start();
     }
+    posWin=point;
 }
 
 void PopUpColor::reloadSettings()
@@ -194,6 +210,8 @@ void PopUpColor::reloadSettings()
     copyBuffer = settings.value(SETTINGS_COPY_BUFF, false).toBool();
     typeCopyBuffer = settings.value(SETTINGS_TYPE_BUFF, 0).toInt();
     followCursor = settings.value(SETTINGS_FOLLOW_CURSOR, false).toBool();
+    posWin.setX(settings.value(SETTINGS_POS_X,0).toInt());
+    posWin.setY(settings.value(SETTINGS_POS_Y,0).toInt());
 #ifdef Q_OS_WIN32
     UnregisterHotKey((HWND) PopUpColor::winId(), 101);
     if(settings.value(SETTINGS_ALLOW_SCREENSHOTS, false).toBool()){
@@ -460,4 +478,10 @@ float PopUpColor::getPopupOpacity() const
 QColor PopUpColor::getCurrentColor() const
 {
     return currentColor;
+}
+
+void PopUpColor::slotHide()
+{
+    posWin=this->pos();
+    this->hide();
 }

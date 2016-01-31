@@ -30,6 +30,7 @@ signals:
 
 public:
     explicit PopUpColor(QWidget *parent = 0);
+    void saveSettings();
     ~PopUpColor();
 
 protected:
@@ -51,6 +52,7 @@ private slots:
     void changeStyleSheets();
     void changeLabelText();
     void slotCopyBuffer();
+    void slotHide();
 
 private:
     // Properties
@@ -64,6 +66,7 @@ private:
     QToolButton closeButton;
     QGridLayout layout;
     QPropertyAnimation animation;
+    QPoint posWin;
 
     TransparentWindow dummyTransparentWindow;
 

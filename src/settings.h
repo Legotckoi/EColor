@@ -15,5 +15,8 @@
 
 #define KEY_SEQUENCE_PIXEL  "shortcut/pixel_1"
 
+#define SETTINGS_POS_X "settings/posX"
+#define SETTINGS_POS_Y "settings/posY"
+
 #endif // SETTINGS
 
