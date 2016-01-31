@@ -38,9 +38,6 @@ PopUpColor::PopUpColor(QWidget *parent) : QWidget(parent)
     comboBox.setCurrentIndex(0);
     layout.addWidget(&comboBox,1,1,1,2);
 
-    reloadSettings();
-    setCurrentColor(QColor(Qt::white));
-
     connect(&comboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &PopUpColor::changeIndexComboBoxColor);
     connect(&label, &CodeLabel::setPos, this, &PopUpColor::showPos);
     connect(&closeButton, &QToolButton::clicked, this, &PopUpColor::hide);
@@ -52,6 +49,9 @@ PopUpColor::PopUpColor(QWidget *parent) : QWidget(parent)
     connect(&dummyTransparentWindow, &TransparentWindow::changeColor, this, &PopUpColor::setCurrentColor);
     connect(&dummyTransparentWindow, &TransparentWindow::backColor, this, &PopUpColor::backColor);
     connect(&dummyTransparentWindow, &TransparentWindow::saveColor, this, &PopUpColor::slotCopyBuffer);
+
+    reloadSettings();
+    setCurrentColor(QColor(Qt::white));
 }
 
 PopUpColor::~PopUpColor()
