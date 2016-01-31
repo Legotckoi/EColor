@@ -7,5 +7,6 @@
         <file>images/myappico.ico</file>
         <file>images/close-circle-black.png</file>
         <file>images/close-circle-outline-black.png</file>
+        <file>images/eyedropper-black.png</file>
     </qresource>
 </RCC>

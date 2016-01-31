@@ -13,15 +13,20 @@
 #include <QComboBox>
 
 #include "codelabel.h"
+#include "transparentwindow.h"
 
 class PopUpColor : public QWidget
 {
     Q_OBJECT
 
     Q_PROPERTY(float popupOpacity READ getPopupOpacity WRITE setPopupOpacity)
+    Q_PROPERTY(QColor currentColor READ getCurrentColor WRITE setCurrentColor NOTIFY currentColorChanged)
 
-    void setPopupOpacity(float opacity);
     float getPopupOpacity() const;
+    QColor getCurrentColor() const;
+
+signals:
+    void currentColorChanged();
 
 public:
     explicit PopUpColor(QWidget *parent = 0);
@@ -32,26 +37,35 @@ protected:
     bool nativeEvent(const QByteArray &eventType, void *message, long *result);
 
 public slots:
-    void setPopupColor(const QColor& color);
     void show();
     void showPos(QPoint point);
     void reloadSettings();
+    void setPopupOpacity(float opacity);
+    void setCurrentColor(QColor color);
 
 private slots:
-    void dropperbuttonClicked();
+    void pickerButtonClicked();
     void hideAnimation();
     void changeIndexComboBoxColor(int index);
+    void backColor();
+    void changeStyleSheets();
+    void changeLabelText();
+    void slotCopyBuffer();
 
 private:
+    // Properties
+    float popupOpacity;
+    QColor currentColor;
+    QColor tempCurrentColor;
+    // Interface
     CodeLabel label;
     QComboBox comboBox;
-    QToolButton dropperButton;
+    QToolButton pickerButton;
     QToolButton closeButton;
     QGridLayout layout;
     QPropertyAnimation animation;
-    float popupOpacity;
 
-    QColor currentColor;
+    TransparentWindow dummyTransparentWindow;
 
     // Переменные для работы с горячими клавишами
     QKeySequence    keys;
@@ -60,9 +74,6 @@ private:
     bool            followCursor;
 
     void setColor(const QColor &color);
-    void changeStyleSheets();
-    void setLabelText();
-    void slotCopyBuffer();
     unsigned int winKeyModificator(QKeySequence sequence);
     char winHotKey(QKeySequence sequence);
 };

@@ -16,7 +16,6 @@
 #include <QGraphicsDropShadowEffect>
 #include <cmath>
 #include "popupmessage.h"
-#include "qmessagebox.h"
 
 PopUpColor::PopUpColor(QWidget *parent) : QWidget(parent)
 {
@@ -30,19 +29,29 @@ PopUpColor::PopUpColor(QWidget *parent) : QWidget(parent)
     animation.setPropertyName("popupOpacity");
 
     setLayout(&layout);
+
+    label.setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    layout.addWidget(&label,0,0,1,2);
+    layout.addWidget(&closeButton,0,2);
+    layout.addWidget(&pickerButton,1,0);
     comboBox.addItems(QStringList() << "HEX" << "RGB" << "CMYK" << "HSV" << "HSL");
     comboBox.setCurrentIndex(0);
-    layout.addWidget(&comboBox,1,0,1,2);
-    layout.addWidget(&closeButton,0,1);
-    label.setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    layout.addWidget(&label,0,0);
+    layout.addWidget(&comboBox,1,1,1,2);
 
     reloadSettings();
-    setPopupColor(QColor(Qt::white));
+    setCurrentColor(QColor(Qt::white));
 
-    connect(&comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeIndexComboBoxColor(int)));
+    connect(&comboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &PopUpColor::changeIndexComboBoxColor);
     connect(&label, &CodeLabel::setPos, this, &PopUpColor::showPos);
     connect(&closeButton, &QToolButton::clicked, this, &PopUpColor::hide);
+    connect(&closeButton, &QToolButton::clicked, &dummyTransparentWindow, &TransparentWindow::hide);
+    connect(&closeButton, &QToolButton::clicked, this, &PopUpColor::backColor);
+    connect(&pickerButton, &QToolButton::clicked, this, &PopUpColor::pickerButtonClicked);
+    connect(this, &PopUpColor::currentColorChanged, this, &PopUpColor::changeLabelText);
+    connect(this, &PopUpColor::currentColorChanged, this, &PopUpColor::changeStyleSheets);
+    connect(&dummyTransparentWindow, &TransparentWindow::changeColor, this, &PopUpColor::setCurrentColor);
+    connect(&dummyTransparentWindow, &TransparentWindow::backColor, this, &PopUpColor::backColor);
+    connect(&dummyTransparentWindow, &TransparentWindow::saveColor, this, &PopUpColor::slotCopyBuffer);
 }
 
 PopUpColor::~PopUpColor()
@@ -81,7 +90,7 @@ void PopUpColor::paintEvent(QPaintEvent *event)
 
     painter.drawRoundedRect(roundedRect, 2, 2);
 
-    QPolygonF triangle;
+   /* QPolygonF triangle;
     triangle << QPoint(rect().x() + rect().width() / 2 - 10, rect().y() + rect().height() - 10)
              << QPoint(rect().x() + rect().width() / 2, rect().y() + rect().height())
              << QPoint(rect().x() + rect().width() / 2 + 10, rect().y() + rect().height() - 10);
@@ -89,13 +98,14 @@ void PopUpColor::paintEvent(QPaintEvent *event)
     QPainterPath trianglePath;
     trianglePath.addPolygon(triangle);
 
-    painter.drawPath(trianglePath);
+    painter.drawPath(trianglePath);*/
 }
 
 bool PopUpColor::nativeEvent(const QByteArray &eventType, void *message, long *result)
 {
     Q_UNUSED(eventType)
     Q_UNUSED(result)
+#ifdef Q_OS_WIN32
     MSG* msg = reinterpret_cast<MSG*>(message);
 
     if(msg->message == WM_HOTKEY){
@@ -104,10 +114,11 @@ bool PopUpColor::nativeEvent(const QByteArray &eventType, void *message, long *r
         case 100: {
             QScreen *screen = QApplication::primaryScreen();
             QImage img = screen->grabWindow(0).toImage();
-            QRgb b = img.pixel(QCursor::pos());
-            QColor c;
-            c.setRgb(b);
-            setColor(c);
+            QColor color;
+            color.setRgb(img.pixel(QCursor::pos()));;
+            setCurrentColor(color);
+            (followCursor) ? showPos(QCursor::pos()) : show();
+            slotCopyBuffer();
             return true;
             break;
         }
@@ -125,15 +136,8 @@ bool PopUpColor::nativeEvent(const QByteArray &eventType, void *message, long *r
             break;
         }
     }
+#endif
     return false;
-}
-
-void PopUpColor::setPopupColor(const QColor &color)
-{
-    currentColor = color;
-    changeStyleSheets();
-    setLabelText();
-    this->repaint();
 }
 
 void PopUpColor::show()
@@ -164,10 +168,7 @@ void PopUpColor::show()
 void PopUpColor::showPos(QPoint point)
 {
     adjustSize();
-    int cursorX = (QApplication::desktop()->width() - point.x() < width()) ? (point.x() - width()) : point.x();
-    int cursorY = (QApplication::desktop()->height() - point.y() < height()) ? (point.y() - height()) : point.y();
-
-    setGeometry(cursorX, cursorY, width(), height());
+    setGeometry(point.x(), point.y(), width(), height());
 
     if(!isVisible()){
         setWindowOpacity(0.0);
@@ -193,19 +194,24 @@ void PopUpColor::reloadSettings()
     copyBuffer = settings.value(SETTINGS_COPY_BUFF, false).toBool();
     typeCopyBuffer = settings.value(SETTINGS_TYPE_BUFF, 0).toInt();
     followCursor = settings.value(SETTINGS_FOLLOW_CURSOR, false).toBool();
+#ifdef Q_OS_WIN32
     UnregisterHotKey((HWND) PopUpColor::winId(), 101);
     if(settings.value(SETTINGS_ALLOW_SCREENSHOTS, false).toBool()){
         RegisterHotKey((HWND)PopUpColor::winId(), 101, 0, VK_SNAPSHOT);
     }
+#endif
     keys = QKeySequence(settings.value(KEY_SEQUENCE_PIXEL, QVariant()).toString());
+#ifdef Q_OS_WIN32
     UnregisterHotKey((HWND)PopUpColor::winId(), 100);
     RegisterHotKey((HWND)PopUpColor::winId(), 100, winKeyModificator(keys), winHotKey(keys));
+#endif
     comboBox.setCurrentIndex(typeCopyBuffer);
 }
 
-void PopUpColor::dropperbuttonClicked()
+void PopUpColor::pickerButtonClicked()
 {
-
+    tempCurrentColor = getCurrentColor();
+    dummyTransparentWindow.showFullScreen();
 }
 
 void PopUpColor::hideAnimation()
@@ -219,15 +225,19 @@ void PopUpColor::hideAnimation()
 void PopUpColor::changeIndexComboBoxColor(int index)
 {
     typeCopyBuffer = index;
-    setLabelText();
-    adjustSize();
+    changeLabelText();
     slotCopyBuffer();
     this->repaint();
 }
 
+void PopUpColor::backColor()
+{
+    setCurrentColor(tempCurrentColor);
+}
+
 void PopUpColor::setColor(const QColor &color)
 {
-    setPopupColor(color);
+    setCurrentColor(color);
     (followCursor) ? showPos(QCursor::pos()) : show();
     slotCopyBuffer();
 }
@@ -272,6 +282,16 @@ void PopUpColor::changeStyleSheets()
                             "margin-left: 6px; "
                             "margin-bottom: 0px;"
                             "font-size: 16px; }");
+        pickerButton.setStyleSheet("QToolButton { image: url(:/images/eyedropper-black.png);"
+                                   "icon-size: 16px;"
+                                   "height: 16px;"
+                                   "width: 16px;"
+                                   "margin: 6px;"
+                                   "padding: 6px;"
+                                   "border: none;"
+                                   "border-radius: 2px;"
+                                   "background-color: " + strColor + "; }"
+                                   "QToolButton:pressed { background-color: transparent; }");
         closeButton.setStyleSheet("QToolButton { image: url(:/images/close-circle-outline-black.png);"
                                   "icon-size: 16px;"
                                   "height: 16px;"
@@ -289,6 +309,16 @@ void PopUpColor::changeStyleSheets()
                             "margin-left: 6px; "
                             "margin-bottom: 0px;"
                             "font-size: 16px; }");
+        pickerButton.setStyleSheet("QToolButton { image: url(:/images/eyedropper.png);"
+                                   "icon-size: 16px;"
+                                   "height: 16px;"
+                                   "width: 16px;"
+                                   "margin: 6px;"
+                                   "padding: 6px;"
+                                   "border: none;"
+                                   "border-radius: 2px;"
+                                   "background-color: " + strColor + "; }"
+                                   "QToolButton:pressed { background-color: transparent; }");
         closeButton.setStyleSheet("QToolButton { image: url(:/images/close-circle-outline.png);"
                                   "icon-size: 16px;"
                                   "height: 16px;"
@@ -300,9 +330,10 @@ void PopUpColor::changeStyleSheets()
                                   "border: none;}"
                                   "QToolButton:pressed { image: url(:/images/close-circle.png);}");
     }
+    this->repaint();
 }
 
-void PopUpColor::setLabelText()
+void PopUpColor::changeLabelText()
 {
     switch (typeCopyBuffer) {
     case 0:
@@ -336,6 +367,7 @@ void PopUpColor::setLabelText()
     default:
         break;
     }
+    adjustSize();
 }
 
 void PopUpColor::slotCopyBuffer()
@@ -373,6 +405,7 @@ void PopUpColor::slotCopyBuffer()
     }
 }
 
+#ifdef Q_OS_WIN32
 unsigned int PopUpColor::winKeyModificator(QKeySequence sequence)
 {
     QStringList list = sequence.toString().split("+");
@@ -405,6 +438,7 @@ char PopUpColor::winHotKey(QKeySequence sequence)
     }
     return hotKey;
 }
+#endif
 
 void PopUpColor::setPopupOpacity(float opacity)
 {
@@ -412,7 +446,18 @@ void PopUpColor::setPopupOpacity(float opacity)
     setWindowOpacity(opacity);
 }
 
+void PopUpColor::setCurrentColor(QColor color)
+{
+    currentColor = color;
+    emit currentColorChanged();
+}
+
 float PopUpColor::getPopupOpacity() const
 {
     return popupOpacity;
+}
+
+QColor PopUpColor::getCurrentColor() const
+{
+    return currentColor;
 }
