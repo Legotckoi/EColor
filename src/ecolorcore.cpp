@@ -86,6 +86,7 @@ void EColorCore::quitTriggered()
 { 
     delete versionChecker;
     delete trayIcon;
+    popUpColor->saveSettings();
     exit(0);
 }
 
