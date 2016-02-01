@@ -56,9 +56,11 @@ PopUpColor::PopUpColor(QWidget *parent) : QWidget(parent)
 
 void PopUpColor::saveSettings()
 {
+    qDebug()<<"sdsdff";
     QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
     settings.setValue(SETTINGS_POS_X,posWin.x());
     settings.setValue(SETTINGS_POS_Y,posWin.y());
+    qDebug()<<posWin;
 }
 
 PopUpColor::~PopUpColor()
