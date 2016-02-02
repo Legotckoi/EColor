@@ -31,12 +31,13 @@ PopUpColor::PopUpColor(QWidget *parent) : QWidget(parent)
     setLayout(&layout);
 
     label.setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    layout.addWidget(&label,0,0,1,2);
-    layout.addWidget(&closeButton,0,2);
+    layout.addWidget(&label,0,0,1,3);
+    layout.addWidget(&closeButton,0,3);
     layout.addWidget(&pickerButton,1,0);
+    layout.addWidget(&levelButton,1,1);
     comboBox.addItems(QStringList() << "HEX" << "RGB" << "CMYK" << "HSV" << "HSL");
     comboBox.setCurrentIndex(0);
-    layout.addWidget(&comboBox,1,1,1,2);
+    layout.addWidget(&comboBox,1,2,1,2);
 
     connect(&comboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &PopUpColor::changeIndexComboBoxColor);
     connect(&label, &CodeLabel::setPos, this, &PopUpColor::showPos);
@@ -119,14 +120,16 @@ bool PopUpColor::nativeEvent(const QByteArray &eventType, void *message, long *r
 
         switch (msg->wParam) {
         case 100: {
-            QScreen *screen = QApplication::primaryScreen();
-            QImage img = screen->grabWindow(0).toImage();
-            QColor color;
-            color.setRgb(img.pixel(QCursor::pos()));;
-            setCurrentColor(color);
-            tempCurrentColor = color;
-            (followCursor) ? showPos(QCursor::pos()) : show();
-            slotCopyBuffer();
+            if(!dummyTransparentWindow.isVisible()){
+                QScreen *screen = QApplication::primaryScreen();
+                QImage img = screen->grabWindow(0).toImage();
+                QColor color;
+                color.setRgb(img.pixel(QCursor::pos()));;
+                setCurrentColor(color);
+                tempCurrentColor = color;
+                (followCursor) ? showPos(QCursor::pos()) : show();
+                slotCopyBuffer();
+            }
             return true;
             break;
         }
@@ -316,6 +319,19 @@ void PopUpColor::changeStyleSheets()
                                    "border-radius: 2px;"
                                    "background-color: " + strColor + "; }"
                                    "QToolButton:pressed { background-color: transparent; }");
+        levelButton.setStyleSheet("QToolButton { image: url(:/images/invert-colors-black.png);"
+                                  "icon-size: 16px;"
+                                  "height: 16px;"
+                                  "width: 16px;"
+                                  "margin-top: 6px;"
+                                  "margin-bottom: 6px;"
+                                  "margin-left: 0px;"
+                                  "margin-right: 0px;"
+                                  "padding: 6px;"
+                                  "border: none;"
+                                  "border-radius: 2px;"
+                                  "background-color: " + strColor + "; }"
+                                  "QToolButton:pressed { background-color: transparent; }");
         closeButton.setStyleSheet("QToolButton { image: url(:/images/close-circle-outline-black.png);"
                                   "icon-size: 16px;"
                                   "height: 16px;"
@@ -343,6 +359,19 @@ void PopUpColor::changeStyleSheets()
                                    "border-radius: 2px;"
                                    "background-color: " + strColor + "; }"
                                    "QToolButton:pressed { background-color: transparent; }");
+        levelButton.setStyleSheet("QToolButton { image: url(:/images/invert-colors.png);"
+                                  "icon-size: 16px;"
+                                  "height: 16px;"
+                                  "width: 16px;"
+                                  "margin-top: 6px;"
+                                  "margin-bottom: 6px;"
+                                  "margin-left: 0px;"
+                                  "margin-right: 0px;"
+                                  "padding: 6px;"
+                                  "border: none;"
+                                  "border-radius: 2px;"
+                                  "background-color: " + strColor + "; }"
+                                  "QToolButton:pressed { background-color: transparent; }");
         closeButton.setStyleSheet("QToolButton { image: url(:/images/close-circle-outline.png);"
                                   "icon-size: 16px;"
                                   "height: 16px;"

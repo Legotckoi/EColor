@@ -65,6 +65,7 @@ private:
     QComboBox comboBox;
     QToolButton pickerButton;
     QToolButton closeButton;
+    QToolButton levelButton;
     QGridLayout layout;
     QPropertyAnimation animation;
     QPoint posWin;
