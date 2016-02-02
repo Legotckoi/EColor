@@ -49,6 +49,7 @@ private slots:
     void hideAnimation();
     void changeIndexComboBoxColor(int index);
     void backColor();
+    void saveColor();
     void changeStyleSheets();
     void changeLabelText();
     void slotCopyBuffer();
@@ -76,7 +77,6 @@ private:
     int             typeCopyBuffer;
     bool            followCursor;
 
-    void setColor(const QColor &color);
     unsigned int winKeyModificator(QKeySequence sequence);
     char winHotKey(QKeySequence sequence);
 };

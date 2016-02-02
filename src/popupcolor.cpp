@@ -48,10 +48,11 @@ PopUpColor::PopUpColor(QWidget *parent) : QWidget(parent)
     connect(this, &PopUpColor::currentColorChanged, this, &PopUpColor::changeStyleSheets);
     connect(&dummyTransparentWindow, &TransparentWindow::changeColor, this, &PopUpColor::setCurrentColor);
     connect(&dummyTransparentWindow, &TransparentWindow::backColor, this, &PopUpColor::backColor);
-    connect(&dummyTransparentWindow, &TransparentWindow::saveColor, this, &PopUpColor::slotCopyBuffer);
+    connect(&dummyTransparentWindow, &TransparentWindow::saveColor, this, &PopUpColor::saveColor);
 
     reloadSettings();
     setCurrentColor(QColor(Qt::white));
+    tempCurrentColor = QColor(Qt::white);
 }
 
 void PopUpColor::saveSettings()
@@ -92,7 +93,7 @@ void PopUpColor::paintEvent(QPaintEvent *event)
     roundedRect.setX(rect().x() + 5);
     roundedRect.setY(rect().y() + 5);
     roundedRect.setWidth(rect().width() - 10);
-    roundedRect.setHeight(rect().height() - 14.5);
+    roundedRect.setHeight(layout.cellRect(0,0).height() + layout.cellRect(1,0).height() + 16);
 
     painter.drawRoundedRect(roundedRect, 2, 2);
 
@@ -123,6 +124,7 @@ bool PopUpColor::nativeEvent(const QByteArray &eventType, void *message, long *r
             QColor color;
             color.setRgb(img.pixel(QCursor::pos()));;
             setCurrentColor(color);
+            tempCurrentColor = color;
             (followCursor) ? showPos(QCursor::pos()) : show();
             slotCopyBuffer();
             return true;
@@ -150,16 +152,15 @@ void PopUpColor::show()
 {
     adjustSize();
     int x,y;
-    if(posWin==QPoint(0,0)){
-        x=QApplication::desktop()->availableGeometry().width() - 36 - width() + QApplication::desktop() -> availableGeometry().x();
-        y=QApplication::desktop()->availableGeometry().height() - 36 - height() + QApplication::desktop() -> availableGeometry().y();
+    if(posWin == QPoint(0,0)){
+        x = QApplication::desktop()->availableGeometry().width() - 36 - width() + QApplication::desktop() -> availableGeometry().x();
+        y = QApplication::desktop()->availableGeometry().height() - 36 - height() + QApplication::desktop() -> availableGeometry().y();
     }else{
-        x=posWin.x();
-        y=posWin.y();
+        x = posWin.x();
+        y = posWin.y();
     }
-        setGeometry(x,y,
-                    width(),
-                    height());
+    setGeometry(x,y,width(),height());
+
     if(!isVisible()){
         setWindowOpacity(0.0);
 
@@ -181,7 +182,15 @@ void PopUpColor::show()
 void PopUpColor::showPos(QPoint point)
 {
     adjustSize();
-    setGeometry(point.x(), point.y(), width(), height());
+    int x,y;
+    if(QApplication::mouseButtons() == Qt::LeftButton){
+        x = point.x();
+        y = point.y();
+    } else {
+        x = ((QApplication::desktop()->width() - point.x()) < width())? point.x() - width() : point.x();
+        y = ((QApplication::desktop()->height() - point.y()) < height())? point.y() - height() : point.y();
+    }
+    setGeometry(x,y,width(),height());
 
     if(!isVisible()){
         setWindowOpacity(0.0);
@@ -199,7 +208,7 @@ void PopUpColor::showPos(QPoint point)
         animation.setEndValue(1.0);
         animation.start();
     }
-    posWin=point;
+    posWin = point;
 }
 
 void PopUpColor::reloadSettings()
@@ -251,10 +260,9 @@ void PopUpColor::backColor()
     setCurrentColor(tempCurrentColor);
 }
 
-void PopUpColor::setColor(const QColor &color)
+void PopUpColor::saveColor()
 {
-    setCurrentColor(color);
-    (followCursor) ? showPos(QCursor::pos()) : show();
+    tempCurrentColor = getCurrentColor();
     slotCopyBuffer();
 }
 
@@ -278,7 +286,7 @@ void PopUpColor::changeStyleSheets()
                            "margin-top: 6px;"
                            "margin-right: 6px; "
                            "margin-left: 6px; "
-                           "margin-bottom: 8px;"
+                           "margin-bottom: 6px;"
                            "padding: 6px;"
                            "font-size: 14px; }"
                            "QComboBox::drop-down {border: none;} "
