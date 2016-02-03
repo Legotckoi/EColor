@@ -14,6 +14,7 @@
 
 #include "codelabel.h"
 #include "transparentwindow.h"
+#include "gradationlabel.h"
 
 class PopUpColor : public QWidget
 {
@@ -26,7 +27,7 @@ class PopUpColor : public QWidget
     QColor getCurrentColor() const;
 
 signals:
-    void currentColorChanged();
+    void currentColorChanged(const QColor &color);
 
 public:
     explicit PopUpColor(QWidget *parent = 0);
@@ -50,14 +51,16 @@ private slots:
     void changeIndexComboBoxColor(int index);
     void backColor();
     void saveColor();
-    void changeStyleSheets();
-    void changeLabelText();
-    void slotCopyBuffer();
+    void changeStyleSheets(const QColor &color);
+    void changeLabelText(const QColor &color);
+    void slotCopyBuffer(const QColor &color);
     void slotHide();
+    void slotGradationButtonClicked();
 
 private:
     // Properties
     float popupOpacity;
+    QPropertyAnimation animation;
     QColor currentColor;
     QColor tempCurrentColor;
     // Interface
@@ -65,12 +68,26 @@ private:
     QComboBox comboBox;
     QToolButton pickerButton;
     QToolButton closeButton;
-    QToolButton levelButton;
+    QToolButton gradationButton;
     QGridLayout layout;
-    QPropertyAnimation animation;
     QPoint posWin;
-
+    // Pipette
     TransparentWindow dummyTransparentWindow;
+    // Gradation Widget
+    QWidget gradationWidget;
+    // Gradation Layout
+    QGridLayout layoutGradation;
+    // Gradation Labels
+    GradationLabel label_10;
+    GradationLabel label_20;
+    GradationLabel label_30;
+    GradationLabel label_40;
+    GradationLabel label_50;
+    GradationLabel label_60;
+    GradationLabel label_70;
+    GradationLabel label_80;
+    GradationLabel label_90;
+    GradationLabel label_100;
 
     // Переменные для работы с горячими клавишами
     QKeySequence    keys;

@@ -46,7 +46,8 @@ SOURCES += main.cpp\
     ecolorcore.cpp \
     popupmessage.cpp \
     codelabel.cpp \
-    transparentwindow.cpp
+    transparentwindow.cpp \
+    gradationlabel.cpp
 
 HEADERS  += \
     about.h \
@@ -58,7 +59,8 @@ HEADERS  += \
     ecolorcore.h \
     popupmessage.h \
     codelabel.h \
-    transparentwindow.h
+    transparentwindow.h \
+    gradationlabel.h
 
 FORMS    += \
     about.ui \
