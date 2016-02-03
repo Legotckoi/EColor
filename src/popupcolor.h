@@ -11,6 +11,7 @@
 #include <QPropertyAnimation>
 #include <QTimer>
 #include <QComboBox>
+#include <QSlider>
 
 #include "codelabel.h"
 #include "transparentwindow.h"
@@ -35,7 +36,6 @@ public:
     ~PopUpColor();
 
 protected:
-    void paintEvent(QPaintEvent *event);
     bool nativeEvent(const QByteArray &eventType, void *message, long *result);
 
 public slots:
@@ -53,6 +53,7 @@ private slots:
     void saveColor();
     void changeStyleSheets(const QColor &color);
     void changeLabelText(const QColor &color);
+    void changeSliders();
     void slotCopyBuffer(const QColor &color);
     void slotHide();
     void slotGradationButtonClicked();
@@ -64,6 +65,8 @@ private:
     QColor currentColor;
     QColor tempCurrentColor;
     // Interface
+    QWidget popUpWidget;
+    QGridLayout layoutPopUp;
     CodeLabel label;
     QComboBox comboBox;
     QToolButton pickerButton;
@@ -73,11 +76,16 @@ private:
     QPoint posWin;
     // Pipette
     TransparentWindow dummyTransparentWindow;
-    // Gradation Widget
+    // Slider
+    QWidget sliderWidget;
+    QGridLayout layoutSlider;
+    QSlider sliderSaturation;
+    QSlider sliderBrightness;
+    QLabel labelSaturation;
+    QLabel labelBrightness;
+    // Gradation
     QWidget gradationWidget;
-    // Gradation Layout
     QGridLayout layoutGradation;
-    // Gradation Labels
     GradationLabel label_10;
     GradationLabel label_20;
     GradationLabel label_30;

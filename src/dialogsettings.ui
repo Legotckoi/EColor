@@ -32,6 +32,9 @@
    <string>Настройки</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>9</number>
+   </property>
    <item row="6" column="3">
     <widget class="QPushButton" name="pBScreenPath">
      <property name="text">

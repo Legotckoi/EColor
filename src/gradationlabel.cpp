@@ -15,8 +15,8 @@ GradationLabel::GradationLabel(QWidget *parent) : QWidget(parent)
     connect(this, &GradationLabel::currentColorChanged, this, static_cast<void (GradationLabel::*)(void)>(&GradationLabel::repaint));
 
     setCurrentColor(QColor(Qt::white));
-    adjustSize();
     changeStyleSheets();
+    adjustSize();
 }
 
 void GradationLabel::paintEvent(QPaintEvent *event)
@@ -76,15 +76,15 @@ void GradationLabel::changeStyleSheets()
 {
     QString fontColor = (m_currentLightness > 0.7) ? "#000000" : "#ffffff";
     codeLabel.setStyleSheet("QLabel { font-size: 14px;"
-                            "padding: 0px;"
+                            "border: none;"
                             "color: " + fontColor + ";}");
     lightnessLabel.setStyleSheet("QLabel { font-size: 14px;"
-                                 "padding: 0px;"
+                                 "border: none;"
                                  "color: " + fontColor + ";}");
 }
 
 void GradationLabel::changeLabelText(const QColor &color)
 {
-    lightnessLabel.setText(QString::number(round(m_currentLightness*100)));
+    lightnessLabel.setText(QString::number(round(color.lightnessF()*100)));
     codeLabel.setText(color.name());
 }

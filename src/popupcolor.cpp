@@ -29,18 +29,33 @@ PopUpColor::PopUpColor(QWidget *parent) : QWidget(parent)
     animation.setPropertyName("popupOpacity");
 
     setLayout(&layout);
+    layout.setSpacing(0);
 
+    layout.addWidget(&popUpWidget,0,0);
+    popUpWidget.setLayout(&layoutPopUp);
     label.setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    layout.addWidget(&label,0,0,1,3);
-    layout.addWidget(&closeButton,0,3);
-    layout.addWidget(&pickerButton,1,0);
-    layout.addWidget(&gradationButton,1,1);
+    layoutPopUp.addWidget(&label,0,0,1,3);
+    layoutPopUp.addWidget(&closeButton,0,3);
+    layoutPopUp.addWidget(&pickerButton,1,0);
+    layoutPopUp.addWidget(&gradationButton,1,1);
     comboBox.addItems(QStringList() << "HEX" << "RGB" << "CMYK" << "HSV" << "HSL");
     comboBox.setCurrentIndex(0);
-    layout.addWidget(&comboBox,1,2,1,2);
-    layout.addWidget(&gradationWidget,2,0,1,4);
+    layoutPopUp.addWidget(&comboBox,1,2,1,2);
+
+    layout.addWidget(&sliderWidget,1,0);
+    sliderWidget.setLayout(&layoutSlider);
+    sliderSaturation.setOrientation(Qt::Horizontal);
+    sliderSaturation.setRange(-100,100);
+    layoutSlider.addWidget(&sliderSaturation,0,0);
+    sliderBrightness.setOrientation(Qt::Horizontal);
+    sliderBrightness.setRange(-100,100);
+    layoutSlider.addWidget(&sliderBrightness,1,0);
+    sliderWidget.setStyleSheet("QWidget { background-color: #ffffff; padding: 0px; margin: 0px;}");
+
+    layout.addWidget(&gradationWidget,2,0);
     gradationWidget.setLayout(&layoutGradation);
     layoutGradation.setSpacing(0);
+    layoutGradation.setContentsMargins(7,0,7,1);
     label_10.setCurrentLightness(0.1);
     label_20.setCurrentLightness(0.2);
     label_30.setCurrentLightness(0.3);
@@ -61,7 +76,6 @@ PopUpColor::PopUpColor(QWidget *parent) : QWidget(parent)
     layoutGradation.addWidget(&label_80,2,0);
     layoutGradation.addWidget(&label_90,1,0);
     layoutGradation.addWidget(&label_100,0,0);
-    gradationWidget.setVisible(false);
 
     connect(&comboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &PopUpColor::changeIndexComboBoxColor);
     connect(&label, &CodeLabel::setPos, this, &PopUpColor::showPos);
@@ -72,6 +86,7 @@ PopUpColor::PopUpColor(QWidget *parent) : QWidget(parent)
     connect(&pickerButton, &QToolButton::clicked, this, &PopUpColor::pickerButtonClicked);
     connect(this, &PopUpColor::currentColorChanged, this, &PopUpColor::changeLabelText);
     connect(this, &PopUpColor::currentColorChanged, this, &PopUpColor::changeStyleSheets);
+    connect(this, &PopUpColor::currentColorChanged, this, &PopUpColor::changeSliders);
     connect(&dummyTransparentWindow, &TransparentWindow::changeColor, this, &PopUpColor::setCurrentColor);
     connect(&dummyTransparentWindow, &TransparentWindow::backColor, this, &PopUpColor::backColor);
     connect(&dummyTransparentWindow, &TransparentWindow::saveColor, this, &PopUpColor::saveColor);
@@ -101,6 +116,10 @@ PopUpColor::PopUpColor(QWidget *parent) : QWidget(parent)
     reloadSettings();
     setCurrentColor(QColor(Qt::white));
     tempCurrentColor = QColor(Qt::white);
+
+    gradationWidget.setVisible(false);
+    sliderWidget.setVisible(false);
+    adjustSize();
 }
 
 void PopUpColor::saveSettings()
@@ -112,48 +131,6 @@ void PopUpColor::saveSettings()
 
 PopUpColor::~PopUpColor()
 {
-}
-
-void PopUpColor::paintEvent(QPaintEvent *event)
-{
-    Q_UNUSED(event)
-
-    QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
-
-    painter.setBrush(QBrush(currentColor));
-    QColor penColor;
-    qreal lightness = currentColor.lightnessF();
-
-    if(lightness < 0.5){
-        lightness += 0.09;
-    } else {
-        lightness -= 0.09;
-    }
-    penColor.setHslF(currentColor.hslHueF(),
-                     currentColor.hslSaturationF(),
-                     lightness);
-
-    QPen pen(QBrush(penColor),1);
-    painter.setPen(pen);
-
-    QRectF roundedRect;
-    roundedRect.setX(rect().x() + 5);
-    roundedRect.setY(rect().y() + 5);
-    roundedRect.setWidth(rect().width() - 10);
-    roundedRect.setHeight(layout.cellRect(0,0).height() + layout.cellRect(1,0).height() + 16);
-
-    painter.drawRoundedRect(roundedRect, 2, 2);
-
-   /* QPolygonF triangle;
-    triangle << QPoint(rect().x() + rect().width() / 2 - 10, rect().y() + rect().height() - 10)
-             << QPoint(rect().x() + rect().width() / 2, rect().y() + rect().height())
-             << QPoint(rect().x() + rect().width() / 2 + 10, rect().y() + rect().height() - 10);
-
-    QPainterPath trianglePath;
-    trianglePath.addPolygon(triangle);
-
-    painter.drawPath(trianglePath);*/
 }
 
 bool PopUpColor::nativeEvent(const QByteArray &eventType, void *message, long *result)
@@ -302,7 +279,6 @@ void PopUpColor::changeIndexComboBoxColor(int index)
     typeCopyBuffer = index;
     changeLabelText(getCurrentColor());
     slotCopyBuffer(getCurrentColor());
-    this->repaint();
 }
 
 void PopUpColor::backColor()
@@ -333,10 +309,6 @@ void PopUpColor::changeStyleSheets(const QColor &color)
     QString fontColor = (color.lightnessF() > 0.7) ? "#000000" : "#ffffff";
     comboBox.setStyleSheet("QComboBox { color: " + fontColor + "; background-color: " + strColor + "; "
                            "border: none; border-radius: 2px;"
-                           "margin-top: 6px;"
-                           "margin-right: 6px; "
-                           "margin-left: 6px; "
-                           "margin-bottom: 6px;"
                            "padding: 6px;"
                            "font-size: 14px; }"
                            "QComboBox::drop-down {border: none;} "
@@ -350,57 +322,37 @@ void PopUpColor::changeStyleSheets(const QColor &color)
                            "selection-color: " + fontColor + ";"
                            "selection-background-color: " + color.name() + ";}");
     if(color.lightnessF() > 0.7){
-        label.setStyleSheet("QLabel { color: black;"
-                            "margin-top: 4px;"
-                            "margin-right: 6px; "
-                            "margin-left: 6px; "
-                            "margin-bottom: 0px;"
-                            "font-size: 16px; }");
+        label.setStyleSheet("QLabel { color: black; border: none; font-size: 16px; }");
         pickerButton.setStyleSheet("QToolButton { image: url(:/images/eyedropper-black.png);"
                                    "icon-size: 16px;"
                                    "height: 16px;"
                                    "width: 16px;"
-                                   "margin: 6px;"
                                    "padding: 6px;"
                                    "border: none;"
                                    "border-radius: 2px;"
                                    "background-color: " + strColor + "; }"
                                    "QToolButton:pressed { background-color: transparent; }");
         gradationButton.setStyleSheet("QToolButton { image: url(:/images/invert-colors-black.png);"
-                                  "icon-size: 16px;"
-                                  "height: 16px;"
-                                  "width: 16px;"
-                                  "margin-top: 6px;"
-                                  "margin-bottom: 6px;"
-                                  "margin-left: 0px;"
-                                  "margin-right: 0px;"
-                                  "padding: 6px;"
-                                  "border: none;"
-                                  "border-radius: 2px;"
-                                  "background-color: " + strColor + "; }"
-                                  "QToolButton:pressed { background-color: transparent; }");
+                                      "icon-size: 16px;"
+                                      "height: 16px;"
+                                      "width: 16px;"
+                                      "padding: 6px;"
+                                      "border: none;"
+                                      "border-radius: 2px;"
+                                      "background-color: " + strColor + "; }"
+                                      "QToolButton:pressed { background-color: transparent; }");
         closeButton.setStyleSheet("QToolButton { image: url(:/images/close-circle-outline-black.png);"
                                   "icon-size: 16px;"
                                   "height: 16px;"
                                   "width: 16px;"
-                                  "margin-top: 4px;"
-                                  "margin-right: 6px; "
-                                  "margin-left: 6px; "
-                                  "margin-bottom: 0px;"
                                   "border: none;}"
                                   "QToolButton:pressed { image: url(:/images/close-circle-black.png);}");
     } else {
-        label.setStyleSheet("QLabel { color: white;"
-                            "margin-top: 4px;"
-                            "margin-right: 6px; "
-                            "margin-left: 6px; "
-                            "margin-bottom: 0px;"
-                            "font-size: 16px; }");
+        label.setStyleSheet("QLabel { color: white; border: none; font-size: 16px; }");
         pickerButton.setStyleSheet("QToolButton { image: url(:/images/eyedropper.png);"
                                    "icon-size: 16px;"
                                    "height: 16px;"
                                    "width: 16px;"
-                                   "margin: 6px;"
                                    "padding: 6px;"
                                    "border: none;"
                                    "border-radius: 2px;"
@@ -410,10 +362,6 @@ void PopUpColor::changeStyleSheets(const QColor &color)
                                   "icon-size: 16px;"
                                   "height: 16px;"
                                   "width: 16px;"
-                                  "margin-top: 6px;"
-                                  "margin-bottom: 6px;"
-                                  "margin-left: 0px;"
-                                  "margin-right: 0px;"
                                   "padding: 6px;"
                                   "border: none;"
                                   "border-radius: 2px;"
@@ -423,14 +371,23 @@ void PopUpColor::changeStyleSheets(const QColor &color)
                                   "icon-size: 16px;"
                                   "height: 16px;"
                                   "width: 16px;"
-                                  "margin-top: 4px;"
-                                  "margin-right: 6px; "
-                                  "margin-left: 6px; "
-                                  "margin-bottom: 0px;"
                                   "border: none;}"
                                   "QToolButton:pressed { image: url(:/images/close-circle.png);}");
     }
-    this->repaint();
+    sliderWidget.setStyleSheet("QWidget { background-color: " + color.name() + ";"
+                               "border: 1px solid " + c.name() + ";"
+                               "margin-left: 6px;"
+                               "margin-right: 6px;}");
+    gradationWidget.setStyleSheet("QWidget { background-color: transparent;"
+                                  "border: 1px solid " + c.name() + ";"
+                                  "margin-left: 6px;"
+                                  "margin-right: 6px;}");
+    popUpWidget.setStyleSheet("QWidget { background-color: " + color.name() + ";"
+                              "border: 1px solid " + c.name() + ";"
+                              "border-radius: 2px;}");
+    sliderBrightness.setStyleSheet("QSlider { border: none; margin: 0px; padding: 0px;}");
+    sliderSaturation.setStyleSheet("QSlider {border: none; margin: 0px; padding: 0px;}");
+    adjustSize();
 }
 
 void PopUpColor::changeLabelText(const QColor &color)
@@ -468,6 +425,12 @@ void PopUpColor::changeLabelText(const QColor &color)
         break;
     }
     adjustSize();
+}
+
+void PopUpColor::changeSliders()
+{
+    sliderBrightness.setValue(0);
+    sliderSaturation.setValue(0);
 }
 
 void PopUpColor::slotCopyBuffer(const QColor &color)
@@ -549,7 +512,7 @@ void PopUpColor::setPopupOpacity(float opacity)
 void PopUpColor::setCurrentColor(QColor color)
 {
     currentColor = color;
-    emit currentColorChanged(currentColor);
+    emit currentColorChanged(color);
 }
 
 float PopUpColor::getPopupOpacity() const
@@ -564,12 +527,16 @@ QColor PopUpColor::getCurrentColor() const
 
 void PopUpColor::slotHide()
 {
-    posWin=this->pos();
-    this->hide();
+    posWin = pos();
+    gradationWidget.setVisible(false);
+    sliderWidget.setVisible(false);
+    adjustSize();
+    hide();
 }
 
 void PopUpColor::slotGradationButtonClicked()
 {
-    (gradationWidget.isVisible())? gradationWidget.setVisible(false) : gradationWidget.setVisible(true);
+    (gradationWidget.isVisible()) ? gradationWidget.setVisible(false) : gradationWidget.setVisible(true);
+    (sliderWidget.isVisible()) ? sliderWidget.setVisible(false) : sliderWidget.setVisible(true);
     adjustSize();
 }
