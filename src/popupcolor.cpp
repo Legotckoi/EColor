@@ -159,7 +159,7 @@ bool PopUpColor::nativeEvent(const QByteArray &eventType, void *message, long *r
                 color.setRgb(img.pixel(QCursor::pos()));;
                 setCurrentColor(color);
                 tempCurrentColor = color;
-                (followCursor) ? showPos(QCursor::pos()) : show();
+                (followCursor) ? showPos(QCursor::pos()) : showPos(posWin);
                 slotCopyBuffer(getCurrentColor());
             }
             return true;
@@ -183,45 +183,19 @@ bool PopUpColor::nativeEvent(const QByteArray &eventType, void *message, long *r
     return false;
 }
 
-void PopUpColor::show()
+void PopUpColor::slotShow()
 {
-    adjustSize();
-    int x,y;
-    if(posWin == QPoint(0,0)){
-        x = QApplication::desktop()->availableGeometry().width() - 36 - width() + QApplication::desktop() -> availableGeometry().x();
-        y = QApplication::desktop()->availableGeometry().height() - 36 - height() + QApplication::desktop() -> availableGeometry().y();
-    }else{
-        x = posWin.x();
-        y = posWin.y();
-    }
-    setGeometry(x,y,width(),height());
-
-    if(!isVisible()){
-        setWindowOpacity(0.0);
-
-        animation.setDuration(150);
-        animation.setStartValue(0.0);
-        animation.setEndValue(1.0);
-
-        QWidget::show();
-
-        animation.start();
-    } else {
-        animation.setDuration(windowOpacity()*150);
-        animation.setStartValue(windowOpacity());
-        animation.setEndValue(1.0);
-        animation.start();
-    }
+    showPos(posWin);
 }
 
 void PopUpColor::showPos(QPoint point)
 {
     adjustSize();
     int x,y;
-    if(QApplication::mouseButtons() == Qt::LeftButton){
-        x = point.x();
-        y = point.y();
-    } else {
+    if(point == QPoint(0,0)){
+        x = QApplication::desktop()->availableGeometry().width() - 36 - width() + QApplication::desktop() -> availableGeometry().x();
+        y = QApplication::desktop()->availableGeometry().height() - 36 - height() + QApplication::desktop() -> availableGeometry().y();
+    }else{
         x = ((QApplication::desktop()->width() - point.x()) < width())? point.x() - width() : point.x();
         y = ((QApplication::desktop()->height() - point.y()) < height())? point.y() - height() : point.y();
     }
@@ -243,15 +217,14 @@ void PopUpColor::showPos(QPoint point)
         animation.setEndValue(1.0);
         animation.start();
     }
-    posWin = point;
 }
 
 void PopUpColor::reloadSettings()
 {
     QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
-    copyBuffer = settings.value(SETTINGS_COPY_BUFF, false).toBool();
+    copyBuffer = settings.value(SETTINGS_COPY_BUFF, true).toBool();
     typeCopyBuffer = settings.value(SETTINGS_TYPE_BUFF, 0).toInt();
-    followCursor = settings.value(SETTINGS_FOLLOW_CURSOR, false).toBool();
+    followCursor = settings.value(SETTINGS_FOLLOW_CURSOR, true).toBool();
     posWin.setX(settings.value(SETTINGS_POS_X,0).toInt());
     posWin.setY(settings.value(SETTINGS_POS_Y,0).toInt());
 #ifdef Q_OS_WIN32
