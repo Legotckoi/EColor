@@ -13,7 +13,6 @@
 #include <QComboBox>
 #include <QSlider>
 
-#include "codelabel.h"
 #include "transparentwindow.h"
 #include "gradationlabel.h"
 
@@ -23,12 +22,14 @@ class PopUpColor : public QWidget
 
     Q_PROPERTY(float popupOpacity READ getPopupOpacity WRITE setPopupOpacity)
     Q_PROPERTY(QColor currentColor READ getCurrentColor WRITE setCurrentColor NOTIFY currentColorChanged)
+    Q_PROPERTY(QPoint previousPosition READ previousPosition WRITE setPreviousPosition NOTIFY previousPositionChanged)
 
     float getPopupOpacity() const;
     QColor getCurrentColor() const;
 
 signals:
     void currentColorChanged(const QColor &color);
+    void previousPositionChanged(const QPoint &previousPosition);
 
 public:
     explicit PopUpColor(QWidget *parent = 0);
@@ -45,6 +46,11 @@ public slots:
     void setPopupOpacity(float opacity);
     void setCurrentColor(QColor color);
 
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+
 private slots:
     void pickerButtonClicked();
     void hideAnimation();
@@ -58,8 +64,11 @@ private slots:
     void slotHide();
     void slotGradationButtonClicked();
     void updateStyleSheets();
+    void setPreviousPosition(const QPoint &previousPosition);
 
 private:
+    QPoint previousPosition() const;
+
     // Properties
     float popupOpacity;
     QPropertyAnimation animation;
@@ -68,7 +77,7 @@ private:
     // Interface
     QWidget popUpWidget;
     QGridLayout layoutPopUp;
-    CodeLabel label;
+    QLabel label;
     QComboBox comboBox;
     QToolButton pickerButton;
     QToolButton closeButton;
@@ -106,6 +115,8 @@ private:
 
     unsigned int winKeyModificator(QKeySequence sequence);
     char winHotKey(QKeySequence sequence);
+    QPoint m_previousPosition;
+    bool m_leftMouseButtonPressed;
 };
 
 #endif // POPUPCOLOR_H

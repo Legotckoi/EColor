@@ -46,7 +46,6 @@ SOURCES += main.cpp\
     popupcolor.cpp \
     ecolorcore.cpp \
     popupmessage.cpp \
-    codelabel.cpp \
     transparentwindow.cpp \
     gradationlabel.cpp \
     popupcolorstylesheethelper.cpp
@@ -60,7 +59,6 @@ HEADERS  += \
     popupcolor.h \
     ecolorcore.h \
     popupmessage.h \
-    codelabel.h \
     transparentwindow.h \
     gradationlabel.h \
     popupcolorstylesheethelper.h

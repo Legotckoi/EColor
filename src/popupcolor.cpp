@@ -18,7 +18,9 @@
 #include <cmath>
 #include "popupmessage.h"
 
-PopUpColor::PopUpColor(QWidget *parent) : QWidget(parent)
+PopUpColor::PopUpColor(QWidget *parent) :
+    QWidget(parent),
+    m_leftMouseButtonPressed(false)
 {
     setWindowFlags(Qt::FramelessWindowHint |
                    Qt::Tool |
@@ -79,7 +81,6 @@ PopUpColor::PopUpColor(QWidget *parent) : QWidget(parent)
     layoutGradation.addWidget(&label_100,0,0);
 
     connect(&comboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &PopUpColor::changeIndexComboBoxColor);
-    connect(&label, &CodeLabel::setPos, this, &PopUpColor::showPos);
     connect(&closeButton, &QToolButton::clicked, this, &PopUpColor::slotHide);
     connect(&closeButton, &QToolButton::clicked, &dummyTransparentWindow, &TransparentWindow::hide);
     connect(&closeButton, &QToolButton::clicked, this, &PopUpColor::backColor);
@@ -133,6 +134,11 @@ void PopUpColor::saveSettings()
 
 PopUpColor::~PopUpColor()
 {
+}
+
+QPoint PopUpColor::previousPosition() const
+{
+    return m_previousPosition;
 }
 
 bool PopUpColor::nativeEvent(const QByteArray &eventType, void *message, long *result)
@@ -431,14 +437,55 @@ char PopUpColor::winHotKey(QKeySequence sequence)
 
 void PopUpColor::setPopupOpacity(float opacity)
 {
+    if (popupOpacity == opacity)
+        return;
+
     popupOpacity = opacity;
     setWindowOpacity(opacity);
 }
 
 void PopUpColor::setCurrentColor(QColor color)
 {
+    if (currentColor == color)
+        return;
+
     currentColor = color;
     emit currentColorChanged(color);
+}
+
+void PopUpColor::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton && event->y() < pickerButton.y()) {
+        m_leftMouseButtonPressed = true;
+        setPreviousPosition(event->pos());
+    }
+    return QWidget::mousePressEvent(event);
+}
+
+void PopUpColor::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton)
+        m_leftMouseButtonPressed = false;
+    return QWidget::mouseReleaseEvent(event);
+}
+
+void PopUpColor::mouseMoveEvent(QMouseEvent *event)
+{
+    if (m_leftMouseButtonPressed) {
+        auto dx = event->x() - m_previousPosition.x();
+        auto dy = event->y() - m_previousPosition.y();
+        setGeometry(x() + dx, y() + dy, width(), height());
+    }
+    return QWidget::mouseMoveEvent(event);
+}
+
+void PopUpColor::setPreviousPosition(const QPoint &previousPosition)
+{
+    if (m_previousPosition == previousPosition)
+        return;
+
+    m_previousPosition = previousPosition;
+    emit previousPositionChanged(previousPosition);
 }
 
 float PopUpColor::getPopupOpacity() const
