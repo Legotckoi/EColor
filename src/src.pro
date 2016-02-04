@@ -47,7 +47,8 @@ SOURCES += main.cpp\
     popupmessage.cpp \
     codelabel.cpp \
     transparentwindow.cpp \
-    gradationlabel.cpp
+    gradationlabel.cpp \
+    popupcolorstylesheethelper.cpp
 
 HEADERS  += \
     about.h \
@@ -60,7 +61,8 @@ HEADERS  += \
     popupmessage.h \
     codelabel.h \
     transparentwindow.h \
-    gradationlabel.h
+    gradationlabel.h \
+    popupcolorstylesheethelper.h
 
 FORMS    += \
     about.ui \

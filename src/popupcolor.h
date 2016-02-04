@@ -57,6 +57,7 @@ private slots:
     void slotCopyBuffer(const QColor &color);
     void slotHide();
     void slotGradationButtonClicked();
+    void updateStyleSheets();
 
 private:
     // Properties
