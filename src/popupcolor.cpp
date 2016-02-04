@@ -1,4 +1,5 @@
 #include "popupcolor.h"
+#include "popupcolorstylesheethelper.h"
 #include "settings.h"
 #include <windows.h>
 #include <QSettings>
@@ -90,6 +91,7 @@ PopUpColor::PopUpColor(QWidget *parent) : QWidget(parent)
     connect(&dummyTransparentWindow, &TransparentWindow::changeColor, this, &PopUpColor::setCurrentColor);
     connect(&dummyTransparentWindow, &TransparentWindow::backColor, this, &PopUpColor::backColor);
     connect(&dummyTransparentWindow, &TransparentWindow::saveColor, this, &PopUpColor::saveColor);
+    connect(&dummyTransparentWindow, &TransparentWindow::visibleChanged, this, &PopUpColor::updateStyleSheets);
 
     connect(this, &PopUpColor::currentColorChanged, &label_10, &GradationLabel::setCurrentColor);
     connect(this, &PopUpColor::currentColorChanged, &label_20, &GradationLabel::setCurrentColor);
@@ -295,98 +297,22 @@ void PopUpColor::saveColor()
 void PopUpColor::changeStyleSheets(const QColor &color)
 {
     QColor c;
-    qreal lightness = color.lightnessF();
-    if(lightness < 0.5){
-        lightness += 0.09;
-    } else {
-        lightness -= 0.09;
-    }
-
-    c.setHslF(color.hslHueF(),
-                  color.hslSaturationF(),
-                  lightness);
+    qreal lightness = PopUpColorStyleSheetHelper::correctedLightness(color.lightnessF());
+    c.setHslF(color.hslHueF(), color.hslSaturationF(), lightness);
     QString strColor = c.name();
-    QString fontColor = (color.lightnessF() > 0.7) ? "#000000" : "#ffffff";
-    comboBox.setStyleSheet("QComboBox { color: " + fontColor + "; background-color: " + strColor + "; "
-                           "border: none; border-radius: 2px;"
-                           "padding: 6px;"
-                           "font-size: 14px; }"
-                           "QComboBox::drop-down {border: none;} "
-                           "QComboBox::down-arrow {image: url(noimg); border: none;}"
-                           "QComboBox QAbstractItemView { "
-                           "border: none;"
-                           "color: " + fontColor + "; "
-                           "background-color: " + strColor + "; "
-                           "border-radius: 2px;"
-                           "padding: 6px;"
-                           "selection-color: " + fontColor + ";"
-                           "selection-background-color: " + color.name() + ";}");
-    if(color.lightnessF() > 0.7){
-        label.setStyleSheet("QLabel { color: black; border: none; font-size: 16px; }");
-        pickerButton.setStyleSheet("QToolButton { image: url(:/images/eyedropper-black.png);"
-                                   "icon-size: 16px;"
-                                   "height: 16px;"
-                                   "width: 16px;"
-                                   "padding: 6px;"
-                                   "border: none;"
-                                   "border-radius: 2px;"
-                                   "background-color: " + strColor + "; }"
-                                   "QToolButton:pressed { background-color: transparent; }");
-        gradationButton.setStyleSheet("QToolButton { image: url(:/images/invert-colors-black.png);"
-                                      "icon-size: 16px;"
-                                      "height: 16px;"
-                                      "width: 16px;"
-                                      "padding: 6px;"
-                                      "border: none;"
-                                      "border-radius: 2px;"
-                                      "background-color: " + strColor + "; }"
-                                      "QToolButton:pressed { background-color: transparent; }");
-        closeButton.setStyleSheet("QToolButton { image: url(:/images/close-circle-outline-black.png);"
-                                  "icon-size: 16px;"
-                                  "height: 16px;"
-                                  "width: 16px;"
-                                  "border: none;}"
-                                  "QToolButton:pressed { image: url(:/images/close-circle-black.png);}");
-    } else {
-        label.setStyleSheet("QLabel { color: white; border: none; font-size: 16px; }");
-        pickerButton.setStyleSheet("QToolButton { image: url(:/images/eyedropper.png);"
-                                   "icon-size: 16px;"
-                                   "height: 16px;"
-                                   "width: 16px;"
-                                   "padding: 6px;"
-                                   "border: none;"
-                                   "border-radius: 2px;"
-                                   "background-color: " + strColor + "; }"
-                                   "QToolButton:pressed { background-color: transparent; }");
-        gradationButton.setStyleSheet("QToolButton { image: url(:/images/invert-colors.png);"
-                                  "icon-size: 16px;"
-                                  "height: 16px;"
-                                  "width: 16px;"
-                                  "padding: 6px;"
-                                  "border: none;"
-                                  "border-radius: 2px;"
-                                  "background-color: " + strColor + "; }"
-                                  "QToolButton:pressed { background-color: transparent; }");
-        closeButton.setStyleSheet("QToolButton { image: url(:/images/close-circle-outline.png);"
-                                  "icon-size: 16px;"
-                                  "height: 16px;"
-                                  "width: 16px;"
-                                  "border: none;}"
-                                  "QToolButton:pressed { image: url(:/images/close-circle.png);}");
-    }
-    sliderWidget.setStyleSheet("QWidget { background-color: " + color.name() + ";"
-                               "border: 1px solid " + c.name() + ";"
-                               "margin-left: 6px;"
-                               "margin-right: 6px;}");
-    gradationWidget.setStyleSheet("QWidget { background-color: transparent;"
-                                  "border: 1px solid " + c.name() + ";"
-                                  "margin-left: 6px;"
-                                  "margin-right: 6px;}");
-    popUpWidget.setStyleSheet("QWidget { background-color: " + color.name() + ";"
-                              "border: 1px solid " + c.name() + ";"
-                              "border-radius: 2px;}");
-    sliderBrightness.setStyleSheet("QSlider { border: none; margin: 0px; padding: 0px;}");
-    sliderSaturation.setStyleSheet("QSlider {border: none; margin: 0px; padding: 0px;}");
+    QString fontColor = PopUpColorStyleSheetHelper::isColorLight(color) ? "#000000" : "#ffffff";
+
+    comboBox.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradationCombobox(strColor, color, fontColor));
+    label.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfCodeLabel(color));
+    pickerButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfPicker(dummyTransparentWindow.isVisible(), strColor, color));
+    gradationButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradation(strColor, color));
+    closeButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfCloseButton(color));
+    sliderWidget.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfSliderWidget(color, c));
+    gradationWidget.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradationWidget(c));
+    popUpWidget.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfPopUpWidget(color, c));
+    sliderBrightness.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfSliderBrightness());
+    sliderSaturation.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfSliderSaturation());
+
     adjustSize();
 }
 
@@ -539,4 +465,9 @@ void PopUpColor::slotGradationButtonClicked()
     (gradationWidget.isVisible()) ? gradationWidget.setVisible(false) : gradationWidget.setVisible(true);
     (sliderWidget.isVisible()) ? sliderWidget.setVisible(false) : sliderWidget.setVisible(true);
     adjustSize();
+}
+
+void PopUpColor::updateStyleSheets()
+{
+    changeStyleSheets(getCurrentColor());
 }
