@@ -10,13 +10,7 @@ QT       += network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-win32-mingw{
-    QMAKE_CXXFLAGS += -std=c++0x
-    QMAKE_CXXFLAGS += -Wliteral-suffix
-}
-win32-msvc*{
-    LIBS += -luser32
-}
+CONFIG += c++11
 
 VER_MAJ = 0
 VER_MIN = 1
