@@ -12,6 +12,13 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
 
+win32-mingw{
+    QMAKE_CXXFLAGS += -Wliteral-suffix
+}
+win32-msvc*{
+    LIBS += -luser32
+}
+
 VER_MAJ = 0
 VER_MIN = 1
 VER_PAT = 4
