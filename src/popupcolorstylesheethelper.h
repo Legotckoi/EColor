@@ -10,7 +10,7 @@ class PopUpColorStyleSheetHelper
 {
 public:
     static QString getStyleSheetOfPicker(const bool isActive, const QString &strColor, const QColor &color);
-    static QString getStyleSheetOfGradation(const QString &strColor, const QColor &color);
+    static QString getStyleSheetOfGradation(const bool isActive, const QString &strColor, const QColor &color);
     static QString getStyleSheetOfGradationCombobox(const QString &strColor, const QColor &color, const QString &fontColor);
     static QString getStyleSheetOfCodeLabel(const QColor &color);
     static QString getStyleSheetOfCloseButton(const QColor &color);
