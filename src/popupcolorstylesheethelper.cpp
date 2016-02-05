@@ -36,9 +36,14 @@ QString PopUpColorStyleSheetHelper::getStyleSheetOfPicker(const bool isActive, c
     }
 }
 
-QString PopUpColorStyleSheetHelper::getStyleSheetOfGradation(const QString &strColor, const QColor &color)
+QString PopUpColorStyleSheetHelper::getStyleSheetOfGradation(const bool isActive, const QString &strColor, const QColor &color)
 {
+    QColor backgroundColor{strColor};
+
     if (isColorLight(color)) {
+        if (isActive)
+            backgroundColor = backgroundColor.darker();
+
         return "QToolButton { image: url(:/images/invert-colors-black.png);"
                "icon-size: 16px;"
                "height: 16px;"
@@ -46,9 +51,12 @@ QString PopUpColorStyleSheetHelper::getStyleSheetOfGradation(const QString &strC
                "padding: 6px;"
                "border: none;"
                "border-radius: 2px;"
-               "background-color: " + strColor + "; }"
+               "background-color: " + backgroundColor.name() + "; }"
                "QToolButton:pressed { background-color: transparent; }";
     } else {
+        if (isActive)
+            backgroundColor = backgroundColor.lighter();
+
         return "QToolButton { image: url(:/images/invert-colors.png);"
                "icon-size: 16px;"
                "height: 16px;"
@@ -56,7 +64,7 @@ QString PopUpColorStyleSheetHelper::getStyleSheetOfGradation(const QString &strC
                "padding: 6px;"
                "border: none;"
                "border-radius: 2px;"
-               "background-color: " + strColor + "; }"
+               "background-color: " + backgroundColor.name() + "; }"
                "QToolButton:pressed { background-color: transparent; }";
     }
 }
