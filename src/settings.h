@@ -18,5 +18,7 @@
 #define SETTINGS_POS_X "settings/posX"
 #define SETTINGS_POS_Y "settings/posY"
 
+#define COUNT_GRADATION 10
+
 #endif // SETTINGS
 

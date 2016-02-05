@@ -15,6 +15,7 @@
 
 #include "transparentwindow.h"
 #include "gradationlabel.h"
+#include "settings.h"
 
 class PopUpColor : public QWidget
 {
@@ -68,6 +69,7 @@ private slots:
     void updateStyleSheets();
     void setPreviousPosition(const QPoint &previousPosition);
 
+
 private:
     QPoint previousPosition() const;
 
@@ -98,16 +100,8 @@ private:
     // Gradation
     QWidget gradationWidget;
     QGridLayout layoutGradation;
-    GradationLabel label_10;
-    GradationLabel label_20;
-    GradationLabel label_30;
-    GradationLabel label_40;
-    GradationLabel label_50;
-    GradationLabel label_60;
-    GradationLabel label_70;
-    GradationLabel label_80;
-    GradationLabel label_90;
-    GradationLabel label_100;
+    GradationLabel labelGradation[COUNT_GRADATION];
+
 
     // Переменные для работы с горячими клавишами
     QKeySequence    keys;
