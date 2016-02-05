@@ -18,8 +18,8 @@ DialogSettings::DialogSettings(QWidget *parent) :
     QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
     ui->checkAutoRun->setChecked(settings.value(SETTINGS_AUTORUN, false).toBool());
     ui->keySequenceEdit->setKeySequence(QKeySequence(settings.value(KEY_SEQUENCE_PIXEL, QVariant()).toString()));
-    ui->checkFollowCursor->setChecked(settings.value(SETTINGS_FOLLOW_CURSOR, false).toBool());
-    ui->checkCopyBuffer->setChecked(settings.value(SETTINGS_COPY_BUFF, false).toBool());
+    ui->checkFollowCursor->setChecked(settings.value(SETTINGS_FOLLOW_CURSOR, true).toBool());
+    ui->checkCopyBuffer->setChecked(settings.value(SETTINGS_COPY_BUFF, true).toBool());
     ui->cBoxBufferType->setCurrentIndex(settings.value(SETTINGS_TYPE_BUFF, 0).toInt());
     ui->pathScreenShots->setText(settings.value(SETTINGS_PATH_SCREENSHOTS, QVariant()).toString());
     ui->cBoxAllowScreen->setChecked(settings.value(SETTINGS_ALLOW_SCREENSHOTS, false).toBool());

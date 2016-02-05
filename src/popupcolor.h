@@ -40,7 +40,8 @@ protected:
     bool nativeEvent(const QByteArray &eventType, void *message, long *result);
 
 public slots:
-    void show();
+    void slotShow();
+    void slotHide();
     void showPos(QPoint point);
     void reloadSettings();
     void setPopupOpacity(float opacity);
@@ -61,7 +62,6 @@ private slots:
     void changeLabelText(const QColor &color);
     void changeSliders();
     void slotCopyBuffer(const QColor &color);
-    void slotHide();
     void slotGradationButtonClicked();
     void updateStyleSheets();
     void setPreviousPosition(const QPoint &previousPosition);

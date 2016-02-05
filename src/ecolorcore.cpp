@@ -94,7 +94,7 @@ void EColorCore::iconActivated(QSystemTrayIcon::ActivationReason reason)
 {
     switch (reason){
     case QSystemTrayIcon::Trigger:
-        (!popUpColor->isVisible())? popUpColor->show() : popUpColor->hide();
+        (!popUpColor->isVisible())? popUpColor->slotShow() : popUpColor->slotHide();
         break;
     default:
         break;
