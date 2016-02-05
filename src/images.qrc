@@ -10,5 +10,9 @@
         <file>images/eyedropper-black.png</file>
         <file>images/invert-colors.png</file>
         <file>images/invert-colors-black.png</file>
+        <file>images/brightness.png</file>
+        <file>images/brightness-black.png</file>
+        <file>images/contrast-circle.png</file>
+        <file>images/contrast-circle-black.png</file>
     </qresource>
 </RCC>

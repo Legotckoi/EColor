@@ -17,8 +17,9 @@ public:
     static QString getStyleSheetOfSliderWidget(const QColor &color, const QColor &correctedColor);
     static QString getStyleSheetOfGradationWidget(const QColor &correctedColor);
     static QString getStyleSheetOfPopUpWidget(const QColor &color, const QColor &correctedColor);
-    static QString getStyleSheetOfSliderBrightness();
-    static QString getStyleSheetOfSliderSaturation();
+    static QString getStyleSheetOfSlider(const QColor &color, const QColor &correctedColor);
+    static QString getStyleSheetOfImageSaturation(const QColor &color);
+    static QString getStyleSheetOfImageLightness(const QColor &color);
 
     static bool isColorLight(const QColor &color);
     static qreal correctedLightness(qreal lightness);

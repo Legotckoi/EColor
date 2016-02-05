@@ -58,9 +58,11 @@ private slots:
     void changeIndexComboBoxColor(int index);
     void backColor();
     void saveColor();
+    void setSaturation(int value);
+    void setLightness(int value);
     void changeStyleSheets(const QColor &color);
     void changeLabelText(const QColor &color);
-    void changeSliders();
+    void changeSliders(const QColor &color);
     void slotCopyBuffer(const QColor &color);
     void slotGradationButtonClicked();
     void updateStyleSheets();
@@ -90,9 +92,9 @@ private:
     QWidget sliderWidget;
     QGridLayout layoutSlider;
     QSlider sliderSaturation;
-    QSlider sliderBrightness;
-    QLabel labelSaturation;
-    QLabel labelBrightness;
+    QSlider sliderLightness;
+    QLabel imgSaturation;
+    QLabel imgLightness;
     // Gradation
     QWidget gradationWidget;
     QGridLayout layoutGradation;

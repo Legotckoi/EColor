@@ -138,14 +138,35 @@ QString PopUpColorStyleSheetHelper::getStyleSheetOfPopUpWidget(const QColor &col
            "border-radius: 2px;}";
 }
 
-QString PopUpColorStyleSheetHelper::getStyleSheetOfSliderBrightness()
+QString PopUpColorStyleSheetHelper::getStyleSheetOfSlider(const QColor &color, const QColor &correctedColor)
 {
-    return "QSlider { border: none; margin: 0px; padding: 0px;}";
+    if(isColorLight(color)){
+        return "QSlider {border: none; margin: 0px; padding: 0px;}"
+               "QSlider::groove:horizontal { border:none; height: 4px; background-color: " + correctedColor.name() + ";}"
+               "QSlider::handle:horizontal { border: 1px solid " + correctedColor.darker().name() + "; height: 14px; margin: -6px 0; width: 14px; background: " + correctedColor.darker().name() + "; border-radius: 8px;}";
+    } else {
+        return "QSlider {border: none; margin: 0px; padding: 0px;}"
+               "QSlider::groove:horizontal { border:none; height: 4px; background-color: " + correctedColor.name() + ";}"
+               "QSlider::handle:horizontal { border: 1px solid " + correctedColor.lighter().name() + "; height: 14px; margin: -6px 0; width: 14px; background: " + correctedColor.lighter().name() + "; border-radius: 8px;}";
+    }
 }
 
-QString PopUpColorStyleSheetHelper::getStyleSheetOfSliderSaturation()
+QString PopUpColorStyleSheetHelper::getStyleSheetOfImageLightness(const QColor &color)
 {
-    return "QSlider {border: none; margin: 0px; padding: 0px;}";
+    if (isColorLight(color)) {
+        return "QLabel {border: none; margin: 0; image: url(:/images/brightness-black.png);}";
+    } else {
+        return "QLabel {border: none; margin: 0; image: url(:/images/brightness.png);}";
+    }
+}
+
+QString PopUpColorStyleSheetHelper::getStyleSheetOfImageSaturation(const QColor &color)
+{
+    if (isColorLight(color)) {
+        return "QLabel {border: none; margin: 0; image: url(:/images/contrast-circle-black.png);}";
+    } else {
+        return "QLabel {border: none; margin: 0; image: url(:/images/contrast-circle.png);}";
+    }
 }
 
 bool PopUpColorStyleSheetHelper::isColorLight(const QColor &color)
