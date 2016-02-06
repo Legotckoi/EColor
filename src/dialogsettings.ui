@@ -31,6 +31,9 @@
   <property name="windowTitle">
    <string>Настройки</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="leftMargin">
     <number>9</number>
@@ -44,6 +47,9 @@
    </item>
    <item row="0" column="0" colspan="4">
     <widget class="QCheckBox" name="checkAutoRun">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="text">
       <string>Автоматически запускать приложение при запуске системы</string>
      </property>
@@ -68,6 +74,9 @@
    </item>
    <item row="5" column="0" colspan="4">
     <widget class="QCheckBox" name="cBoxAllowScreen">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="text">
       <string>Перехватывать событие клавиши PrintScreen</string>
      </property>
@@ -75,6 +84,9 @@
    </item>
    <item row="6" column="0">
     <widget class="QLabel" name="label_4">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="text">
       <string>Папка для скриншотов</string>
      </property>
@@ -82,6 +94,9 @@
    </item>
    <item row="1" column="0" colspan="4">
     <widget class="QLabel" name="label_3">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="text">
       <string>Поддерживаются модификаторы Ctrl, Shift, Alt</string>
      </property>
@@ -97,6 +112,9 @@
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>Захват пикселя</string>
@@ -137,6 +155,9 @@
    </item>
    <item row="3" column="1" colspan="2">
     <widget class="QCheckBox" name="checkCopyBuffer">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="text">
       <string>Копировать в буфер обмена</string>
      </property>
@@ -144,6 +165,9 @@
    </item>
    <item row="4" column="1" colspan="3">
     <widget class="QCheckBox" name="checkFollowCursor">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="text">
       <string>Следовать за курсором</string>
      </property>

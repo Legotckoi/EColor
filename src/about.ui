@@ -55,6 +55,9 @@
    </property>
    <item row="2" column="1" colspan="2">
     <widget class="QLabel" name="label_3">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="text">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;WEB-сайт разработчика: &lt;a href=&quot;http://www.evileg.ru&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://www.evileg.ru&lt;/span&gt;&lt;/a&gt; E-mail: legotckoi@evileg.ru&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
@@ -65,6 +68,9 @@
    </item>
    <item row="4" column="1" colspan="2">
     <widget class="QLabel" name="label_5">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="text">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;The program is provided AS IS with NO WARRANTY OF ANY KIND,&lt;br/&gt; INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY &lt;br/&gt;AND FITNESS FOR A PARTICULAR PURPOSE&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
@@ -91,6 +97,9 @@
    </item>
    <item row="1" column="1" colspan="2">
     <widget class="QLabel" name="label_4">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="text">
       <string>© 20015-2016 Легоцкой Евгений Игоревич. Все права защищены.</string>
      </property>
@@ -164,6 +173,9 @@
    </item>
    <item row="3" column="1" colspan="2">
     <widget class="QLabel" name="label_2">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="text">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;WEB-страница EColor: &lt;a href=&quot;http://www.evileg.ru/ecolor&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://www.evileg.ru/ecolor&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>

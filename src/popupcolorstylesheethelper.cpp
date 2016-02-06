@@ -2,6 +2,7 @@
 
 #include <QString>
 #include <QColor>
+#include <QDebug>
 
 QString PopUpColorStyleSheetHelper::getStyleSheetOfPicker(const bool isActive, const QColor &color)
 {
@@ -170,11 +171,11 @@ QString PopUpColorStyleSheetHelper::getStyleSheetOfSlider(const QColor &color)
     if(isColorLight(color)){
         return "QSlider {border: none; margin: 0px; padding: 0px;}"
                "QSlider::groove:horizontal { border:none; height: 4px; background-color: " + correctColor.name() + ";}"
-               "QSlider::handle:horizontal { border: 1px solid " + correctColor.darker().name() + "; height: 14px; margin: -6px 0; width: 14px; background: " + correctColor.darker().name() + "; border-radius: 8px;}";
+               "QSlider::handle:horizontal { border: 2px solid " + correctColor.name() + "; height: 12px; margin: -6px 0; width: 12px; background: " + correctColor.darker().name() + "; border-radius: 8px;}";
     } else {
         return "QSlider {border: none; margin: 0px; padding: 0px;}"
                "QSlider::groove:horizontal { border:none; height: 4px; background-color: " + correctColor.name() + ";}"
-               "QSlider::handle:horizontal { border: 1px solid " + correctColor.lighter().name() + "; height: 14px; margin: -6px 0; width: 14px; background: " + correctColor.lighter().name() + "; border-radius: 8px;}";
+               "QSlider::handle:horizontal { border: 2px solid " + correctColor.name() + "; height: 24px; margin: -6px 0; width: 12px; background: " + correctColor.lighter().name() + "; border-radius: 8px;}";
     }
 }
 
@@ -212,13 +213,14 @@ bool PopUpColorStyleSheetHelper::isColorLight(const QColor &color)
 
 QColor PopUpColorStyleSheetHelper::correctedColor(const QColor &color)
 {
-    if(color.lightnessF() < 0.15){
-        return color.lighter(400);
-    } else if (color.lightnessF() < 0.5){
-        return color.lighter(130);
-    } else if (color.lightnessF() < 0.85){
-        return color.darker(130);
+    QColor c;
+    qreal lightness = color.lightnessF();
+    if(lightness < 0.15){
+        c.setHslF(color.hslHueF(),color.hslSaturationF(),0.25);
+    } else if(lightness < 0.5) {
+        c.setHslF(color.hslHueF(), color.hslSaturationF(), lightness+0.15);
     } else {
-        return color.darker(150);
+        c.setHslF(color.hslHueF(), color.hslSaturationF(), lightness-0.15);
     }
+    return c;
 }
