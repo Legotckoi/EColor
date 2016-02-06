@@ -65,9 +65,9 @@ PopUpColor::PopUpColor(QWidget *parent) :
     layoutGradation.setSpacing(0);
     layoutGradation.setContentsMargins(7,0,7,1);
     for(int i=0; i<COUNT_GRADATION; ++i){
-        labelGradation[i].setCurrentLightness(0.1*i);
+        labelGradation[i].setCurrentLightness(0.1*(i+1));
 
-        layoutGradation.addWidget(&labelGradation[i],10-i,0);
+        layoutGradation.addWidget(&labelGradation[i],9-i,0);
     }
 
     connect(&comboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &PopUpColor::changeIndexComboBoxColor);
@@ -263,22 +263,16 @@ void PopUpColor::setLightness(int value)
 
 void PopUpColor::changeStyleSheets(const QColor &color)
 {
-    QColor c;
-    qreal lightness = PopUpColorStyleSheetHelper::correctedLightness(color.lightnessF());
-    c.setHslF(color.hslHueF(), color.hslSaturationF(), lightness);
-    QString strColor = c.name();
-    QString fontColor = PopUpColorStyleSheetHelper::isColorLight(color) ? "#000000" : "#ffffff";
-
-    comboBox.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradationCombobox(strColor, color, fontColor));
+    comboBox.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradationCombobox(color));
     label.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfCodeLabel(color));
-    pickerButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfPicker(dummyTransparentWindow.isVisible(), strColor, color));
-    gradationButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradation(gradationWidget.isVisible(), strColor, color));
+    pickerButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfPicker(dummyTransparentWindow.isVisible(), color));
+    gradationButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradation(gradationWidget.isVisible(), color));
     closeButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfCloseButton(color));
-    sliderWidget.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfSliderWidget(color, c));
-    gradationWidget.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradationWidget(c));
-    popUpWidget.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfPopUpWidget(color, c));
-    sliderLightness.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfSlider(color, c));
-    sliderSaturation.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfSlider(color, c));
+    sliderWidget.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfSliderWidget(color));
+    gradationWidget.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradationWidget(color));
+    popUpWidget.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfPopUpWidget(color));
+    sliderLightness.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfSlider(color));
+    sliderSaturation.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfSlider(color));
     imgSaturation.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfImageSaturation(color));
     imgLightness.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfImageLightness(color));
 
@@ -466,6 +460,7 @@ void PopUpColor::slotHide()
     posWin = pos();
     gradationWidget.setVisible(false);
     sliderWidget.setVisible(false);
+    gradationButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradation(gradationWidget.isVisible(), currentColor));
     adjustSize();
     hide();
 }
