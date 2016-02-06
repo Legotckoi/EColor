@@ -101,6 +101,7 @@ PopUpColor::PopUpColor(QWidget *parent) :
     for(int i=0; i<COUNT_GRADATION; ++i){
         connect(this, &PopUpColor::currentColorChanged, &labelGradation[i], &GradationLabel::setCurrentColor);
         connect(&labelGradation[i], &GradationLabel::colorForCopy, this, &PopUpColor::slotCopyBuffer);
+        connect(&labelGradation[i], &GradationLabel::colorForSet, this, &PopUpColor::setCurrentColor);
     }
 
     reloadSettings();
