@@ -2,6 +2,7 @@
 #include <QSystemSemaphore>
 #include <QSharedMemory>
 #include <QMessageBox>
+#include <QFile>
 
 #include "settings.h"
 #include "ecolorcore.h"
@@ -25,6 +26,12 @@ int main(int argc, char *argv[])
         is_running = false;
     }
     semaphore.release();
+
+    QFile styleFile(":/styles/dark.qss");
+    styleFile.open(QIODevice::ReadOnly);
+    QString qssStr = styleFile.readAll();
+
+    a.setStyleSheet(qssStr);
 
     if(is_running){
         QMessageBox msgBox;

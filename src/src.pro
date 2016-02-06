@@ -69,5 +69,6 @@ FORMS    += \
     dialogupdate.ui
 
 RESOURCES += \
-    images.qrc
+    images.qrc \
+    styles.qrc
 
