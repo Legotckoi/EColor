@@ -219,8 +219,10 @@ QColor PopUpColorStyleSheetHelper::correctedColor(const QColor &color)
         c.setHslF(color.hslHueF(),color.hslSaturationF(),0.25);
     } else if(lightness < 0.5) {
         c.setHslF(color.hslHueF(), color.hslSaturationF(), lightness+0.15);
-    } else {
+    } else if(lightness < 0.85){
         c.setHslF(color.hslHueF(), color.hslSaturationF(), lightness-0.15);
+    } else {
+        c.setHslF(color.hslHueF(), color.hslSaturationF(), 0.75);
     }
     return c;
 }
