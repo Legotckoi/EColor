@@ -55,19 +55,21 @@ protected:
 
 private slots:
     void pickerButtonClicked();
+    void copyButtonClicked();
+    void gradationButtonClicked();
     void hideAnimation();
     void changeIndexComboBoxColor(int index);
     void backColor();
     void saveColor();
     void sliderPress();
     void sliderRelease();
+    void setHue(int value);
     void setSaturation(int value);
     void setLightness(int value);
     void changeStyleSheets(const QColor &color);
     void changeLabelText(const QColor &color);
     void changeSliders(const QColor &color);
     void slotCopyBuffer(const QColor &color);
-    void slotGradationButtonClicked();
     void updateStyleSheets();
     void setPreviousPosition(const QPoint &previousPosition);
 
@@ -84,10 +86,11 @@ private:
     QWidget popUpWidget;
     QGridLayout layoutPopUp;
     QLabel label;
-    QComboBox comboBox;
-    QToolButton pickerButton;
     QToolButton closeButton;
+    QToolButton pickerButton;
     QToolButton gradationButton;
+    QToolButton copyButton;
+    QComboBox comboBox;
     QGridLayout layout;
     QPoint posWin;
     // Pipette
@@ -95,8 +98,10 @@ private:
     // Slider
     QWidget sliderWidget;
     QGridLayout layoutSlider;
+    QSlider sliderHue;
     QSlider sliderSaturation;
     QSlider sliderLightness;
+    QLabel imgHue;
     QLabel imgSaturation;
     QLabel imgLightness;
     bool sliderPressed;

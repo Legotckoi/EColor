@@ -38,24 +38,29 @@ PopUpColor::PopUpColor(QWidget *parent) :
     layout.addWidget(&popUpWidget,0,0);
     popUpWidget.setLayout(&layoutPopUp);
     label.setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    layoutPopUp.addWidget(&label,0,0,1,3);
-    layoutPopUp.addWidget(&closeButton,0,3);
+    layoutPopUp.addWidget(&label,0,0,1,4);
+    layoutPopUp.addWidget(&closeButton,0,4);
     layoutPopUp.addWidget(&pickerButton,1,0);
     layoutPopUp.addWidget(&gradationButton,1,1);
+    layoutPopUp.addWidget(&copyButton,1,2);
     comboBox.addItems(QStringList() << "HEX" << "RGB" << "CMYK" << "HSV" << "HSL");
     comboBox.setCurrentIndex(0);
-    layoutPopUp.addWidget(&comboBox,1,2,1,2);
+    layoutPopUp.addWidget(&comboBox,1,3,1,2);
 
     layout.addWidget(&sliderWidget,1,0);
     sliderWidget.setLayout(&layoutSlider);
+    sliderHue.setOrientation(Qt::Horizontal);
+    sliderHue.setRange(0,359);
+    layoutSlider.addWidget(&sliderHue,0,1);
     sliderSaturation.setOrientation(Qt::Horizontal);
     sliderSaturation.setRange(0,100);
-    layoutSlider.addWidget(&sliderSaturation,0,1);
+    layoutSlider.addWidget(&sliderSaturation,1,1);
     sliderLightness.setOrientation(Qt::Horizontal);
     sliderLightness.setRange(0,100);
-    layoutSlider.addWidget(&sliderLightness,1,1);
-    layoutSlider.addWidget(&imgSaturation,0,0);
-    layoutSlider.addWidget(&imgLightness,1,0);
+    layoutSlider.addWidget(&sliderLightness,2,1);
+    layoutSlider.addWidget(&imgHue,0,0);
+    layoutSlider.addWidget(&imgSaturation,1,0);
+    layoutSlider.addWidget(&imgLightness,2,0);
     sliderWidget.setContentsMargins(6,2,6,2);
     imgSaturation.setFixedSize(16,16);
     imgLightness.setFixedSize(16,16);
@@ -73,8 +78,9 @@ PopUpColor::PopUpColor(QWidget *parent) :
     connect(&closeButton, &QToolButton::clicked, this, &PopUpColor::slotHide);
     connect(&closeButton, &QToolButton::clicked, &dummyTransparentWindow, &TransparentWindow::hide);
     connect(&closeButton, &QToolButton::clicked, this, &PopUpColor::backColor);
-    connect(&gradationButton, &QToolButton::clicked, this, &PopUpColor::slotGradationButtonClicked);
     connect(&pickerButton, &QToolButton::clicked, this, &PopUpColor::pickerButtonClicked);
+    connect(&gradationButton, &QToolButton::clicked, this, &PopUpColor::gradationButtonClicked);
+    connect(&copyButton, &QToolButton::clicked, this, &PopUpColor::copyButtonClicked);
     connect(this, &PopUpColor::currentColorChanged, this, &PopUpColor::changeLabelText);
     connect(this, &PopUpColor::currentColorChanged, this, &PopUpColor::changeStyleSheets);
     connect(this, &PopUpColor::currentColorChanged, this, &PopUpColor::changeSliders);
@@ -82,10 +88,13 @@ PopUpColor::PopUpColor(QWidget *parent) :
     connect(&dummyTransparentWindow, &TransparentWindow::backColor, this, &PopUpColor::backColor);
     connect(&dummyTransparentWindow, &TransparentWindow::saveColor, this, &PopUpColor::saveColor);
     connect(&dummyTransparentWindow, &TransparentWindow::visibleChanged, this, &PopUpColor::updateStyleSheets);
+    connect(&sliderHue, &QSlider::valueChanged, this, &PopUpColor::setHue);
     connect(&sliderSaturation, &QSlider::valueChanged, this, &PopUpColor::setSaturation);
     connect(&sliderLightness, &QSlider::valueChanged, this, &PopUpColor::setLightness);
+    connect(&sliderHue, &QSlider::sliderPressed, this, &PopUpColor::sliderPress);
     connect(&sliderSaturation, &QSlider::sliderPressed, this, &PopUpColor::sliderPress);
     connect(&sliderLightness, &QSlider::sliderPressed, this, &PopUpColor::sliderPress);
+    connect(&sliderHue, &QSlider::sliderReleased, this, &PopUpColor::sliderRelease);
     connect(&sliderSaturation, &QSlider::sliderReleased, this, &PopUpColor::sliderRelease);
     connect(&sliderLightness, &QSlider::sliderReleased, this, &PopUpColor::sliderRelease);
 
@@ -230,6 +239,11 @@ void PopUpColor::pickerButtonClicked()
     dummyTransparentWindow.showFullScreen();
 }
 
+void PopUpColor::copyButtonClicked()
+{
+    slotCopyBuffer(currentColor);
+}
+
 void PopUpColor::hideAnimation()
 {
     animation.setDuration(1000);
@@ -266,6 +280,15 @@ void PopUpColor::sliderRelease()
     sliderPressed = false;
 }
 
+void PopUpColor::setHue(int value)
+{
+    QColor color;
+    color.setHslF((qreal)value/359,
+                  currentColor.hslSaturationF(),
+                  currentColor.lightnessF());
+    setCurrentColor(color);
+}
+
 void PopUpColor::setSaturation(int value)
 {
     QColor color;
@@ -290,12 +313,15 @@ void PopUpColor::changeStyleSheets(const QColor &color)
     label.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfCodeLabel(color));
     pickerButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfPicker(dummyTransparentWindow.isVisible(), color));
     gradationButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradation(gradationWidget.isVisible(), color));
+    copyButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfCopy(color));
     closeButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfCloseButton(color));
     sliderWidget.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfSliderWidget(color));
     gradationWidget.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradationWidget(color));
     popUpWidget.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfPopUpWidget(color));
+    sliderHue.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfSlider(color));
     sliderLightness.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfSlider(color));
     sliderSaturation.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfSlider(color));
+    imgHue.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfImageHue(color));
     imgSaturation.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfImageSaturation(color));
     imgLightness.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfImageLightness(color));
 
@@ -342,6 +368,7 @@ void PopUpColor::changeLabelText(const QColor &color)
 void PopUpColor::changeSliders(const QColor &color)
 {
     if(!sliderPressed){
+        sliderHue.setValue(color.hslHue());
         sliderSaturation.setValue(round(color.hslSaturationF()*100));
         sliderLightness.setValue(round(color.lightnessF()*100));
     }
@@ -490,7 +517,7 @@ void PopUpColor::slotHide()
     hide();
 }
 
-void PopUpColor::slotGradationButtonClicked()
+void PopUpColor::gradationButtonClicked()
 {
     gradationWidget.setVisible(!gradationWidget.isVisible());
     sliderWidget.setVisible(!sliderWidget.isVisible());

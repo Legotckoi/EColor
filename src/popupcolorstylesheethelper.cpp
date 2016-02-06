@@ -69,6 +69,31 @@ QString PopUpColorStyleSheetHelper::getStyleSheetOfGradation(const bool isActive
     }
 }
 
+QString PopUpColorStyleSheetHelper::getStyleSheetOfCopy(const QColor &color)
+{
+    if (isColorLight(color)) {
+        return "QToolButton { image: url(:/images/content-copy-black.png);"
+               "icon-size: 16px;"
+               "height: 16px;"
+               "width: 16px;"
+               "padding: 6px;"
+               "border: none;"
+               "border-radius: 2px;"
+               "background-color: " + correctedColor(color).name() + "; }"
+               "QToolButton:pressed { background-color: transparent; }";
+    } else {
+        return "QToolButton { image: url(:/images/content-copy.png);"
+               "icon-size: 16px;"
+               "height: 16px;"
+               "width: 16px;"
+               "padding: 6px;"
+               "border: none;"
+               "border-radius: 2px;"
+               "background-color: " + correctedColor(color).name() + "; }"
+               "QToolButton:pressed { background-color: transparent; }";
+    }
+}
+
 QString PopUpColorStyleSheetHelper::getStyleSheetOfGradationCombobox(const QColor &color)
 {
     QString fontColor = (isColorLight(color)) ? "black" : "white";
@@ -150,6 +175,15 @@ QString PopUpColorStyleSheetHelper::getStyleSheetOfSlider(const QColor &color)
         return "QSlider {border: none; margin: 0px; padding: 0px;}"
                "QSlider::groove:horizontal { border:none; height: 4px; background-color: " + correctColor.name() + ";}"
                "QSlider::handle:horizontal { border: 1px solid " + correctColor.lighter().name() + "; height: 14px; margin: -6px 0; width: 14px; background: " + correctColor.lighter().name() + "; border-radius: 8px;}";
+    }
+}
+
+QString PopUpColorStyleSheetHelper::getStyleSheetOfImageHue(const QColor &color)
+{
+    if (isColorLight(color)) {
+        return "QLabel {border: none; margin: 0; image: url(:/images/palette-black.png);}";
+    } else {
+        return "QLabel {border: none; margin: 0; image: url(:/images/palette.png);}";
     }
 }
 

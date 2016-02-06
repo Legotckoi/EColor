@@ -14,5 +14,9 @@
         <file>images/brightness-black.png</file>
         <file>images/contrast-circle.png</file>
         <file>images/contrast-circle-black.png</file>
+        <file>images/palette.png</file>
+        <file>images/palette-black.png</file>
+        <file>images/content-copy.png</file>
+        <file>images/content-copy-black.png</file>
     </qresource>
 </RCC>
