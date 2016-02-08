@@ -20,7 +20,7 @@
    <string>Доступно обновление</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(66, 66, 66);</string>
+   <string notr="true"/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0" rowspan="4">
@@ -44,7 +44,7 @@
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true">color: rgb(192, 192, 192);</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string/>
@@ -85,7 +85,7 @@
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">color: rgb(192, 192, 192);</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>TextLabel</string>
@@ -107,7 +107,7 @@
       </sizepolicy>
      </property>
      <property name="styleSheet">
-      <string notr="true">color: rgb(192, 192, 192);</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Хотите перейти на сайт, &lt;br/&gt;чтобы скачать новую версию?&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -126,7 +126,7 @@
       </sizepolicy>
      </property>
      <property name="styleSheet">
-      <string notr="true">color: rgb(192, 192, 192);</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>Доступна новая версия!</string>

@@ -59,7 +59,7 @@
       <string notr="true"/>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;WEB-сайт разработчика: &lt;a href=&quot;http://www.evileg.ru&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://www.evileg.ru&lt;/span&gt;&lt;/a&gt; E-mail: legotckoi@evileg.ru&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;WEB-сайт разработчика: &lt;a href=&quot;http://www.evileg.ru&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#34aadc;&quot;&gt;http://www.evileg.ru&lt;/span&gt;&lt;/a&gt; E-mail: legotckoi@evileg.ru&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="margin">
       <number>5</number>
@@ -177,7 +177,7 @@
       <string notr="true"/>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;WEB-страница EColor: &lt;a href=&quot;http://www.evileg.ru/ecolor&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://www.evileg.ru/ecolor&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;WEB-страница EColor: &lt;a href=&quot;http://www.evileg.ru/ecolor&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#34aadc;&quot;&gt;http://www.evileg.ru/ecolor&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="margin">
       <number>5</number>
