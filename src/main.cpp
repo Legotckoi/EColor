@@ -6,6 +6,7 @@
 
 #include "settings.h"
 #include "ecolorcore.h"
+#include "QStyleFactory"
 
 int main(int argc, char *argv[])
 {
@@ -27,11 +28,28 @@ int main(int argc, char *argv[])
     }
     semaphore.release();
 
-    QFile styleFile(":/styles/dark.qss");
-    styleFile.open(QIODevice::ReadOnly);
-    QString qssStr = styleFile.readAll();
+    a.setStyle(QStyleFactory::create("Fusion"));
 
-    a.setStyleSheet(qssStr);
+    QPalette darkPalette;
+    QColor textColor(0xf2, 0xf2, 0xf2);
+    darkPalette.setColor(QPalette::Window, QColor(53,53,53));
+    darkPalette.setColor(QPalette::WindowText, textColor);
+    darkPalette.setColor(QPalette::Base, QColor(25,25,25));
+    darkPalette.setColor(QPalette::AlternateBase, QColor(53,53,53));
+    darkPalette.setColor(QPalette::ToolTipBase, textColor);
+    darkPalette.setColor(QPalette::ToolTipText, textColor);
+    darkPalette.setColor(QPalette::Text, textColor);
+    darkPalette.setColor(QPalette::Button, QColor(53,53,53));
+    darkPalette.setColor(QPalette::ButtonText, textColor);
+    darkPalette.setColor(QPalette::BrightText, Qt::red);
+    darkPalette.setColor(QPalette::Link, Qt::red);
+
+    darkPalette.setColor(QPalette::Highlight, QColor(42, 130, 218));
+    darkPalette.setColor(QPalette::HighlightedText, Qt::black);
+
+    a.setPalette(darkPalette);
+
+    a.setStyleSheet("QToolTip { color: #f2f2f2; background-color: #2a82da; border: 1px solid white; }");
 
     if(is_running){
         QMessageBox msgBox;

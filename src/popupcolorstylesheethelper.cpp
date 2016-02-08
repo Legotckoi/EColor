@@ -101,17 +101,21 @@ QString PopUpColorStyleSheetHelper::getStyleSheetOfGradationCombobox(const QColo
     return "QComboBox { color: " + fontColor + "; background-color: " + correctedColor(color).name() + "; "
            "border: none; border-radius: 2px;"
            "padding: 6px;"
-           "font-size: 14px; }"
+           "font-size: 14px; "
+           "alternate-background-color: " + color.name() + ";}"
            "QComboBox::drop-down {border: none;} "
            "QComboBox::down-arrow {image: url(noimg); border: none;}"
            "QComboBox QAbstractItemView { "
            "border: none;"
            "color: " + fontColor + "; "
            "background-color: " + correctedColor(color).name() + "; "
-           "border-radius: 2px;"
            "padding: 6px;"
-           "selection-color: " + fontColor + ";"
-           "selection-background-color: " + color.name() + ";}";
+           "margin-top: 0px;"
+           "margin-left: 0px;"
+           "margin-right: 0px;"
+           "margin-bottom: -12px;"
+           "selection-color: " + color.name() + ";"
+           "alternate-background-color: " + color.name() + ";}";
 }
 
 QString PopUpColorStyleSheetHelper::getStyleSheetOfCodeLabel(const QColor &color)
@@ -169,13 +173,13 @@ QString PopUpColorStyleSheetHelper::getStyleSheetOfSlider(const QColor &color)
 {
     QColor correctColor = correctedColor(color);
     if(isColorLight(color)){
-        return "QSlider {border: none; margin: 0px; padding: 0px;}"
+        return "QSlider {border: none; margin: 0px; padding: 2px;}"
                "QSlider::groove:horizontal { border:none; height: 4px; background-color: " + correctColor.name() + ";}"
                "QSlider::handle:horizontal { border: 2px solid " + correctColor.name() + "; height: 12px; margin: -6px 0; width: 12px; background: " + correctColor.darker().name() + "; border-radius: 8px;}";
     } else {
-        return "QSlider {border: none; margin: 0px; padding: 0px;}"
+        return "QSlider {border: none; margin: 0px; padding: 2px;}"
                "QSlider::groove:horizontal { border:none; height: 4px; background-color: " + correctColor.name() + ";}"
-               "QSlider::handle:horizontal { border: 2px solid " + correctColor.name() + "; height: 24px; margin: -6px 0; width: 12px; background: " + correctColor.lighter().name() + "; border-radius: 8px;}";
+               "QSlider::handle:horizontal { border: 2px solid " + correctColor.name() + "; height: 12px; margin: -6px 0; width: 12px; background: " + correctColor.lighter().name() + "; border-radius: 8px;}";
     }
 }
 
