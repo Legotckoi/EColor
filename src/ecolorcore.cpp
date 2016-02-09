@@ -3,11 +3,16 @@
 #include "settings.h"
 #include "dialogsettings.h"
 #include "dialogupdate.h"
+#include "versionchecker.h"
+#include "popupcolor.h"
+#include "popupmessage.h"
+#include "nativeeventfilter.h"
 #include <QMenu>
 #include <QAction>
 #include <QFont>
 #include <QSettings>
 #include <QDir>
+#include <QApplication>
 
 EColorCore::EColorCore(QObject *parent) : QObject(parent)
 {
@@ -63,6 +68,13 @@ EColorCore::EColorCore(QObject *parent) : QObject(parent)
     popUpMessage = new PopUpMessage();
     popUpMessage->setPopupText(trUtf8("Приложение EColor запущено"));
     popUpMessage->show();
+
+    nativeEventFilter = new NativeEventFilter(this);
+    qApp->installNativeEventFilter(nativeEventFilter);
+    connect(nativeEventFilter, &NativeEventFilter::hotKeyShowPressed, popUpColor, &PopUpColor::onHotKeyShowPressed);
+    connect(nativeEventFilter, &NativeEventFilter::hotKeyPixmapPressed, popUpColor, &PopUpColor::onHotKeyPixmapPressed);
+    connect(popUpColor, &PopUpColor::hotKeysSettingsReloading, nativeEventFilter, &NativeEventFilter::onHotKeysSettingsReloading);
+    emit popUpColor->reloadSettings();
 }
 
 EColorCore::~EColorCore()

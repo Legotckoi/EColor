@@ -104,7 +104,6 @@ PopUpColor::PopUpColor(QWidget *parent) :
         connect(&labelGradation[i], &GradationLabel::colorForSet, this, &PopUpColor::setCurrentColor);
     }
 
-    reloadSettings();
     setCurrentColor(QColor(Qt::white));
     tempCurrentColor = QColor(Qt::white);
 
@@ -130,50 +129,32 @@ QPoint PopUpColor::previousPosition() const
     return m_previousPosition;
 }
 
-bool PopUpColor::nativeEvent(const QByteArray &eventType, void *message, long *result)
+void PopUpColor::onHotKeyShowPressed()
 {
-    Q_UNUSED(eventType)
-    Q_UNUSED(result)
-#ifdef Q_OS_WIN32
-    MSG* msg = reinterpret_cast<MSG*>(message);
-
-    if(msg->message == WM_HOTKEY){
-
-        switch (msg->wParam) {
-        case 100: {
-            if(!dummyTransparentWindow.isVisible()){
-                QScreen *screen = QApplication::primaryScreen();
-                QImage img = screen->grabWindow(0).toImage();
-                QColor color;
-                color.setRgb(img.pixel(QCursor::pos()));;
-                setCurrentColor(color);
-                tempCurrentColor = color;
-                gradationWidget.setVisible(false);
-                sliderWidget.setVisible(false);
-                gradationButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradation(gradationWidget.isVisible(), currentColor));
-                adjustSize();
-                (followCursor) ? showPos(QCursor::pos()) : showPos(posWin);
-                slotCopyBuffer(getCurrentColor());
-            }
-            return true;
-            break;
-        }
-        case 101: {
-            QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
-            QPixmap pixmap = QApplication::primaryScreen()->grabWindow(0);
-            pixmap.save(settings.value(SETTINGS_PATH_SCREENSHOTS, QVariant()).toString() +
-                        QDateTime::currentDateTime().toString("/Screen_yyyy-MM-dd_hh-mm-ss") +
-                        ".png", "PNG");
-            QApplication::clipboard()->setPixmap(pixmap);
-            return true;
-            break;
-        }
-        default:
-            break;
-        }
+    if(!dummyTransparentWindow.isVisible()){
+        QScreen *screen = QApplication::primaryScreen();
+        QImage img = screen->grabWindow(0).toImage();
+        QColor color;
+        color.setRgb(img.pixel(QCursor::pos()));;
+        setCurrentColor(color);
+        tempCurrentColor = color;
+        gradationWidget.setVisible(false);
+        sliderWidget.setVisible(false);
+        gradationButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradation(gradationWidget.isVisible(), currentColor));
+        adjustSize();
+        (followCursor) ? showPos(QCursor::pos()) : showPos(posWin);
+        slotCopyBuffer(getCurrentColor());
     }
-#endif
-    return false;
+}
+
+void PopUpColor::onHotKeyPixmapPressed()
+{
+    QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
+    QPixmap pixmap = QApplication::primaryScreen()->grabWindow(0);
+    pixmap.save(settings.value(SETTINGS_PATH_SCREENSHOTS, QVariant()).toString() +
+                QDateTime::currentDateTime().toString("/Screen_yyyy-MM-dd_hh-mm-ss") +
+                ".png", "PNG");
+    QApplication::clipboard()->setPixmap(pixmap);
 }
 
 void PopUpColor::slotShow()
@@ -220,17 +201,8 @@ void PopUpColor::reloadSettings()
     followCursor = settings.value(SETTINGS_FOLLOW_CURSOR, true).toBool();
     posWin.setX(settings.value(SETTINGS_POS_X,0).toInt());
     posWin.setY(settings.value(SETTINGS_POS_Y,0).toInt());
-#ifdef Q_OS_WIN32
-    UnregisterHotKey((HWND) PopUpColor::winId(), 101);
-    if(settings.value(SETTINGS_ALLOW_SCREENSHOTS, false).toBool()){
-        RegisterHotKey((HWND)PopUpColor::winId(), 101, 0, VK_SNAPSHOT);
-    }
-#endif
     keys = QKeySequence(settings.value(KEY_SEQUENCE_PIXEL, QVariant()).toString());
-#ifdef Q_OS_WIN32
-    UnregisterHotKey((HWND)PopUpColor::winId(), 100);
-    RegisterHotKey((HWND)PopUpColor::winId(), 100, winKeyModificator(keys), winHotKey(keys));
-#endif
+    emit hotKeysSettingsReloading(keys, settings.value(SETTINGS_ALLOW_SCREENSHOTS, false).toBool());
     comboBox.setCurrentIndex(typeCopyBuffer);
 }
 
@@ -409,41 +381,6 @@ void PopUpColor::slotCopyBuffer(const QColor &color)
         PopUpMessage::information(this, "Скопировано в буфер обмена");
     }
 }
-
-#ifdef Q_OS_WIN32
-unsigned int PopUpColor::winKeyModificator(QKeySequence sequence)
-{
-    QStringList list = sequence.toString().split("+");
-    unsigned int keyModificator = 0;
-
-    foreach (QString str, list) {
-        if(str == "Ctrl"){
-            keyModificator += MOD_CONTROL;
-            continue;
-        } else if(str == "Alt"){
-            keyModificator += MOD_ALT;
-            continue;
-        } else if(str == "Shift"){
-            keyModificator += MOD_SHIFT;
-            continue;
-        }
-    }
-    return keyModificator;
-}
-
-char PopUpColor::winHotKey(QKeySequence sequence)
-{
-    QStringList list = sequence.toString().split("+");
-    char hotKey = 'E';
-
-    foreach (QString str, list) {
-        if(str != "Ctrl" && str != "Alt" && str != "Shift"){
-            hotKey = str.at(0).unicode();
-        }
-    }
-    return hotKey;
-}
-#endif
 
 void PopUpColor::setPopupOpacity(float opacity)
 {

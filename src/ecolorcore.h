@@ -4,9 +4,10 @@
 #include <QObject>
 #include <QSystemTrayIcon>
 
-#include "versionchecker.h"
-#include "popupcolor.h"
-#include "popupmessage.h"
+class VersionChecker;
+class PopUpColor;
+class PopUpMessage;
+class NativeEventFilter;
 
 class EColorCore : public QObject
 {
@@ -34,6 +35,7 @@ private:
     VersionChecker *versionChecker;
     PopUpColor *popUpColor;
     PopUpMessage *popUpMessage;
+    NativeEventFilter *nativeEventFilter;
 };
 
 #endif // ECOLOCORE_H

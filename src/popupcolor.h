@@ -31,16 +31,16 @@ class PopUpColor : public QWidget
 signals:
     void currentColorChanged(const QColor &color);
     void previousPositionChanged(const QPoint &previousPosition);
+    void hotKeysSettingsReloading(const QKeySequence &keys, const bool settingsAllowScreenShots);
 
 public:
     explicit PopUpColor(QWidget *parent = 0);
     void saveSettings();
     ~PopUpColor();
 
-protected:
-    bool nativeEvent(const QByteArray &eventType, void *message, long *result);
-
 public slots:
+    void onHotKeyShowPressed();
+    void onHotKeyPixmapPressed();
     void slotShow();
     void slotHide();
     void showPos(QPoint point);
@@ -117,8 +117,6 @@ private:
     int             typeCopyBuffer;
     bool            followCursor;
 
-    unsigned int winKeyModificator(QKeySequence sequence);
-    char winHotKey(QKeySequence sequence);
     QPoint m_previousPosition;
     bool m_leftMouseButtonPressed;
 };
