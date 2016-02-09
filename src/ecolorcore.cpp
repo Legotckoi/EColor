@@ -28,14 +28,17 @@ EColorCore::EColorCore(QObject *parent) : QObject(parent)
     trayIcon->setIcon(QIcon(":/images/ecolor.png"));
 
     QMenu * menu = new QMenu();
+    QAction *actionShow = new QAction(trUtf8("Показать"), this);
     QAction *actionConfig = new QAction(trUtf8("Настройки"), this);
     QAction *actionAbout = new QAction(trUtf8("О Приложении"), this);
     QAction *actionQuit = new QAction(trUtf8("Выход"), this);
 
+    connect(actionShow, &QAction::triggered, this, &EColorCore::showTriggered);
     connect(actionConfig, &QAction::triggered, this, &EColorCore::configTriggered);
     connect(actionAbout, &QAction::triggered, this, &EColorCore::aboutTriggered);
     connect(actionQuit, &QAction::triggered, this, &EColorCore::quitTriggered);
 
+    menu->addAction(actionShow);
     menu->addAction(actionConfig);
     menu->addAction(actionAbout);
     menu->addSeparator();
@@ -44,8 +47,9 @@ EColorCore::EColorCore(QObject *parent) : QObject(parent)
     trayIcon->setContextMenu(menu);
     trayIcon->show();
 
+#ifdef Q_OS_WIN32
     connect(trayIcon, &QSystemTrayIcon::activated, this, &EColorCore::iconActivated);
-
+#endif
     versionChecker = new VersionChecker();
     connect(versionChecker, &VersionChecker::signalNewVersion, this, &EColorCore::showDialogUpdate);
     versionChecker->setSoftName(APPLICATION_NAME);
@@ -69,6 +73,11 @@ EColorCore::~EColorCore()
     delete trayIcon;
 }
 
+void EColorCore::showTriggered()
+{
+    (!popUpColor->isVisible())? popUpColor->slotShow() : popUpColor->slotHide();
+}
+
 void EColorCore::configTriggered()
 {
     DialogSettings *dialogSettings = new DialogSettings();
@@ -90,6 +99,7 @@ void EColorCore::quitTriggered()
     exit(0);
 }
 
+#ifdef Q_OS_WIN32
 void EColorCore::iconActivated(QSystemTrayIcon::ActivationReason reason)
 {
     switch (reason){
@@ -100,6 +110,7 @@ void EColorCore::iconActivated(QSystemTrayIcon::ActivationReason reason)
         break;
     }
 }
+#endif
 
 void EColorCore::showDialogUpdate(QString newVersion)
 {
