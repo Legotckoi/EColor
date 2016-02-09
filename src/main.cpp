@@ -18,6 +18,13 @@ int main(int argc, char *argv[])
     QSystemSemaphore semaphore("EColor Semaphore", 1);
     semaphore.acquire();
 
+#ifndef Q_OS_WIN32
+    QSharedMemory nix_fix_shared_memory("EColor Shared Memory");
+        if(nix_fix_shared_memory.attach()){
+            nix_fix_shared_memory.detach();
+        }
+#endif
+
     QSharedMemory sharedMemory("EColor Shared Memory");
     bool is_running;
     if (sharedMemory.attach()){
