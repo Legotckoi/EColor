@@ -20,11 +20,14 @@ signals:
 public slots:
 
 private slots:
+    void showTriggered();
     void configTriggered();
     void aboutTriggered();
     void quitTriggered();
-    void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void showDialogUpdate(QString newVersion);
+#ifdef Q_OS_WIN32
+    void iconActivated(QSystemTrayIcon::ActivationReason reason);
+#endif
 
 private:
     QSystemTrayIcon *trayIcon;

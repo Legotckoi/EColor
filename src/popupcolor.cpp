@@ -1,7 +1,8 @@
 #include "popupcolor.h"
 #include "popupcolorstylesheethelper.h"
-#include "settings.h"
+#ifdef Q_OS_WIN32
 #include <windows.h>
+#endif
 #include <QSettings>
 #include <QDir>
 #include <QPainter>
@@ -37,55 +38,49 @@ PopUpColor::PopUpColor(QWidget *parent) :
     layout.addWidget(&popUpWidget,0,0);
     popUpWidget.setLayout(&layoutPopUp);
     label.setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    layoutPopUp.addWidget(&label,0,0,1,3);
-    layoutPopUp.addWidget(&closeButton,0,3);
+    layoutPopUp.addWidget(&label,0,0,1,4);
+    layoutPopUp.addWidget(&closeButton,0,4);
     layoutPopUp.addWidget(&pickerButton,1,0);
     layoutPopUp.addWidget(&gradationButton,1,1);
+    layoutPopUp.addWidget(&copyButton,1,2);
     comboBox.addItems(QStringList() << "HEX" << "RGB" << "CMYK" << "HSV" << "HSL");
     comboBox.setCurrentIndex(0);
-    layoutPopUp.addWidget(&comboBox,1,2,1,2);
+    layoutPopUp.addWidget(&comboBox,1,3,1,2);
 
     layout.addWidget(&sliderWidget,1,0);
     sliderWidget.setLayout(&layoutSlider);
+    sliderHue.setOrientation(Qt::Horizontal);
+    sliderHue.setRange(0,359);
+    layoutSlider.addWidget(&sliderHue,0,1);
     sliderSaturation.setOrientation(Qt::Horizontal);
-    sliderSaturation.setRange(-100,100);
-    layoutSlider.addWidget(&sliderSaturation,0,0);
-    sliderBrightness.setOrientation(Qt::Horizontal);
-    sliderBrightness.setRange(-100,100);
-    layoutSlider.addWidget(&sliderBrightness,1,0);
-    sliderWidget.setStyleSheet("QWidget { background-color: #ffffff; padding: 0px; margin: 0px;}");
+    sliderSaturation.setRange(0,100);
+    layoutSlider.addWidget(&sliderSaturation,1,1);
+    sliderLightness.setOrientation(Qt::Horizontal);
+    sliderLightness.setRange(0,100);
+    layoutSlider.addWidget(&sliderLightness,2,1);
+    layoutSlider.addWidget(&imgHue,0,0);
+    layoutSlider.addWidget(&imgSaturation,1,0);
+    layoutSlider.addWidget(&imgLightness,2,0);
+    sliderWidget.setContentsMargins(6,2,6,2);
+    imgSaturation.setFixedSize(16,16);
+    imgLightness.setFixedSize(16,16);
 
     layout.addWidget(&gradationWidget,2,0);
     gradationWidget.setLayout(&layoutGradation);
     layoutGradation.setSpacing(0);
     layoutGradation.setContentsMargins(7,0,7,1);
-    label_10.setCurrentLightness(0.1);
-    label_20.setCurrentLightness(0.2);
-    label_30.setCurrentLightness(0.3);
-    label_40.setCurrentLightness(0.4);
-    label_50.setCurrentLightness(0.5);
-    label_60.setCurrentLightness(0.6);
-    label_70.setCurrentLightness(0.7);
-    label_80.setCurrentLightness(0.8);
-    label_90.setCurrentLightness(0.9);
-    label_100.setCurrentLightness(1.0);
-    layoutGradation.addWidget(&label_10,9,0);
-    layoutGradation.addWidget(&label_20,8,0);
-    layoutGradation.addWidget(&label_30,7,0);
-    layoutGradation.addWidget(&label_40,6,0);
-    layoutGradation.addWidget(&label_50,5,0);
-    layoutGradation.addWidget(&label_60,4,0);
-    layoutGradation.addWidget(&label_70,3,0);
-    layoutGradation.addWidget(&label_80,2,0);
-    layoutGradation.addWidget(&label_90,1,0);
-    layoutGradation.addWidget(&label_100,0,0);
+    for(int i=0; i<COUNT_GRADATION; ++i){
+        labelGradation[i].setCurrentLightness(0.1*(i+1));
+        layoutGradation.addWidget(&labelGradation[i],9-i,0);
+    }
 
     connect(&comboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &PopUpColor::changeIndexComboBoxColor);
     connect(&closeButton, &QToolButton::clicked, this, &PopUpColor::slotHide);
     connect(&closeButton, &QToolButton::clicked, &dummyTransparentWindow, &TransparentWindow::hide);
     connect(&closeButton, &QToolButton::clicked, this, &PopUpColor::backColor);
-    connect(&gradationButton, &QToolButton::clicked, this, &PopUpColor::slotGradationButtonClicked);
     connect(&pickerButton, &QToolButton::clicked, this, &PopUpColor::pickerButtonClicked);
+    connect(&gradationButton, &QToolButton::clicked, this, &PopUpColor::gradationButtonClicked);
+    connect(&copyButton, &QToolButton::clicked, this, &PopUpColor::copyButtonClicked);
     connect(this, &PopUpColor::currentColorChanged, this, &PopUpColor::changeLabelText);
     connect(this, &PopUpColor::currentColorChanged, this, &PopUpColor::changeStyleSheets);
     connect(this, &PopUpColor::currentColorChanged, this, &PopUpColor::changeSliders);
@@ -93,28 +88,21 @@ PopUpColor::PopUpColor(QWidget *parent) :
     connect(&dummyTransparentWindow, &TransparentWindow::backColor, this, &PopUpColor::backColor);
     connect(&dummyTransparentWindow, &TransparentWindow::saveColor, this, &PopUpColor::saveColor);
     connect(&dummyTransparentWindow, &TransparentWindow::visibleChanged, this, &PopUpColor::updateStyleSheets);
+    connect(&sliderHue, &QSlider::valueChanged, this, &PopUpColor::setHue);
+    connect(&sliderSaturation, &QSlider::valueChanged, this, &PopUpColor::setSaturation);
+    connect(&sliderLightness, &QSlider::valueChanged, this, &PopUpColor::setLightness);
+    connect(&sliderHue, &QSlider::sliderPressed, this, &PopUpColor::sliderPress);
+    connect(&sliderSaturation, &QSlider::sliderPressed, this, &PopUpColor::sliderPress);
+    connect(&sliderLightness, &QSlider::sliderPressed, this, &PopUpColor::sliderPress);
+    connect(&sliderHue, &QSlider::sliderReleased, this, &PopUpColor::sliderRelease);
+    connect(&sliderSaturation, &QSlider::sliderReleased, this, &PopUpColor::sliderRelease);
+    connect(&sliderLightness, &QSlider::sliderReleased, this, &PopUpColor::sliderRelease);
 
-    connect(this, &PopUpColor::currentColorChanged, &label_10, &GradationLabel::setCurrentColor);
-    connect(this, &PopUpColor::currentColorChanged, &label_20, &GradationLabel::setCurrentColor);
-    connect(this, &PopUpColor::currentColorChanged, &label_30, &GradationLabel::setCurrentColor);
-    connect(this, &PopUpColor::currentColorChanged, &label_40, &GradationLabel::setCurrentColor);
-    connect(this, &PopUpColor::currentColorChanged, &label_50, &GradationLabel::setCurrentColor);
-    connect(this, &PopUpColor::currentColorChanged, &label_60, &GradationLabel::setCurrentColor);
-    connect(this, &PopUpColor::currentColorChanged, &label_70, &GradationLabel::setCurrentColor);
-    connect(this, &PopUpColor::currentColorChanged, &label_80, &GradationLabel::setCurrentColor);
-    connect(this, &PopUpColor::currentColorChanged, &label_90, &GradationLabel::setCurrentColor);
-    connect(this, &PopUpColor::currentColorChanged, &label_100, &GradationLabel::setCurrentColor);
-
-    connect(&label_10, &GradationLabel::colorForCopy, this, &PopUpColor::slotCopyBuffer);
-    connect(&label_20, &GradationLabel::colorForCopy, this, &PopUpColor::slotCopyBuffer);
-    connect(&label_30, &GradationLabel::colorForCopy, this, &PopUpColor::slotCopyBuffer);
-    connect(&label_40, &GradationLabel::colorForCopy, this, &PopUpColor::slotCopyBuffer);
-    connect(&label_50, &GradationLabel::colorForCopy, this, &PopUpColor::slotCopyBuffer);
-    connect(&label_60, &GradationLabel::colorForCopy, this, &PopUpColor::slotCopyBuffer);
-    connect(&label_70, &GradationLabel::colorForCopy, this, &PopUpColor::slotCopyBuffer);
-    connect(&label_80, &GradationLabel::colorForCopy, this, &PopUpColor::slotCopyBuffer);
-    connect(&label_90, &GradationLabel::colorForCopy, this, &PopUpColor::slotCopyBuffer);
-    connect(&label_100, &GradationLabel::colorForCopy, this, &PopUpColor::slotCopyBuffer);
+    for(int i=0; i<COUNT_GRADATION; ++i){
+        connect(this, &PopUpColor::currentColorChanged, &labelGradation[i], &GradationLabel::setCurrentColor);
+        connect(&labelGradation[i], &GradationLabel::colorForCopy, this, &PopUpColor::slotCopyBuffer);
+        connect(&labelGradation[i], &GradationLabel::colorForSet, this, &PopUpColor::setCurrentColor);
+    }
 
     reloadSettings();
     setCurrentColor(QColor(Qt::white));
@@ -122,6 +110,7 @@ PopUpColor::PopUpColor(QWidget *parent) :
 
     gradationWidget.setVisible(false);
     sliderWidget.setVisible(false);
+    sliderPressed = false;
     adjustSize();
 }
 
@@ -159,6 +148,10 @@ bool PopUpColor::nativeEvent(const QByteArray &eventType, void *message, long *r
                 color.setRgb(img.pixel(QCursor::pos()));;
                 setCurrentColor(color);
                 tempCurrentColor = color;
+                gradationWidget.setVisible(false);
+                sliderWidget.setVisible(false);
+                gradationButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradation(gradationWidget.isVisible(), currentColor));
+                adjustSize();
                 (followCursor) ? showPos(QCursor::pos()) : showPos(posWin);
                 slotCopyBuffer(getCurrentColor());
             }
@@ -247,6 +240,11 @@ void PopUpColor::pickerButtonClicked()
     dummyTransparentWindow.showFullScreen();
 }
 
+void PopUpColor::copyButtonClicked()
+{
+    slotCopyBuffer(currentColor);
+}
+
 void PopUpColor::hideAnimation()
 {
     animation.setDuration(1000);
@@ -273,24 +271,60 @@ void PopUpColor::saveColor()
     slotCopyBuffer(getCurrentColor());
 }
 
+void PopUpColor::sliderPress()
+{
+    sliderPressed = true;
+}
+
+void PopUpColor::sliderRelease()
+{
+    sliderPressed = false;
+}
+
+void PopUpColor::setHue(int value)
+{
+    QColor color;
+    color.setHslF((qreal)value/359,
+                  currentColor.hslSaturationF(),
+                  currentColor.lightnessF());
+    setCurrentColor(color);
+}
+
+void PopUpColor::setSaturation(int value)
+{
+    QColor color;
+    color.setHslF(currentColor.hslHueF(),
+                  (qreal)value/100,
+                  currentColor.lightnessF());
+    setCurrentColor(color);
+}
+
+void PopUpColor::setLightness(int value)
+{
+    QColor color;
+    color.setHslF(currentColor.hslHueF(),
+                  currentColor.hslSaturationF(),
+                  (qreal)value/100);
+    setCurrentColor(color);
+}
+
 void PopUpColor::changeStyleSheets(const QColor &color)
 {
-    QColor c;
-    qreal lightness = PopUpColorStyleSheetHelper::correctedLightness(color.lightnessF());
-    c.setHslF(color.hslHueF(), color.hslSaturationF(), lightness);
-    QString strColor = c.name();
-    QString fontColor = PopUpColorStyleSheetHelper::isColorLight(color) ? "#000000" : "#ffffff";
-
-    comboBox.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradationCombobox(strColor, color, fontColor));
+    comboBox.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradationCombobox(color));
     label.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfCodeLabel(color));
-    pickerButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfPicker(dummyTransparentWindow.isVisible(), strColor, color));
-    gradationButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradation(gradationWidget.isVisible(), strColor, color));
+    pickerButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfPicker(dummyTransparentWindow.isVisible(), color));
+    gradationButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradation(gradationWidget.isVisible(), color));
+    copyButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfCopy(color));
     closeButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfCloseButton(color));
-    sliderWidget.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfSliderWidget(color, c));
-    gradationWidget.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradationWidget(c));
-    popUpWidget.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfPopUpWidget(color, c));
-    sliderBrightness.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfSliderBrightness());
-    sliderSaturation.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfSliderSaturation());
+    sliderWidget.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfSliderWidget(color));
+    gradationWidget.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradationWidget(color));
+    popUpWidget.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfPopUpWidget(color));
+    sliderHue.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfSlider(color));
+    sliderLightness.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfSlider(color));
+    sliderSaturation.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfSlider(color));
+    imgHue.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfImageHue(color));
+    imgSaturation.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfImageSaturation(color));
+    imgLightness.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfImageLightness(color));
 
     adjustSize();
 }
@@ -332,10 +366,13 @@ void PopUpColor::changeLabelText(const QColor &color)
     adjustSize();
 }
 
-void PopUpColor::changeSliders()
+void PopUpColor::changeSliders(const QColor &color)
 {
-    sliderBrightness.setValue(0);
-    sliderSaturation.setValue(0);
+    if(!sliderPressed){
+        sliderHue.setValue(color.hslHue());
+        sliderSaturation.setValue(round(color.hslSaturationF()*100));
+        sliderLightness.setValue(round(color.lightnessF()*100));
+    }
 }
 
 void PopUpColor::slotCopyBuffer(const QColor &color)
@@ -476,11 +513,12 @@ void PopUpColor::slotHide()
     posWin = pos();
     gradationWidget.setVisible(false);
     sliderWidget.setVisible(false);
+    gradationButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradation(gradationWidget.isVisible(), currentColor));
     adjustSize();
     hide();
 }
 
-void PopUpColor::slotGradationButtonClicked()
+void PopUpColor::gradationButtonClicked()
 {
     gradationWidget.setVisible(!gradationWidget.isVisible());
     sliderWidget.setVisible(!sliderWidget.isVisible());

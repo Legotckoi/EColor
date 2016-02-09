@@ -15,6 +15,7 @@
 
 #include "transparentwindow.h"
 #include "gradationlabel.h"
+#include "settings.h"
 
 class PopUpColor : public QWidget
 {
@@ -54,17 +55,24 @@ protected:
 
 private slots:
     void pickerButtonClicked();
+    void copyButtonClicked();
+    void gradationButtonClicked();
     void hideAnimation();
     void changeIndexComboBoxColor(int index);
     void backColor();
     void saveColor();
+    void sliderPress();
+    void sliderRelease();
+    void setHue(int value);
+    void setSaturation(int value);
+    void setLightness(int value);
     void changeStyleSheets(const QColor &color);
     void changeLabelText(const QColor &color);
-    void changeSliders();
+    void changeSliders(const QColor &color);
     void slotCopyBuffer(const QColor &color);
-    void slotGradationButtonClicked();
     void updateStyleSheets();
     void setPreviousPosition(const QPoint &previousPosition);
+
 
 private:
     QPoint previousPosition() const;
@@ -78,10 +86,11 @@ private:
     QWidget popUpWidget;
     QGridLayout layoutPopUp;
     QLabel label;
-    QComboBox comboBox;
-    QToolButton pickerButton;
     QToolButton closeButton;
+    QToolButton pickerButton;
     QToolButton gradationButton;
+    QToolButton copyButton;
+    QComboBox comboBox;
     QGridLayout layout;
     QPoint posWin;
     // Pipette
@@ -89,23 +98,18 @@ private:
     // Slider
     QWidget sliderWidget;
     QGridLayout layoutSlider;
+    QSlider sliderHue;
     QSlider sliderSaturation;
-    QSlider sliderBrightness;
-    QLabel labelSaturation;
-    QLabel labelBrightness;
+    QSlider sliderLightness;
+    QLabel imgHue;
+    QLabel imgSaturation;
+    QLabel imgLightness;
+    bool sliderPressed;
     // Gradation
     QWidget gradationWidget;
     QGridLayout layoutGradation;
-    GradationLabel label_10;
-    GradationLabel label_20;
-    GradationLabel label_30;
-    GradationLabel label_40;
-    GradationLabel label_50;
-    GradationLabel label_60;
-    GradationLabel label_70;
-    GradationLabel label_80;
-    GradationLabel label_90;
-    GradationLabel label_100;
+    GradationLabel labelGradation[COUNT_GRADATION];
+
 
     // Переменные для работы с горячими клавишами
     QKeySequence    keys;

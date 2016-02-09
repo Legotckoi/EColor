@@ -2,10 +2,11 @@
 
 #include <QString>
 #include <QColor>
+#include <QDebug>
 
-QString PopUpColorStyleSheetHelper::getStyleSheetOfPicker(const bool isActive, const QString &strColor, const QColor &color)
+QString PopUpColorStyleSheetHelper::getStyleSheetOfPicker(const bool isActive, const QColor &color)
 {
-    QColor backgroundColor{strColor};
+    QColor backgroundColor{correctedColor(color)};
 
     if (isColorLight(color)) {
         if (isActive)
@@ -36,9 +37,9 @@ QString PopUpColorStyleSheetHelper::getStyleSheetOfPicker(const bool isActive, c
     }
 }
 
-QString PopUpColorStyleSheetHelper::getStyleSheetOfGradation(const bool isActive, const QString &strColor, const QColor &color)
+QString PopUpColorStyleSheetHelper::getStyleSheetOfGradation(const bool isActive, const QColor &color)
 {
-    QColor backgroundColor{strColor};
+    QColor backgroundColor{correctedColor(color)};
 
     if (isColorLight(color)) {
         if (isActive)
@@ -69,22 +70,52 @@ QString PopUpColorStyleSheetHelper::getStyleSheetOfGradation(const bool isActive
     }
 }
 
-QString PopUpColorStyleSheetHelper::getStyleSheetOfGradationCombobox(const QString &strColor, const QColor &color, const QString &fontColor)
+QString PopUpColorStyleSheetHelper::getStyleSheetOfCopy(const QColor &color)
 {
-    return "QComboBox { color: " + fontColor + "; background-color: " + strColor + "; "
+    if (isColorLight(color)) {
+        return "QToolButton { image: url(:/images/content-copy-black.png);"
+               "icon-size: 16px;"
+               "height: 16px;"
+               "width: 16px;"
+               "padding: 6px;"
+               "border: none;"
+               "border-radius: 2px;"
+               "background-color: " + correctedColor(color).name() + "; }"
+               "QToolButton:pressed { background-color: transparent; }";
+    } else {
+        return "QToolButton { image: url(:/images/content-copy.png);"
+               "icon-size: 16px;"
+               "height: 16px;"
+               "width: 16px;"
+               "padding: 6px;"
+               "border: none;"
+               "border-radius: 2px;"
+               "background-color: " + correctedColor(color).name() + "; }"
+               "QToolButton:pressed { background-color: transparent; }";
+    }
+}
+
+QString PopUpColorStyleSheetHelper::getStyleSheetOfGradationCombobox(const QColor &color)
+{
+    QString fontColor = (isColorLight(color)) ? "black" : "white";
+    return "QComboBox { color: " + fontColor + "; background-color: " + correctedColor(color).name() + "; "
            "border: none; border-radius: 2px;"
            "padding: 6px;"
-           "font-size: 14px; }"
+           "font-size: 14px; "
+           "alternate-background-color: " + color.name() + ";}"
            "QComboBox::drop-down {border: none;} "
            "QComboBox::down-arrow {image: url(noimg); border: none;}"
            "QComboBox QAbstractItemView { "
            "border: none;"
            "color: " + fontColor + "; "
-           "background-color: " + strColor + "; "
-           "border-radius: 2px;"
+           "background-color: " + correctedColor(color).name() + "; "
            "padding: 6px;"
-           "selection-color: " + fontColor + ";"
-           "selection-background-color: " + color.name() + ";}";
+           "margin-top: 0px;"
+           "margin-left: 0px;"
+           "margin-right: 0px;"
+           "margin-bottom: -12px;"
+           "selection-color: " + color.name() + ";"
+           "alternate-background-color: " + color.name() + ";}";
 }
 
 QString PopUpColorStyleSheetHelper::getStyleSheetOfCodeLabel(const QColor &color)
@@ -115,37 +146,68 @@ QString PopUpColorStyleSheetHelper::getStyleSheetOfCloseButton(const QColor &col
     }
 }
 
-QString PopUpColorStyleSheetHelper::getStyleSheetOfSliderWidget(const QColor &color, const QColor &correctedColor)
+QString PopUpColorStyleSheetHelper::getStyleSheetOfSliderWidget(const QColor &color)
 {
     return "QWidget { background-color: " + color.name() + ";"
-           "border: 1px solid " + correctedColor.name() + ";"
+           "border: 1px solid " + correctedColor(color).name() + ";"
            "margin-left: 6px;"
            "margin-right: 6px;}";
 }
 
-QString PopUpColorStyleSheetHelper::getStyleSheetOfGradationWidget(const QColor &correctedColor)
+QString PopUpColorStyleSheetHelper::getStyleSheetOfGradationWidget(const QColor &color)
 {
     return "QWidget { background-color: transparent;"
-           "border: 1px solid " + correctedColor.name() + ";"
+           "border: 1px solid " + correctedColor(color).name() + ";"
            "margin-left: 6px;"
            "margin-right: 6px;}";
 }
 
-QString PopUpColorStyleSheetHelper::getStyleSheetOfPopUpWidget(const QColor &color, const QColor &correctedColor)
+QString PopUpColorStyleSheetHelper::getStyleSheetOfPopUpWidget(const QColor &color)
 {
     return "QWidget { background-color: " + color.name() + ";"
-           "border: 1px solid " + correctedColor.name() + ";"
+           "border: 1px solid " + correctedColor(color).name() + ";"
            "border-radius: 2px;}";
 }
 
-QString PopUpColorStyleSheetHelper::getStyleSheetOfSliderBrightness()
+QString PopUpColorStyleSheetHelper::getStyleSheetOfSlider(const QColor &color)
 {
-    return "QSlider { border: none; margin: 0px; padding: 0px;}";
+    QColor correctColor = correctedColor(color);
+    if(isColorLight(color)){
+        return "QSlider {border: none; margin: 0px; padding: 2px;}"
+               "QSlider::groove:horizontal { border:none; height: 4px; background-color: " + correctColor.name() + ";}"
+               "QSlider::handle:horizontal { border: 2px solid " + correctColor.name() + "; height: 12px; margin: -6px 0; width: 12px; background: " + correctColor.darker().name() + "; border-radius: 8px;}";
+    } else {
+        return "QSlider {border: none; margin: 0px; padding: 2px;}"
+               "QSlider::groove:horizontal { border:none; height: 4px; background-color: " + correctColor.name() + ";}"
+               "QSlider::handle:horizontal { border: 2px solid " + correctColor.name() + "; height: 12px; margin: -6px 0; width: 12px; background: " + correctColor.lighter().name() + "; border-radius: 8px;}";
+    }
 }
 
-QString PopUpColorStyleSheetHelper::getStyleSheetOfSliderSaturation()
+QString PopUpColorStyleSheetHelper::getStyleSheetOfImageHue(const QColor &color)
 {
-    return "QSlider {border: none; margin: 0px; padding: 0px;}";
+    if (isColorLight(color)) {
+        return "QLabel {border: none; margin: 0; image: url(:/images/palette-black.png);}";
+    } else {
+        return "QLabel {border: none; margin: 0; image: url(:/images/palette.png);}";
+    }
+}
+
+QString PopUpColorStyleSheetHelper::getStyleSheetOfImageLightness(const QColor &color)
+{
+    if (isColorLight(color)) {
+        return "QLabel {border: none; margin: 0; image: url(:/images/brightness-black.png);}";
+    } else {
+        return "QLabel {border: none; margin: 0; image: url(:/images/brightness.png);}";
+    }
+}
+
+QString PopUpColorStyleSheetHelper::getStyleSheetOfImageSaturation(const QColor &color)
+{
+    if (isColorLight(color)) {
+        return "QLabel {border: none; margin: 0; image: url(:/images/contrast-circle-black.png);}";
+    } else {
+        return "QLabel {border: none; margin: 0; image: url(:/images/contrast-circle.png);}";
+    }
 }
 
 bool PopUpColorStyleSheetHelper::isColorLight(const QColor &color)
@@ -153,12 +215,18 @@ bool PopUpColorStyleSheetHelper::isColorLight(const QColor &color)
     return color.lightnessF() > 0.7;
 }
 
-qreal PopUpColorStyleSheetHelper::correctedLightness(qreal lightness)
+QColor PopUpColorStyleSheetHelper::correctedColor(const QColor &color)
 {
-    if(lightness < 0.5){
-        lightness += 0.09;
+    QColor c;
+    qreal lightness = color.lightnessF();
+    if(lightness < 0.15){
+        c.setHslF(color.hslHueF(),color.hslSaturationF(),0.25);
+    } else if(lightness < 0.5) {
+        c.setHslF(color.hslHueF(), color.hslSaturationF(), lightness+0.15);
+    } else if(lightness < 0.85){
+        c.setHslF(color.hslHueF(), color.hslSaturationF(), lightness-0.15);
     } else {
-        lightness -= 0.09;
+        c.setHslF(color.hslHueF(), color.hslSaturationF(), 0.75);
     }
-    return lightness;
+    return c;
 }

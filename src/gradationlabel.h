@@ -28,6 +28,7 @@ signals:
     void currentColorChanged(const QColor &color);
     void currentLightnessChanged(const qreal lightness);
     void colorForCopy(const QColor  &color);
+    void colorForSet(const QColor &color);
 
 public slots:
     void setCurrentColor(QColor color);

@@ -1,6 +1,7 @@
 #include "gradationlabel.h"
 #include <QPainter>
 #include <cmath>
+#include <QDebug>
 
 GradationLabel::GradationLabel(QWidget *parent) : QWidget(parent)
 {
@@ -45,8 +46,12 @@ void GradationLabel::paintEvent(QPaintEvent *event)
 
 void GradationLabel::mouseReleaseEvent(QMouseEvent *event)
 {
-    Q_UNUSED(event)
-    emit colorForCopy(m_currentColor);
+    if(event->button() == Qt::LeftButton){
+        emit colorForCopy(m_currentColor);
+    } else {
+        emit colorForSet(m_currentColor);
+    }
+    event->accept();
 }
 
 QColor GradationLabel::getCurrentColor() const

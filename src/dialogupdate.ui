@@ -19,6 +19,9 @@
   <property name="windowTitle">
    <string>Доступно обновление</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0" rowspan="4">
     <widget class="QLabel" name="label">
@@ -39,6 +42,9 @@
        <width>130</width>
        <height>130</height>
       </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
      </property>
      <property name="text">
       <string/>
@@ -78,6 +84,9 @@
        <bold>true</bold>
       </font>
      </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="text">
       <string>TextLabel</string>
      </property>
@@ -97,6 +106,9 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="text">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Хотите перейти на сайт, &lt;br/&gt;чтобы скачать новую версию?&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
@@ -112,6 +124,9 @@
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
      </property>
      <property name="text">
       <string>Доступна новая версия!</string>
