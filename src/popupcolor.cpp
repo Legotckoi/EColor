@@ -77,7 +77,6 @@ PopUpColor::PopUpColor(QWidget *parent) :
     connect(&comboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &PopUpColor::changeIndexComboBoxColor);
     connect(&closeButton, &QToolButton::clicked, this, &PopUpColor::slotHide);
     connect(&closeButton, &QToolButton::clicked, &dummyTransparentWindow, &TransparentWindow::hide);
-    connect(&closeButton, &QToolButton::clicked, this, &PopUpColor::backColor);
     connect(&pickerButton, &QToolButton::clicked, this, &PopUpColor::pickerButtonClicked);
     connect(&gradationButton, &QToolButton::clicked, this, &PopUpColor::gradationButtonClicked);
     connect(&copyButton, &QToolButton::clicked, this, &PopUpColor::copyButtonClicked);
@@ -448,6 +447,7 @@ QColor PopUpColor::getCurrentColor() const
 void PopUpColor::slotHide()
 {
     posWin = pos();
+    if(dummyTransparentWindow.isVisible()) backColor();
     gradationWidget.setVisible(false);
     sliderWidget.setVisible(false);
     gradationButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradation(gradationWidget.isVisible(), currentColor));
