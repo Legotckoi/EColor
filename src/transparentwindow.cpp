@@ -6,9 +6,6 @@
 
 TransparentWindow::TransparentWindow(QWindow *parent) : QWindow(parent)
 {
-#ifdef Q_OS_WIN32
-    setFlags(Qt::Tool | Qt::FramelessWindowHint);
-#endif
     QPixmap imagePipette(":/images/eyedropper-black.png");
     QPixmap pipette = imagePipette.scaled(24,24,Qt::KeepAspectRatio);
     QCursor cursor = QCursor(pipette,4,20);

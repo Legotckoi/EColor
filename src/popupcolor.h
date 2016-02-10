@@ -66,6 +66,7 @@ private slots:
     void setHue(int value);
     void setSaturation(int value);
     void setLightness(int value);
+    void updateStyleSheets();
     void changeStyleSheets(const QColor &color);
     void changeLabelText(const QColor &color);
     void changeSliders(const QColor &color);

@@ -84,6 +84,7 @@ PopUpColor::PopUpColor(QWidget *parent) :
     connect(&dummyTransparentWindow, &TransparentWindow::changeColor, this, &PopUpColor::setCurrentColor);
     connect(&dummyTransparentWindow, &TransparentWindow::backColor, this, &PopUpColor::backColor);
     connect(&dummyTransparentWindow, &TransparentWindow::saveColor, this, &PopUpColor::saveColor);
+    connect(&dummyTransparentWindow, &TransparentWindow::visibleChanged, this, &PopUpColor::updateStyleSheets);
     connect(&sliderHue, &QSlider::valueChanged, this, &PopUpColor::setHue);
     connect(&sliderSaturation, &QSlider::valueChanged, this, &PopUpColor::setSaturation);
     connect(&sliderLightness, &QSlider::valueChanged, this, &PopUpColor::setLightness);
@@ -154,6 +155,8 @@ void PopUpColor::onHotKeyPixmapPressed()
 
 void PopUpColor::slotShow()
 {
+    changeLabelText(m_currentColor);
+    changeStyleSheets(m_currentColor);
     showPos(posWin);
 }
 
@@ -273,6 +276,11 @@ void PopUpColor::setLightness(int value)
                   m_currentColor.hslSaturationF(),
                   (qreal)value/100);
     setCurrentColor(color);
+}
+
+void PopUpColor::updateStyleSheets()
+{
+    changeStyleSheets(m_currentColor);
 }
 
 void PopUpColor::changeStyleSheets(const QColor &color)
