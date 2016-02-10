@@ -128,10 +128,13 @@ QPoint PopUpColor::previousPosition() const
 void PopUpColor::onHotKeyShowPressed()
 {
     if(!dummyTransparentWindow.isVisible()){
-        QScreen *screen = QApplication::primaryScreen();
-        QImage img = screen->grabWindow(0).toImage();
+        QImage img = QApplication::primaryScreen()->grabWindow(0,
+                                                               QCursor::pos().x(),
+                                                               QCursor::pos().y(),
+                                                               1,
+                                                               1).toImage();
         QColor color;
-        color.setRgb(img.pixel(QCursor::pos()));;
+        color.setRgb(img.pixel(0,0));
         setCurrentColor(color);
         tempCurrentColor = color;
         gradationWidget.setVisible(false);
