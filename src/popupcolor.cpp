@@ -21,7 +21,8 @@
 
 PopUpColor::PopUpColor(QWidget *parent) :
     QWidget(parent),
-    m_leftMouseButtonPressed(false)
+    m_leftMouseButtonPressed(false),
+    m_sliderPressed(false)
 {
     setWindowFlags(Qt::FramelessWindowHint |
                    Qt::Tool |
@@ -108,7 +109,6 @@ PopUpColor::PopUpColor(QWidget *parent) :
 
     gradationWidget.setVisible(false);
     sliderWidget.setVisible(false);
-    sliderPressed = false;
     adjustSize();
 }
 
@@ -139,10 +139,10 @@ void PopUpColor::onHotKeyShowPressed()
         tempCurrentColor = color;
         gradationWidget.setVisible(false);
         sliderWidget.setVisible(false);
-        gradationButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradation(gradationWidget.isVisible(), currentColor));
+        gradationButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradation(gradationWidget.isVisible(), m_currentColor));
         adjustSize();
         (followCursor) ? showPos(QCursor::pos()) : showPos(posWin);
-        slotCopyBuffer(getCurrentColor());
+        slotCopyBuffer(m_currentColor);
     }
 }
 
@@ -207,13 +207,13 @@ void PopUpColor::reloadSettings()
 
 void PopUpColor::pickerButtonClicked()
 {
-    tempCurrentColor = getCurrentColor();
+    tempCurrentColor = m_currentColor;
     dummyTransparentWindow.showFullScreen();
 }
 
 void PopUpColor::copyButtonClicked()
 {
-    slotCopyBuffer(currentColor);
+    slotCopyBuffer(m_currentColor);
 }
 
 void PopUpColor::hideAnimation()
@@ -227,8 +227,8 @@ void PopUpColor::hideAnimation()
 void PopUpColor::changeIndexComboBoxColor(int index)
 {
     typeCopyBuffer = index;
-    changeLabelText(getCurrentColor());
-    slotCopyBuffer(getCurrentColor());
+    changeLabelText(m_currentColor);
+    slotCopyBuffer(m_currentColor);
 }
 
 void PopUpColor::backColor()
@@ -238,43 +238,43 @@ void PopUpColor::backColor()
 
 void PopUpColor::saveColor()
 {
-    tempCurrentColor = getCurrentColor();
-    slotCopyBuffer(getCurrentColor());
+    tempCurrentColor = m_currentColor;
+    slotCopyBuffer(m_currentColor);
 }
 
 void PopUpColor::sliderPress()
 {
-    sliderPressed = true;
+    m_sliderPressed = true;
 }
 
 void PopUpColor::sliderRelease()
 {
-    sliderPressed = false;
+    m_sliderPressed = false;
 }
 
 void PopUpColor::setHue(int value)
 {
     QColor color;
     color.setHslF((qreal)value/359,
-                  currentColor.hslSaturationF(),
-                  currentColor.lightnessF());
+                  m_currentColor.hslSaturationF(),
+                  m_currentColor.lightnessF());
     setCurrentColor(color);
 }
 
 void PopUpColor::setSaturation(int value)
 {
     QColor color;
-    color.setHslF(currentColor.hslHueF(),
+    color.setHslF(m_currentColor.hslHueF(),
                   (qreal)value/100,
-                  currentColor.lightnessF());
+                  m_currentColor.lightnessF());
     setCurrentColor(color);
 }
 
 void PopUpColor::setLightness(int value)
 {
     QColor color;
-    color.setHslF(currentColor.hslHueF(),
-                  currentColor.hslSaturationF(),
+    color.setHslF(m_currentColor.hslHueF(),
+                  m_currentColor.hslSaturationF(),
                   (qreal)value/100);
     setCurrentColor(color);
 }
@@ -339,7 +339,7 @@ void PopUpColor::changeLabelText(const QColor &color)
 
 void PopUpColor::changeSliders(const QColor &color)
 {
-    if(!sliderPressed){
+    if(!m_sliderPressed){
         sliderHue.setValue(color.hslHue());
         sliderSaturation.setValue(round(color.hslSaturationF()*100));
         sliderLightness.setValue(round(color.lightnessF()*100));
@@ -383,19 +383,19 @@ void PopUpColor::slotCopyBuffer(const QColor &color)
 
 void PopUpColor::setPopupOpacity(float opacity)
 {
-    if (popupOpacity == opacity)
+    if (m_popupOpacity == opacity)
         return;
 
-    popupOpacity = opacity;
+    m_popupOpacity = opacity;
     setWindowOpacity(opacity);
 }
 
 void PopUpColor::setCurrentColor(QColor color)
 {
-    if (currentColor == color)
+    if (m_currentColor == color)
         return;
 
-    currentColor = color;
+    m_currentColor = color;
     emit currentColorChanged(color);
 }
 
@@ -434,14 +434,14 @@ void PopUpColor::setPreviousPosition(const QPoint &previousPosition)
     emit previousPositionChanged(previousPosition);
 }
 
-float PopUpColor::getPopupOpacity() const
+float PopUpColor::popupOpacity() const
 {
-    return popupOpacity;
+    return m_popupOpacity;
 }
 
-QColor PopUpColor::getCurrentColor() const
+QColor PopUpColor::currentColor() const
 {
-    return currentColor;
+    return m_currentColor;
 }
 
 void PopUpColor::slotHide()
@@ -450,7 +450,7 @@ void PopUpColor::slotHide()
     if(dummyTransparentWindow.isVisible()) backColor();
     gradationWidget.setVisible(false);
     sliderWidget.setVisible(false);
-    gradationButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradation(gradationWidget.isVisible(), currentColor));
+    gradationButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradation(gradationWidget.isVisible(), m_currentColor));
     adjustSize();
     hide();
 }
@@ -466,5 +466,5 @@ void PopUpColor::gradationButtonClicked()
 
 void PopUpColor::updateStyleSheets()
 {
-    changeStyleSheets(getCurrentColor());
+    changeStyleSheets(m_currentColor);
 }

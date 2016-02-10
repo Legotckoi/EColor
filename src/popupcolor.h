@@ -21,12 +21,12 @@ class PopUpColor : public QWidget
 {
     Q_OBJECT
 
-    Q_PROPERTY(float popupOpacity READ getPopupOpacity WRITE setPopupOpacity)
-    Q_PROPERTY(QColor currentColor READ getCurrentColor WRITE setCurrentColor NOTIFY currentColorChanged)
+    Q_PROPERTY(float popupOpacity READ popupOpacity WRITE setPopupOpacity)
+    Q_PROPERTY(QColor currentColor READ currentColor WRITE setCurrentColor NOTIFY currentColorChanged)
     Q_PROPERTY(QPoint previousPosition READ previousPosition WRITE setPreviousPosition NOTIFY previousPositionChanged)
 
-    float getPopupOpacity() const;
-    QColor getCurrentColor() const;
+    float popupOpacity() const;
+    QColor currentColor() const;
 
 signals:
     void currentColorChanged(const QColor &color);
@@ -78,9 +78,9 @@ private:
     QPoint previousPosition() const;
 
     // Properties
-    float popupOpacity;
+    float m_popupOpacity;
     QPropertyAnimation animation;
-    QColor currentColor;
+    QColor m_currentColor;
     QColor tempCurrentColor;
     // Interface
     QWidget popUpWidget;
@@ -104,7 +104,6 @@ private:
     QLabel imgHue;
     QLabel imgSaturation;
     QLabel imgLightness;
-    bool sliderPressed;
     // Gradation
     QWidget gradationWidget;
     QGridLayout layoutGradation;
@@ -119,6 +118,7 @@ private:
 
     QPoint m_previousPosition;
     bool m_leftMouseButtonPressed;
+    bool m_sliderPressed;
 };
 
 #endif // POPUPCOLOR_H
