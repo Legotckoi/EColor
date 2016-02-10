@@ -39,7 +39,7 @@ namespace
             }
         }
         return hotKey;
-}
+    }
 }
 
 NativeEventFilter::NativeEventFilter(QObject *parent) :
