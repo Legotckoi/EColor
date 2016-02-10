@@ -1,8 +1,5 @@
 #include "popupcolor.h"
 #include "popupcolorstylesheethelper.h"
-#ifdef Q_OS_WIN32
-#include <windows.h>
-#endif
 #include <QSettings>
 #include <QDir>
 #include <QPainter>
@@ -87,7 +84,6 @@ PopUpColor::PopUpColor(QWidget *parent) :
     connect(&dummyTransparentWindow, &TransparentWindow::changeColor, this, &PopUpColor::setCurrentColor);
     connect(&dummyTransparentWindow, &TransparentWindow::backColor, this, &PopUpColor::backColor);
     connect(&dummyTransparentWindow, &TransparentWindow::saveColor, this, &PopUpColor::saveColor);
-    connect(&dummyTransparentWindow, &TransparentWindow::visibleChanged, this, &PopUpColor::updateStyleSheets);
     connect(&sliderHue, &QSlider::valueChanged, this, &PopUpColor::setHue);
     connect(&sliderSaturation, &QSlider::valueChanged, this, &PopUpColor::setSaturation);
     connect(&sliderLightness, &QSlider::valueChanged, this, &PopUpColor::setLightness);
@@ -459,12 +455,7 @@ void PopUpColor::gradationButtonClicked()
 {
     gradationWidget.setVisible(!gradationWidget.isVisible());
     sliderWidget.setVisible(!sliderWidget.isVisible());
-    updateStyleSheets();
+    changeStyleSheets(m_currentColor);
 
     adjustSize();
-}
-
-void PopUpColor::updateStyleSheets()
-{
-    changeStyleSheets(m_currentColor);
 }

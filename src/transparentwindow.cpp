@@ -8,8 +8,6 @@ TransparentWindow::TransparentWindow(QWindow *parent) : QWindow(parent)
 {
 #ifdef Q_OS_WIN32
     setFlags(Qt::Tool | Qt::FramelessWindowHint);
-#else
-    setMouseGrabEnabled(true);
 #endif
     QPixmap imagePipette(":/images/eyedropper-black.png");
     QPixmap pipette = imagePipette.scaled(24,24,Qt::KeepAspectRatio);
@@ -19,7 +17,6 @@ TransparentWindow::TransparentWindow(QWindow *parent) : QWindow(parent)
 
 void TransparentWindow::mouseMoveEvent(QMouseEvent *event)
 {
-    event->accept();
     QImage img = QApplication::primaryScreen()->grabWindow(0).toImage();
     QColor color;
     color.setRgb(img.pixel(QCursor::pos()));
@@ -28,7 +25,6 @@ void TransparentWindow::mouseMoveEvent(QMouseEvent *event)
 
 void TransparentWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-    event->accept();
     if(event->button() == Qt::LeftButton){
         emit saveColor();
     } else {
@@ -39,7 +35,6 @@ void TransparentWindow::mouseReleaseEvent(QMouseEvent *event)
 
 void TransparentWindow::keyPressEvent(QKeyEvent *event)
 {
-    event->accept();
     if(event->key() == Qt::Key_Escape) {
         emit backColor();
         hide();

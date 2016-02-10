@@ -70,7 +70,6 @@ private slots:
     void changeLabelText(const QColor &color);
     void changeSliders(const QColor &color);
     void slotCopyBuffer(const QColor &color);
-    void updateStyleSheets();
     void setPreviousPosition(const QPoint &previousPosition);
 
 
