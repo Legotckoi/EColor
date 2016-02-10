@@ -33,7 +33,7 @@ EColorCore::EColorCore(QObject *parent) : QObject(parent)
     trayIcon->setIcon(QIcon(":/images/ecolor.png"));
 
     QMenu * menu = new QMenu();
-    QAction *actionShow = new QAction(trUtf8("Показать"), this);
+    actionShow = new QAction(trUtf8("Показать"), this);
     QAction *actionConfig = new QAction(trUtf8("Настройки"), this);
     QAction *actionAbout = new QAction(trUtf8("О Приложении"), this);
     QAction *actionQuit = new QAction(trUtf8("Выход"), this);
@@ -87,7 +87,13 @@ EColorCore::~EColorCore()
 
 void EColorCore::showTriggered()
 {
-    (!popUpColor->isVisible())? popUpColor->slotShow() : popUpColor->slotHide();
+    if(popUpColor->isVisible()){
+        popUpColor->slotHide();
+        actionShow->setText(trUtf8("Показать"));
+    }else{
+        popUpColor->slotShow();
+        actionShow->setText(trUtf8("Скрыть"));
+    }
 }
 
 void EColorCore::configTriggered()
@@ -116,7 +122,13 @@ void EColorCore::iconActivated(QSystemTrayIcon::ActivationReason reason)
 {
     switch (reason){
     case QSystemTrayIcon::Trigger:
-        (!popUpColor->isVisible())? popUpColor->slotShow() : popUpColor->slotHide();
+        if(popUpColor->isVisible()){
+            popUpColor->slotHide();
+            actionShow->setText(trUtf8("Показать"));
+        }else{
+            popUpColor->slotShow();
+            actionShow->setText(trUtf8("Скрыть"));
+        }
         break;
     default:
         break;
