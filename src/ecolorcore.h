@@ -8,6 +8,7 @@ class VersionChecker;
 class PopUpColor;
 class PopUpMessage;
 class NativeEventFilter;
+class QAction;
 
 class EColorCore : public QObject
 {
@@ -36,6 +37,7 @@ private:
     PopUpColor *popUpColor;
     PopUpMessage *popUpMessage;
     NativeEventFilter *nativeEventFilter;
+    QAction *actionShow ;
 };
 
 #endif // ECOLOCORE_H
