@@ -5,9 +5,14 @@
 #-------------------------------------------------
 
 QT       += core gui network
-linux: QT       += x11extras
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+linux {
+    QT       += x11extras
+    CONFIG   += link_pkgconfig
+    PKGCONFIG += x11
+}
 
 CONFIG += c++11
 
@@ -71,6 +76,3 @@ FORMS    += \
 
 RESOURCES += \
     images.qrc
-
-CONFIG   += link_pkgconfig
-PKGCONFIG += x11
