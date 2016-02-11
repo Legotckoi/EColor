@@ -4,9 +4,8 @@
 #
 #-------------------------------------------------
 
-QT       += core
-QT       += gui
-QT       += network
+QT       += core gui network
+linux: QT       += x11extras
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -30,8 +29,6 @@ DEFINES += VER=\"$${VERSTR}\"
 DEFINES += VER_MAJOR=$${VER_MAJ}
 DEFINES += VER_MINOR=$${VER_MIN}
 DEFINES += VER_PATHES=$${VER_PAT}
-
-
 
 TARGET = EColor
 TEMPLATE = app
@@ -75,3 +72,5 @@ FORMS    += \
 RESOURCES += \
     images.qrc
 
+CONFIG   += link_pkgconfig
+PKGCONFIG += x11
