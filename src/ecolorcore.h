@@ -26,6 +26,7 @@ private slots:
     void configTriggered();
     void aboutTriggered();
     void quitTriggered();
+    void updateActionShow();
     void showDialogUpdate(QString newVersion);
 #ifdef Q_OS_WIN32
     void iconActivated(QSystemTrayIcon::ActivationReason reason);

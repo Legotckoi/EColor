@@ -161,6 +161,7 @@ void PopUpColor::slotShow()
     changeLabelText(m_currentColor);
     changeStyleSheets(m_currentColor);
     showPos(posWin);
+    emit visibleChanged();
 }
 
 void PopUpColor::showPos(QPoint point)
@@ -460,6 +461,7 @@ void PopUpColor::slotHide()
     gradationButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradation(gradationWidget.isVisible(), m_currentColor));
     adjustSize();
     hide();
+    emit visibleChanged();
 }
 
 void PopUpColor::gradationButtonClicked()

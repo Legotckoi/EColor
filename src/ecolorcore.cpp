@@ -74,6 +74,7 @@ EColorCore::EColorCore(QObject *parent) : QObject(parent)
     connect(nativeEventFilter, &NativeEventFilter::hotKeyShowPressed, popUpColor, &PopUpColor::onHotKeyShowPressed);
     connect(nativeEventFilter, &NativeEventFilter::hotKeyPixmapPressed, popUpColor, &PopUpColor::onHotKeyPixmapPressed);
     connect(popUpColor, &PopUpColor::hotKeysSettingsReloading, nativeEventFilter, &NativeEventFilter::onHotKeysSettingsReloading);
+    connect(popUpColor, &PopUpColor::visibleChanged, this, &EColorCore::updateActionShow);
     emit popUpColor->reloadSettings();
 }
 
@@ -87,13 +88,7 @@ EColorCore::~EColorCore()
 
 void EColorCore::showTriggered()
 {
-    if(popUpColor->isVisible()){
-        popUpColor->slotHide();
-        actionShow->setText(trUtf8("Показать"));
-    }else{
-        popUpColor->slotShow();
-        actionShow->setText(trUtf8("Скрыть"));
-    }
+    (popUpColor->isVisible())?popUpColor->slotHide():popUpColor->slotShow();
 }
 
 void EColorCore::configTriggered()
@@ -117,18 +112,17 @@ void EColorCore::quitTriggered()
     exit(0);
 }
 
+void EColorCore::updateActionShow()
+{
+    (!popUpColor->isVisible())?actionShow->setText(trUtf8("Показать")):actionShow->setText(trUtf8("Скрыть"));
+}
+
 #ifdef Q_OS_WIN32
 void EColorCore::iconActivated(QSystemTrayIcon::ActivationReason reason)
 {
     switch (reason){
     case QSystemTrayIcon::Trigger:
-        if(popUpColor->isVisible()){
-            popUpColor->slotHide();
-            actionShow->setText(trUtf8("Показать"));
-        }else{
-            popUpColor->slotShow();
-            actionShow->setText(trUtf8("Скрыть"));
-        }
+        (popUpColor->isVisible())?popUpColor->slotHide():popUpColor->slotShow();
         break;
     default:
         break;

@@ -29,6 +29,7 @@ class PopUpColor : public QWidget
     QColor currentColor() const;
 
 signals:
+    void visibleChanged();
     void currentColorChanged(const QColor &color);
     void previousPositionChanged(const QPoint &previousPosition);
     void hotKeysSettingsReloading(const QKeySequence &keys, const bool settingsAllowScreenShots);

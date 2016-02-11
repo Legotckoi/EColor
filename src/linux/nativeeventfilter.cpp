@@ -46,7 +46,9 @@ namespace
         }
         return hotKey;
     }
-    QKeySequence keySequense;
+
+    QKeySequence showSequence;
+    Display * m_display;
 }
 
 NativeEventFilter::NativeEventFilter(QObject *parent) :
@@ -60,15 +62,14 @@ bool NativeEventFilter::nativeEventFilter(const QByteArray &eventType, void *mes
     Q_UNUSED(eventType)
     Q_UNUSED(result)
 
-    Display * m_display = QX11Info::display();
     xcb_key_press_event_t *keyEvent = 0;
     if (eventType == "xcb_generic_event_t") {
         xcb_generic_event_t *event = static_cast<xcb_generic_event_t *>(message);
         if ((event->response_type & 127) == XCB_KEY_PRESS){
             keyEvent = static_cast<xcb_key_press_event_t *>(message);
             foreach (quint32 maskMods, maskModifiers()) {
-                if((keyEvent->state == X11KeyModificator(keySequense) | maskMods )
-                        &&  keyEvent->detail == X11HotKey(m_display,keySequense)){
+                if((keyEvent->state == X11KeyModificator(showSequence) | maskMods )
+                        &&  keyEvent->detail == X11HotKey(m_display,showSequence)){
                     emit hotKeyShowPressed();
                 }
             }
@@ -79,12 +80,12 @@ bool NativeEventFilter::nativeEventFilter(const QByteArray &eventType, void *mes
 
 void NativeEventFilter::onHotKeysSettingsReloading(const QKeySequence &keys, const bool settingsAllowScreenShots)
 {
-    keySequense = keys;
+    showSequence = keys;
     Q_UNUSED(settingsAllowScreenShots)
 
-    Display * m_display = QX11Info::display();
+    m_display = QX11Info::display();
     Window win = DefaultRootWindow(m_display);
     foreach (quint32 maskMods, maskModifiers()) {
-        XGrabKey(m_display, X11HotKey(m_display, keySequense) , X11KeyModificator(keySequense) | maskMods, win,True, GrabModeAsync, GrabModeAsync);
+        XGrabKey(m_display, X11HotKey(m_display, showSequence) , X11KeyModificator(showSequence) | maskMods, win,True, GrabModeAsync, GrabModeAsync);
     }
 }
