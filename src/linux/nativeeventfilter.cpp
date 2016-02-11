@@ -78,10 +78,8 @@ bool NativeEventFilter::nativeEventFilter(const QByteArray &eventType, void *mes
     return false;
 }
 
-void NativeEventFilter::onHotKeysSettingsReloading(const QKeySequence &keys, const bool settingsAllowScreenShots)
+void NativeEventFilter::onHotKeysSettingsReloading(const QKeySequence &keys)
 {
-    Q_UNUSED(settingsAllowScreenShots)
-
     m_display = QX11Info::display();
     Window win = DefaultRootWindow(m_display);
     if(showSequence != 0){

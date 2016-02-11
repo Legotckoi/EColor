@@ -21,8 +21,6 @@ DialogSettings::DialogSettings(QWidget *parent) :
     ui->checkFollowCursor->setChecked(settings.value(SETTINGS_FOLLOW_CURSOR, true).toBool());
     ui->checkCopyBuffer->setChecked(settings.value(SETTINGS_COPY_BUFF, true).toBool());
     ui->cBoxBufferType->setCurrentIndex(settings.value(SETTINGS_TYPE_BUFF, 0).toInt());
-    ui->pathScreenShots->setText(settings.value(SETTINGS_PATH_SCREENSHOTS, QVariant()).toString());
-    ui->cBoxAllowScreen->setChecked(settings.value(SETTINGS_ALLOW_SCREENSHOTS, false).toBool());
 }
 
 DialogSettings::~DialogSettings()
@@ -38,8 +36,6 @@ void DialogSettings::saveSettings()
     settings.setValue(SETTINGS_FOLLOW_CURSOR, ui->checkFollowCursor->isChecked());
     settings.setValue(SETTINGS_COPY_BUFF, ui->checkCopyBuffer->isChecked());
     settings.setValue(SETTINGS_TYPE_BUFF, ui->cBoxBufferType->currentIndex());
-    settings.setValue(SETTINGS_PATH_SCREENSHOTS, ui->pathScreenShots->text());
-    settings.setValue(SETTINGS_ALLOW_SCREENSHOTS, ui->cBoxAllowScreen->isChecked());
     settings.sync();
 
     #ifdef Q_OS_WIN32
@@ -84,12 +80,6 @@ void DialogSettings::on_keySequenceEdit_editingFinished()
         QStringList list = sequence.toString().split(", ");
         ui->keySequenceEdit->setKeySequence(QKeySequence(list.last()));
     }
-}
-
-void DialogSettings::on_pBScreenPath_clicked()
-{
-    QString filename = QFileDialog::getExistingDirectory(this);
-    if(filename != "")ui->pathScreenShots->setText(filename);
 }
 
 void DialogSettings::on_buttonBox_rejected()

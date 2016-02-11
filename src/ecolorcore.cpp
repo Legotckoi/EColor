@@ -21,10 +21,6 @@ EColorCore::EColorCore(QObject *parent) : QObject(parent)
         settings.setValue(KEY_SEQUENCE_PIXEL, QKeySequence("Ctrl+E").toString());
         settings.sync();
     }
-    if(!settings.contains(SETTINGS_PATH_SCREENSHOTS)){
-        settings.setValue(SETTINGS_PATH_SCREENSHOTS, QDir::currentPath());
-        settings.sync();
-    }
 
     trayIcon = new QSystemTrayIcon(this);
     trayIcon->setToolTip("EColor \n"
@@ -72,7 +68,6 @@ EColorCore::EColorCore(QObject *parent) : QObject(parent)
     nativeEventFilter = new NativeEventFilter(this);
     qApp->installNativeEventFilter(nativeEventFilter);
     connect(nativeEventFilter, &NativeEventFilter::hotKeyShowPressed, popUpColor, &PopUpColor::onHotKeyShowPressed);
-    connect(nativeEventFilter, &NativeEventFilter::hotKeyPixmapPressed, popUpColor, &PopUpColor::onHotKeyPixmapPressed);
     connect(popUpColor, &PopUpColor::hotKeysSettingsReloading, nativeEventFilter, &NativeEventFilter::onHotKeysSettingsReloading);
     connect(popUpColor, &PopUpColor::visibleChanged, this, &EColorCore::updateActionShow);
     emit popUpColor->reloadSettings();

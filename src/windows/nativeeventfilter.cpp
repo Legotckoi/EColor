@@ -62,21 +62,13 @@ bool NativeEventFilter::nativeEventFilter(const QByteArray &eventType, void *mes
             emit hotKeyShowPressed();
             return true;
         }
-        case 101: {
-            emit hotKeyShowPressed();
-            return true;
-        }
         }
     }
     return false;
 }
 
-void NativeEventFilter::onHotKeysSettingsReloading(const QKeySequence &keys, const bool settingsAllowScreenShots)
+void NativeEventFilter::onHotKeysSettingsReloading(const QKeySequence &keys)
 {
-    UnregisterHotKey(firstWindowCreatedId, 101);
-    if(settingsAllowScreenShots) {
-        RegisterHotKey(firstWindowCreatedId, 101, 0, VK_SNAPSHOT);
-    }
     UnregisterHotKey(firstWindowCreatedId, 100);
     RegisterHotKey(firstWindowCreatedId, 100, winKeyModificator(keys), winHotKey(keys));
 }

@@ -16,10 +16,9 @@ public:
 
 signals:
     void hotKeyShowPressed();
-    void hotKeyPixmapPressed();
 
 public slots:
-    void onHotKeysSettingsReloading(const QKeySequence &keys, const bool settingsAllowScreenShots);
+    void onHotKeysSettingsReloading(const QKeySequence &keys);
 };
 
 #endif // NATIVEEVENTFILTER_H

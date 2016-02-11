@@ -10,9 +10,6 @@
 #define SETTINGS_TYPE_BUFF      "settings/typeCopyBuffer"
 #define SETTINGS_FOLLOW_CURSOR  "settings/followCursor"
 
-#define SETTINGS_ALLOW_SCREENSHOTS  "settings/allowScreenshots"
-#define SETTINGS_PATH_SCREENSHOTS   "settings/pathScreenshots"
-
 #define KEY_SEQUENCE_PIXEL  "shortcut/pixel_1"
 
 #define SETTINGS_POS_X "settings/posX"

@@ -32,7 +32,7 @@ signals:
     void visibleChanged();
     void currentColorChanged(const QColor &color);
     void previousPositionChanged(const QPoint &previousPosition);
-    void hotKeysSettingsReloading(const QKeySequence &keys, const bool settingsAllowScreenShots);
+    void hotKeysSettingsReloading(const QKeySequence &keys);
 
 public:
     explicit PopUpColor(QWidget *parent = 0);
@@ -41,7 +41,6 @@ public:
 
 public slots:
     void onHotKeyShowPressed();
-    void onHotKeyPixmapPressed();
     void slotShow();
     void slotHide();
     void showPos(QPoint point);

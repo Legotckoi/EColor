@@ -146,16 +146,6 @@ void PopUpColor::onHotKeyShowPressed()
     }
 }
 
-void PopUpColor::onHotKeyPixmapPressed()
-{
-    QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
-    QPixmap pixmap = QApplication::primaryScreen()->grabWindow(0);
-    pixmap.save(settings.value(SETTINGS_PATH_SCREENSHOTS, QVariant()).toString() +
-                QDateTime::currentDateTime().toString("/Screen_yyyy-MM-dd_hh-mm-ss") +
-                ".png", "PNG");
-    QApplication::clipboard()->setPixmap(pixmap);
-}
-
 void PopUpColor::slotShow()
 {
     changeLabelText(m_currentColor);
@@ -204,7 +194,7 @@ void PopUpColor::reloadSettings()
     posWin.setX(settings.value(SETTINGS_POS_X,0).toInt());
     posWin.setY(settings.value(SETTINGS_POS_Y,0).toInt());
     keys = QKeySequence(settings.value(KEY_SEQUENCE_PIXEL, QVariant()).toString());
-    emit hotKeysSettingsReloading(keys, settings.value(SETTINGS_ALLOW_SCREENSHOTS, false).toBool());
+    emit hotKeysSettingsReloading(keys);
     comboBox.setCurrentIndex(typeCopyBuffer);
 }
 
