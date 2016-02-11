@@ -80,11 +80,16 @@ bool NativeEventFilter::nativeEventFilter(const QByteArray &eventType, void *mes
 
 void NativeEventFilter::onHotKeysSettingsReloading(const QKeySequence &keys, const bool settingsAllowScreenShots)
 {
-    showSequence = keys;
     Q_UNUSED(settingsAllowScreenShots)
 
     m_display = QX11Info::display();
     Window win = DefaultRootWindow(m_display);
+    if(showSequence != 0){
+        foreach (quint32 maskMods, maskModifiers()) {
+            XUngrabKey(m_display, X11HotKey(m_display, showSequence),X11KeyModificator(showSequence) | maskMods,win);
+        }
+    }
+    showSequence = keys;
     foreach (quint32 maskMods, maskModifiers()) {
         XGrabKey(m_display, X11HotKey(m_display, showSequence) , X11KeyModificator(showSequence) | maskMods, win,True, GrabModeAsync, GrabModeAsync);
     }
