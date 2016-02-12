@@ -37,7 +37,7 @@ private:
     VersionChecker *versionChecker;
     PopUpColor *popUpColor;
     PopUpMessage *popUpMessage;
-    NativeEventFilter *nativeEventFilter;
+  //  NativeEventFilter *nativeEventFilter;
     QAction *actionShow ;
 };
 

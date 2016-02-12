@@ -17,6 +17,8 @@
 #include "gradationlabel.h"
 #include "settings.h"
 
+class QGlobalShortcut;
+
 class PopUpColor : public QWidget
 {
     Q_OBJECT
@@ -32,7 +34,6 @@ signals:
     void visibleChanged();
     void currentColorChanged(const QColor &color);
     void previousPositionChanged(const QPoint &previousPosition);
-    void hotKeysSettingsReloading(const QKeySequence &keys);
 
 public:
     explicit PopUpColor(QWidget *parent = 0);
@@ -109,9 +110,10 @@ private:
     QGridLayout layoutGradation;
     GradationLabel labelGradation[COUNT_GRADATION];
 
+    // Global Hot Key
+    QGlobalShortcut *gShortcutShow;
 
     // Переменные для работы с горячими клавишами
-    QKeySequence    keys;
     bool            copyBuffer;
     int             typeCopyBuffer;
     bool            followCursor;

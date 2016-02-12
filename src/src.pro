@@ -53,10 +53,7 @@ SOURCES += main.cpp\
     popupcolorstylesheethelper.cpp
 
 win32: SOURCES += win/qglobalshortcut.cpp
-linus: SOURCES += x11/qglobalshortcut.cpp
-
-win32: SOURCES += windows/nativeeventfilter.cpp
-linux: SOURCES += linux/nativeeventfilter.cpp
+linux: SOURCES += x11/qglobalshortcut.cpp
 
 HEADERS  += \
     about.h \
@@ -70,7 +67,6 @@ HEADERS  += \
     transparentwindow.h \
     gradationlabel.h \
     popupcolorstylesheethelper.h \
-    nativeeventfilter.h \
     qglobalshortcut.h
 
 FORMS    += \

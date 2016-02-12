@@ -65,10 +65,6 @@ EColorCore::EColorCore(QObject *parent) : QObject(parent)
     popUpMessage->setPopupText(trUtf8("Приложение EColor запущено"));
     popUpMessage->show();
 
-    nativeEventFilter = new NativeEventFilter(this);
-    qApp->installNativeEventFilter(nativeEventFilter);
-    connect(nativeEventFilter, &NativeEventFilter::hotKeyShowPressed, popUpColor, &PopUpColor::onHotKeyShowPressed);
-    connect(popUpColor, &PopUpColor::hotKeysSettingsReloading, nativeEventFilter, &NativeEventFilter::onHotKeysSettingsReloading);
     connect(popUpColor, &PopUpColor::visibleChanged, this, &EColorCore::updateActionShow);
     emit popUpColor->reloadSettings();
 }

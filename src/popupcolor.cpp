@@ -15,6 +15,7 @@
 #include <QGraphicsDropShadowEffect>
 #include <cmath>
 #include "popupmessage.h"
+#include "qglobalshortcut.h"
 
 PopUpColor::PopUpColor(QWidget *parent) :
     QWidget(parent),
@@ -100,6 +101,9 @@ PopUpColor::PopUpColor(QWidget *parent) :
         connect(&labelGradation[i], &GradationLabel::colorForCopy, this, &PopUpColor::slotCopyBuffer);
         connect(&labelGradation[i], &GradationLabel::colorForSet, this, &PopUpColor::setCurrentColor);
     }
+
+    gShortcutShow = new QGlobalShortcut(this);
+    connect(gShortcutShow, &QGlobalShortcut::activated, this, &PopUpColor::onHotKeyShowPressed);
 
     setCurrentColor(QColor(Qt::white));
     tempCurrentColor = QColor(Qt::white);
@@ -193,8 +197,7 @@ void PopUpColor::reloadSettings()
     followCursor = settings.value(SETTINGS_FOLLOW_CURSOR, true).toBool();
     posWin.setX(settings.value(SETTINGS_POS_X,0).toInt());
     posWin.setY(settings.value(SETTINGS_POS_Y,0).toInt());
-    keys = QKeySequence(settings.value(KEY_SEQUENCE_PIXEL, QVariant()).toString());
-    emit hotKeysSettingsReloading(keys);
+    gShortcutShow->setShortcut(QKeySequence(settings.value(KEY_SEQUENCE_PIXEL, QVariant()).toString()));
     comboBox.setCurrentIndex(typeCopyBuffer);
 }
 
