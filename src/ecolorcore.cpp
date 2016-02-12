@@ -6,7 +6,6 @@
 #include "versionchecker.h"
 #include "popupcolor.h"
 #include "popupmessage.h"
-#include "nativeeventfilter.h"
 #include <QMenu>
 #include <QAction>
 #include <QFont>
