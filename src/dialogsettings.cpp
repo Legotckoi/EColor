@@ -73,15 +73,6 @@ void DialogSettings::closeEvent(QCloseEvent *event)
     this->deleteLater();
 }
 
-void DialogSettings::on_keySequenceEdit_editingFinished()
-{
-    QKeySequence sequence = ui->keySequenceEdit->keySequence();
-    if(sequence.count() > 1){
-        QStringList list = sequence.toString().split(", ");
-        ui->keySequenceEdit->setKeySequence(QKeySequence(list.last()));
-    }
-}
-
 void DialogSettings::on_buttonBox_rejected()
 {
     this->hide();

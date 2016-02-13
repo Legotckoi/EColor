@@ -11,23 +11,14 @@ About::About(QWidget *parent) :
     ui->setupUi(this);
     setModal(true);
     ui->labelVersion->setText("EColor v" + QString(VER));
+    connect(ui->label_2, &QLabel::linkActivated,[=](const QString &link){QDesktopServices::openUrl(QUrl(link));});
+    connect(ui->label_3, &QLabel::linkActivated,[=](const QString &link){QDesktopServices::openUrl(QUrl(link));});
 }
 
 About::~About()
 {
     delete ui;
 }
-
-void About::on_label_3_linkActivated(const QString &link)
-{
-    QDesktopServices::openUrl(QUrl(link));
-}
-
-void About::on_label_2_linkActivated(const QString &link)
-{
-    QDesktopServices::openUrl(QUrl(link));
-}
-
 
 void About::closeEvent(QCloseEvent *event)
 {

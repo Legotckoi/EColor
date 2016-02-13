@@ -89,12 +89,11 @@ PopUpColor::PopUpColor(QWidget *parent) :
 
     connect(&gShortcutShow, &QGlobalShortcut::activated, this, &PopUpColor::onHotKeyShowPressed);
 
-    setCurrentColor(QColor(Qt::white));
-    tempCurrentColor = QColor(Qt::white);
-
     gradationWidget.setVisible(false);
     sliderWidget.setVisible(false);
     adjustSize();
+    setCurrentColor(QColor(Qt::white));
+    tempCurrentColor = QColor(Qt::white);
 }
 
 void PopUpColor::saveSettings()
@@ -116,11 +115,7 @@ QPoint PopUpColor::previousPosition() const
 void PopUpColor::onHotKeyShowPressed()
 {
     if(!dummyTransparentWindow.isVisible()){
-        QImage img = QApplication::primaryScreen()->grabWindow(0,
-                                                               QCursor::pos().x(),
-                                                               QCursor::pos().y(),
-                                                               1,
-                                                               1).toImage();
+        QImage img = QApplication::primaryScreen()->grabWindow(0,QCursor::pos().x(), QCursor::pos().y(),1,1).toImage();
         QColor color;
         color.setRgb(img.pixel(0,0));
         setCurrentColor(color);

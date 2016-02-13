@@ -46,6 +46,7 @@ class VersionChecker : public QObject
 public:
     explicit VersionChecker(QObject *parent = 0);
     VersionChecker(QObject *parent, QString &softName, int majVersion, int minVersion, int patVersion);
+    ~VersionChecker();
     void setSoftName(QString softName);
     void setMajVersion(int majVersion);
     void setMinVersion(int minVersion);

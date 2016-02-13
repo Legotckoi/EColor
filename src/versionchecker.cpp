@@ -15,10 +15,7 @@ public:
     VersionData *versionData;
     QUrl url;
 
-    VersionCheckerPrivate()
-    {
-
-    }
+    VersionCheckerPrivate(){}
 };
 
 VersionChecker::VersionChecker(QObject *parent) :
@@ -48,6 +45,12 @@ VersionChecker::VersionChecker(QObject *parent, QString &softName, int majVersio
 
     timerCheck = new QTimer();
     connect(timerCheck, &QTimer::timeout, this, &VersionChecker::slotUpdate);
+}
+
+VersionChecker::~VersionChecker()
+{
+    delete checker;
+    delete timerCheck;
 }
 
 void VersionChecker::setSoftName(QString softName)

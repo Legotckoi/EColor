@@ -15,11 +15,7 @@ TransparentWindow::TransparentWindow(QWindow *parent) : QWindow(parent)
 void TransparentWindow::mouseMoveEvent(QMouseEvent *event)
 {
     event->accept();
-    QImage img = QApplication::primaryScreen()->grabWindow(0,
-                                                           QCursor::pos().x(),
-                                                           QCursor::pos().y(),
-                                                           1,
-                                                           1).toImage();
+    QImage img = QApplication::primaryScreen()->grabWindow(0,QCursor::pos().x(), QCursor::pos().y(),1,1).toImage();
     QColor color;
     color.setRgb(img.pixel(0,0));
     emit changeColor(color);

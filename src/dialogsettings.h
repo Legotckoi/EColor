@@ -21,13 +21,12 @@ signals:
     void reloadKeySequence();
 
 protected:
-    void closeEvent(QCloseEvent *event);
+    void closeEvent(QCloseEvent *event) override;
 
 private slots:
     void on_buttonBox_clicked(QAbstractButton *button);
     void on_buttonBox_accepted();
     void on_buttonBox_rejected();
-    void on_keySequenceEdit_editingFinished();
 
 private:
     Ui::DialogSettings *ui;
