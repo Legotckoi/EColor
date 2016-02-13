@@ -1,18 +1,11 @@
 #include "popupcolor.h"
 #include "popupcolorstylesheethelper.h"
 #include <QSettings>
-#include <QDir>
-#include <QPainter>
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QDebug>
-#include <QVBoxLayout>
 #include <QScreen>
 #include <QClipboard>
-#include <QDateTime>
-#include <QPolygonF>
-#include <QLineEdit>
-#include <QGraphicsDropShadowEffect>
 #include <cmath>
 #include "popupmessage.h"
 

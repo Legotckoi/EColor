@@ -3,13 +3,9 @@
 
 #include <QWidget>
 #include <QLabel>
-#include <QGroupBox>
-#include <QVBoxLayout>
-#include <QRadioButton>
 #include <QToolButton>
 #include <QGridLayout>
 #include <QPropertyAnimation>
-#include <QTimer>
 #include <QComboBox>
 #include <QSlider>
 
