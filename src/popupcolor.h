@@ -52,11 +52,9 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
 
 private slots:
-    void pickerButtonClicked();
     void gradationButtonClicked();
     void hideAnimation();
     void changeIndexComboBoxColor(int index);
-    void saveColor();
     void setHue(int value);
     void setSaturation(int value);
     void setLightness(int value);
@@ -65,7 +63,6 @@ private slots:
     void changeSliders(const QColor &color);
     void slotCopyBuffer(const QColor &color);
     void setPreviousPosition(const QPoint &previousPosition);
-
 
 private:
     QPoint previousPosition() const;
@@ -85,7 +82,6 @@ private:
     QToolButton copyButton;
     QComboBox comboBox;
     QGridLayout layout;
-    QPoint posWin;
     // Pipette
     TransparentWindow dummyTransparentWindow;
     // Slider

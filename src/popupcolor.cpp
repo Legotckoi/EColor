@@ -67,7 +67,8 @@ PopUpColor::PopUpColor(QWidget *parent) :
     connect(&comboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &PopUpColor::changeIndexComboBoxColor);
     connect(&closeButton, &QToolButton::clicked, this, &PopUpColor::slotHide);
     connect(&closeButton, &QToolButton::clicked, &dummyTransparentWindow, &TransparentWindow::hide);
-    connect(&pickerButton, &QToolButton::clicked, this, &PopUpColor::pickerButtonClicked);
+    connect(&pickerButton, &QToolButton::clicked, [=](){tempCurrentColor = m_currentColor;
+                                                        dummyTransparentWindow.showFullScreen();});
     connect(&gradationButton, &QToolButton::clicked, this, &PopUpColor::gradationButtonClicked);
     connect(&copyButton, &QToolButton::clicked, [=](){slotCopyBuffer(m_currentColor);});
     connect(this, &PopUpColor::currentColorChanged, this, &PopUpColor::changeLabelText);
@@ -75,7 +76,8 @@ PopUpColor::PopUpColor(QWidget *parent) :
     connect(this, &PopUpColor::currentColorChanged, this, &PopUpColor::changeSliders);
     connect(&dummyTransparentWindow, &TransparentWindow::changeColor, this, &PopUpColor::setCurrentColor);
     connect(&dummyTransparentWindow, &TransparentWindow::backColor, [=](){setCurrentColor(tempCurrentColor);});
-    connect(&dummyTransparentWindow, &TransparentWindow::saveColor, this, &PopUpColor::saveColor);
+    connect(&dummyTransparentWindow, &TransparentWindow::saveColor, [=](){tempCurrentColor = m_currentColor;
+                                                                          slotCopyBuffer(m_currentColor);});
     connect(&dummyTransparentWindow, &TransparentWindow::visibleChanged, [=](){changeStyleSheets(m_currentColor);});
     connect(&sliderHue, &QSlider::valueChanged, this, &PopUpColor::setHue);
     connect(&sliderSaturation, &QSlider::valueChanged, this, &PopUpColor::setSaturation);
@@ -99,8 +101,8 @@ PopUpColor::PopUpColor(QWidget *parent) :
 void PopUpColor::saveSettings()
 {
     QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
-    settings.setValue(SETTINGS_POS_X,posWin.x());
-    settings.setValue(SETTINGS_POS_Y,posWin.y());
+    settings.setValue(SETTINGS_POS_X,m_previousPosition.x());
+    settings.setValue(SETTINGS_POS_Y,m_previousPosition.y());
 }
 
 PopUpColor::~PopUpColor()
@@ -124,7 +126,7 @@ void PopUpColor::onHotKeyShowPressed()
         sliderWidget.setVisible(false);
         gradationButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradation(gradationWidget.isVisible(), m_currentColor));
         adjustSize();
-        (followCursor) ? showPos(QCursor::pos()) : showPos(posWin);
+        (followCursor) ? showPos(QCursor::pos()) : showPos(m_previousPosition);
         slotCopyBuffer(m_currentColor);
         emit visibleChanged();
     }
@@ -134,7 +136,7 @@ void PopUpColor::slotShow()
 {
     changeLabelText(m_currentColor);
     changeStyleSheets(m_currentColor);
-    showPos(posWin);
+    showPos(m_previousPosition);
     emit visibleChanged();
 }
 
@@ -175,16 +177,10 @@ void PopUpColor::reloadSettings()
     copyBuffer = settings.value(SETTINGS_COPY_BUFF, true).toBool();
     typeCopyBuffer = settings.value(SETTINGS_TYPE_BUFF, 0).toInt();
     followCursor = settings.value(SETTINGS_FOLLOW_CURSOR, true).toBool();
-    posWin.setX(settings.value(SETTINGS_POS_X,0).toInt());
-    posWin.setY(settings.value(SETTINGS_POS_Y,0).toInt());
+    m_previousPosition.setX(settings.value(SETTINGS_POS_X,0).toInt());
+    m_previousPosition.setY(settings.value(SETTINGS_POS_Y,0).toInt());
     gShortcutShow.setShortcut(QKeySequence(settings.value(KEY_SEQUENCE_PIXEL, QVariant()).toString()));
     comboBox.setCurrentIndex(typeCopyBuffer);
-}
-
-void PopUpColor::pickerButtonClicked()
-{
-    tempCurrentColor = m_currentColor;
-    dummyTransparentWindow.showFullScreen();
 }
 
 void PopUpColor::hideAnimation()
@@ -199,12 +195,6 @@ void PopUpColor::changeIndexComboBoxColor(int index)
 {
     typeCopyBuffer = index;
     changeLabelText(m_currentColor);
-    slotCopyBuffer(m_currentColor);
-}
-
-void PopUpColor::saveColor()
-{
-    tempCurrentColor = m_currentColor;
     slotCopyBuffer(m_currentColor);
 }
 
@@ -402,7 +392,7 @@ QColor PopUpColor::currentColor() const
 
 void PopUpColor::slotHide()
 {
-    posWin = pos();
+    m_previousPosition = pos();
     if(dummyTransparentWindow.isVisible()) setCurrentColor(tempCurrentColor);;
     gradationWidget.setVisible(false);
     sliderWidget.setVisible(false);
@@ -417,6 +407,5 @@ void PopUpColor::gradationButtonClicked()
     gradationWidget.setVisible(!gradationWidget.isVisible());
     sliderWidget.setVisible(!sliderWidget.isVisible());
     changeStyleSheets(m_currentColor);
-
     adjustSize();
 }
