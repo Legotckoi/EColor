@@ -33,8 +33,8 @@ EColorCore::EColorCore(QObject *parent) : QObject(parent)
     QAction *actionAbout = new QAction(trUtf8("О Приложении"), this);
     QAction *actionQuit = new QAction(trUtf8("Выход"), this);
 
-    connect(actionShow, &QAction::triggered, [=](){(this->popUpColor->isVisible())?
-                    this->popUpColor->slotHide():this->popUpColor->slotShow();});
+    connect(actionShow, &QAction::triggered, [=](){(popUpColor->isVisible())?
+                    popUpColor->slotHide():popUpColor->slotShow();});
     connect(actionConfig, &QAction::triggered, this, &EColorCore::configTriggered);
     connect(actionAbout, &QAction::triggered, [=](){About about; about.exec();});
     connect(actionQuit, &QAction::triggered, [=](){this->popUpColor->saveSettings();exit(0);});

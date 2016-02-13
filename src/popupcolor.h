@@ -13,6 +13,7 @@
 #include <QComboBox>
 #include <QSlider>
 
+#include "qglobalshortcut.h"
 #include "transparentwindow.h"
 #include "gradationlabel.h"
 #include "settings.h"
@@ -56,18 +57,13 @@ protected:
 
 private slots:
     void pickerButtonClicked();
-    void copyButtonClicked();
     void gradationButtonClicked();
     void hideAnimation();
     void changeIndexComboBoxColor(int index);
-    void backColor();
     void saveColor();
-    void sliderPress();
-    void sliderRelease();
     void setHue(int value);
     void setSaturation(int value);
     void setLightness(int value);
-    void updateStyleSheets();
     void changeStyleSheets(const QColor &color);
     void changeLabelText(const QColor &color);
     void changeSliders(const QColor &color);
@@ -111,7 +107,7 @@ private:
     GradationLabel labelGradation[COUNT_GRADATION];
 
     // Global Hot Key
-    QGlobalShortcut *gShortcutShow;
+    QGlobalShortcut gShortcutShow;
 
     // Переменные для работы с горячими клавишами
     bool            copyBuffer;
@@ -120,7 +116,6 @@ private:
 
     QPoint m_previousPosition;
     bool m_leftMouseButtonPressed;
-    bool m_sliderPressed;
 };
 
 #endif // POPUPCOLOR_H
