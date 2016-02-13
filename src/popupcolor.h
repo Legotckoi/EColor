@@ -82,6 +82,7 @@ private:
     QToolButton copyButton;
     QComboBox comboBox;
     QGridLayout layout;
+    QPoint posWin;
     // Pipette
     TransparentWindow dummyTransparentWindow;
     // Slider

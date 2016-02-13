@@ -101,8 +101,8 @@ PopUpColor::PopUpColor(QWidget *parent) :
 void PopUpColor::saveSettings()
 {
     QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
-    settings.setValue(SETTINGS_POS_X,m_previousPosition.x());
-    settings.setValue(SETTINGS_POS_Y,m_previousPosition.y());
+    settings.setValue(SETTINGS_POS_X,posWin.x());
+    settings.setValue(SETTINGS_POS_Y,posWin.y());
 }
 
 PopUpColor::~PopUpColor()
@@ -126,7 +126,7 @@ void PopUpColor::onHotKeyShowPressed()
         sliderWidget.setVisible(false);
         gradationButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradation(gradationWidget.isVisible(), m_currentColor));
         adjustSize();
-        (followCursor) ? showPos(QCursor::pos()) : showPos(m_previousPosition);
+        (followCursor) ? showPos(QCursor::pos()) : showPos(posWin);
         slotCopyBuffer(m_currentColor);
         emit visibleChanged();
     }
@@ -136,7 +136,7 @@ void PopUpColor::slotShow()
 {
     changeLabelText(m_currentColor);
     changeStyleSheets(m_currentColor);
-    showPos(m_previousPosition);
+    showPos(posWin);
     emit visibleChanged();
 }
 
@@ -177,8 +177,8 @@ void PopUpColor::reloadSettings()
     copyBuffer = settings.value(SETTINGS_COPY_BUFF, true).toBool();
     typeCopyBuffer = settings.value(SETTINGS_TYPE_BUFF, 0).toInt();
     followCursor = settings.value(SETTINGS_FOLLOW_CURSOR, true).toBool();
-    m_previousPosition.setX(settings.value(SETTINGS_POS_X,0).toInt());
-    m_previousPosition.setY(settings.value(SETTINGS_POS_Y,0).toInt());
+    posWin.setX(settings.value(SETTINGS_POS_X,0).toInt());
+    posWin.setY(settings.value(SETTINGS_POS_Y,0).toInt());
     gShortcutShow.setShortcut(QKeySequence(settings.value(KEY_SEQUENCE_PIXEL, QVariant()).toString()));
     comboBox.setCurrentIndex(typeCopyBuffer);
 }
@@ -392,7 +392,7 @@ QColor PopUpColor::currentColor() const
 
 void PopUpColor::slotHide()
 {
-    m_previousPosition = pos();
+    posWin = pos();
     if(dummyTransparentWindow.isVisible()) setCurrentColor(tempCurrentColor);;
     gradationWidget.setVisible(false);
     sliderWidget.setVisible(false);
