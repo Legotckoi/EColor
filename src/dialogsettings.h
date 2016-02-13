@@ -25,8 +25,6 @@ protected:
 
 private slots:
     void on_buttonBox_clicked(QAbstractButton *button);
-    void on_buttonBox_accepted();
-    void on_buttonBox_rejected();
 
 private:
     Ui::DialogSettings *ui;

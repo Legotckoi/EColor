@@ -21,6 +21,9 @@ DialogSettings::DialogSettings(QWidget *parent) :
     ui->checkFollowCursor->setChecked(settings.value(SETTINGS_FOLLOW_CURSOR, true).toBool());
     ui->checkCopyBuffer->setChecked(settings.value(SETTINGS_COPY_BUFF, true).toBool());
     ui->cBoxBufferType->setCurrentIndex(settings.value(SETTINGS_TYPE_BUFF, 0).toInt());
+
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, [=](){saveSettings();hide();deleteLater();});
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, [=](){hide();deleteLater();});
 }
 
 DialogSettings::~DialogSettings()
@@ -59,22 +62,9 @@ void DialogSettings::on_buttonBox_clicked(QAbstractButton *button)
     }
 }
 
-void DialogSettings::on_buttonBox_accepted()
-{
-    saveSettings();
-    this->hide();
-    this->deleteLater();
-}
-
 void DialogSettings::closeEvent(QCloseEvent *event)
 {
     event->ignore();
-    this->hide();
-    this->deleteLater();
-}
-
-void DialogSettings::on_buttonBox_rejected()
-{
     this->hide();
     this->deleteLater();
 }
