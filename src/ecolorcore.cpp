@@ -33,10 +33,11 @@ EColorCore::EColorCore(QObject *parent) : QObject(parent)
     QAction *actionAbout = new QAction(trUtf8("О Приложении"), this);
     QAction *actionQuit = new QAction(trUtf8("Выход"), this);
 
-    connect(actionShow, &QAction::triggered, this, &EColorCore::showTriggered);
+    connect(actionShow, &QAction::triggered, [=](){(this->popUpColor->isVisible())?
+                    this->popUpColor->slotHide():this->popUpColor->slotShow();});
     connect(actionConfig, &QAction::triggered, this, &EColorCore::configTriggered);
-    connect(actionAbout, &QAction::triggered, this, &EColorCore::aboutTriggered);
-    connect(actionQuit, &QAction::triggered, this, &EColorCore::quitTriggered);
+    connect(actionAbout, &QAction::triggered, [=](){About about; about.exec();});
+    connect(actionQuit, &QAction::triggered, [=](){this->popUpColor->saveSettings();exit(0);});
 
     menu->addAction(actionShow);
     menu->addAction(actionConfig);
@@ -60,51 +61,26 @@ EColorCore::EColorCore(QObject *parent) : QObject(parent)
     versionChecker->startChecker();
 
     popUpColor = new PopUpColor();
-    popUpMessage = new PopUpMessage();
-    popUpMessage->setPopupText(trUtf8("Приложение EColor запущено"));
-    popUpMessage->show();
-
-    connect(popUpColor, &PopUpColor::visibleChanged, this, &EColorCore::updateActionShow);
-    emit popUpColor->reloadSettings();
+    connect(popUpColor, &PopUpColor::visibleChanged, [=](){(!this->popUpColor->isVisible())?
+                    this->actionShow->setText(trUtf8("Показать")):
+                    this->actionShow->setText(trUtf8("Скрыть"));});
+    popUpColor->reloadSettings();
+    PopUpMessage::information(qobject_cast<QWidget *>(this), trUtf8("Приложение EColor запущено"));
 }
 
 EColorCore::~EColorCore()
 {
     delete popUpColor;
-    delete popUpMessage;
     delete versionChecker;
+    delete actionShow;
     delete trayIcon;
-}
-
-void EColorCore::showTriggered()
-{
-    (popUpColor->isVisible())?popUpColor->slotHide():popUpColor->slotShow();
 }
 
 void EColorCore::configTriggered()
 {
-    DialogSettings *dialogSettings = new DialogSettings();
-    connect(dialogSettings, &DialogSettings::reloadKeySequence, popUpColor, &PopUpColor::reloadSettings);
-    dialogSettings->show();
-}
-
-void EColorCore::aboutTriggered()
-{
-    About *about = new About();
-    about->show();
-}
-
-void EColorCore::quitTriggered()
-{ 
-    delete versionChecker;
-    delete trayIcon;
-    popUpColor->saveSettings();
-    exit(0);
-}
-
-void EColorCore::updateActionShow()
-{
-    (!popUpColor->isVisible())?actionShow->setText(trUtf8("Показать")):actionShow->setText(trUtf8("Скрыть"));
+    DialogSettings dialogSettings;
+    connect(&dialogSettings, &DialogSettings::reloadKeySequence, popUpColor, &PopUpColor::reloadSettings);
+    dialogSettings.exec();
 }
 
 #ifdef Q_OS_WIN32

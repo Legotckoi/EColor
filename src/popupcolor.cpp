@@ -147,6 +147,7 @@ void PopUpColor::onHotKeyShowPressed()
         adjustSize();
         (followCursor) ? showPos(QCursor::pos()) : showPos(posWin);
         slotCopyBuffer(m_currentColor);
+        emit visibleChanged();
     }
 }
 
