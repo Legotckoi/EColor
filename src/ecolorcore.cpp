@@ -37,7 +37,7 @@ EColorCore::EColorCore(QObject *parent) : QObject(parent)
                     popUpColor->slotHide():popUpColor->slotShow();});
     connect(actionConfig, &QAction::triggered, this, &EColorCore::configTriggered);
     connect(actionAbout, &QAction::triggered, [=](){About about; about.exec();});
-    connect(actionQuit, &QAction::triggered, [=](){this->popUpColor->saveSettings();exit(0);});
+    connect(actionQuit, &QAction::triggered, [=](){popUpColor->saveSettings();trayIcon->hide();exit(0);});
 
     menu->addAction(actionShow);
     menu->addAction(actionConfig);
