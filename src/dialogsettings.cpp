@@ -4,6 +4,7 @@
 #include <QSettings>
 #include <QDir>
 #include <QFile>
+#include <QStandardPaths>
 #include <QDebug>
 #include "settings.h"
 
@@ -24,7 +25,10 @@ DialogSettings::DialogSettings(QWidget *parent) :
 #ifdef Q_OS_WIN32
     ui->checkAutoRun->setChecked(settings.value(SETTINGS_AUTORUN, false).toBool());
 #else
-    QFile autorun(QDir::toNativeSeparators(QDir::homePath()) + "/.config/autostart/EColor.desktop");
+    QString autostartPath = QStandardPaths::standardLocations(QStandardPaths::ConfigLocation).at(0) + QLatin1String("/autostart");
+    QDir autorunDir(autostartPath);
+    if(!autorunDir.exists()) autorunDir.mkpath(autostartPath);
+    QFile autorun(autostartPath + QLatin1String("/EColor.desktop"));
     ui->checkAutoRun->setChecked(autorun.exists());
     autorun.close();
 #endif
@@ -58,17 +62,11 @@ void DialogSettings::saveSettings()
         autorun.remove(APPLICATION_NAME);
     }
 #else
+    QString autostartPath = QStandardPaths::standardLocations(QStandardPaths::ConfigLocation).at(0) + QLatin1String("/autostart");
+    QFile autorunFile(autostartPath + QLatin1String("/EColor.desktop"));
     if(ui->checkAutoRun->isChecked()) {
-        QDir autorunDir(QDir::toNativeSeparators(QDir::homePath()) + "/.config/autostart");
-        if(!autorunDir.exists()){
-            autorunDir.mkpath(QDir::toNativeSeparators(QDir::homePath()) + "/.config/autostart");
-        }
-        QFile autorun(QDir::toNativeSeparators(QDir::homePath()) + "/.config/autostart/EColor.desktop");
-        if(!autorun.exists()){
-            QString command("touch ~/.config/autostart/EColor.desktop");
-            system(qPrintable(command));
-            if(autorun.open(QFile::WriteOnly)){
-
+        if(!autorunFile.exists()){
+            if(autorunFile.open(QFile::WriteOnly)){
                 QString autorunContent("[Desktop Entry]\n"
                                        "Type=Application\n"
                                        "Exec=" + QDir::toNativeSeparators(QCoreApplication::applicationFilePath()) + "\n"
@@ -79,16 +77,15 @@ void DialogSettings::saveSettings()
                                        "Name=EColor\n"
                                        "Comment[en_GB]=EColor\n"
                                        "Comment=EColor\n");
-                QTextStream outStream(&autorun);
+                QTextStream outStream(&autorunFile);
                 outStream << autorunContent;
-                autorun.close();
-                command = "chmod +x " + QDir::toNativeSeparators(QDir::homePath()) + "/.config/autostart/EColor.desktop";
-                system(qPrintable(command));
+                autorunFile.setPermissions(QFileDevice::ExeUser|QFileDevice::ExeOwner|QFileDevice::ExeOther|QFileDevice::ExeGroup|
+                                       QFileDevice::WriteUser|QFileDevice::ReadUser);
+                autorunFile.close();
             }
         }
     } else {
-        QString command("rm ~/.config/autostart/EColor.desktop");
-        system(qPrintable(command));
+        if(autorunFile.exists()) autorunFile.remove();
     }
 #endif
 
