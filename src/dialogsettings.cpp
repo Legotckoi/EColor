@@ -16,11 +16,18 @@ DialogSettings::DialogSettings(QWidget *parent) :
     setModal(true);
 
     QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
-    ui->checkAutoRun->setChecked(settings.value(SETTINGS_AUTORUN, false).toBool());
     ui->keySequenceEdit->setKeySequence(QKeySequence(settings.value(KEY_SEQUENCE_PIXEL, QVariant()).toString()));
     ui->checkFollowCursor->setChecked(settings.value(SETTINGS_FOLLOW_CURSOR, true).toBool());
     ui->checkCopyBuffer->setChecked(settings.value(SETTINGS_COPY_BUFF, true).toBool());
     ui->cBoxBufferType->setCurrentIndex(settings.value(SETTINGS_TYPE_BUFF, 0).toInt());
+
+#ifdef Q_OS_WIN32
+    ui->checkAutoRun->setChecked(settings.value(SETTINGS_AUTORUN, false).toBool());
+#else
+    QFile autorun(QDir::toNativeSeparators(QDir::homePath()) + "/.config/autostart/EColor.desktop");
+    ui->checkAutoRun->setChecked(autorun.exists());
+    autorun.close();
+#endif
 
     connect(ui->buttonBox, &QDialogButtonBox::accepted, [=](){saveSettings();hide();deleteLater();});
     connect(ui->buttonBox, &QDialogButtonBox::rejected, [=](){hide();deleteLater();});
@@ -34,7 +41,6 @@ DialogSettings::~DialogSettings()
 void DialogSettings::saveSettings()
 {
     QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
-    settings.setValue(SETTINGS_AUTORUN, ui->checkAutoRun->isChecked());
     settings.setValue(KEY_SEQUENCE_PIXEL, ui->keySequenceEdit->keySequence().toString());
     settings.setValue(SETTINGS_FOLLOW_CURSOR, ui->checkFollowCursor->isChecked());
     settings.setValue(SETTINGS_COPY_BUFF, ui->checkCopyBuffer->isChecked());
@@ -42,6 +48,7 @@ void DialogSettings::saveSettings()
     settings.sync();
 
 #ifdef Q_OS_WIN32
+    settings.setValue(SETTINGS_AUTORUN, ui->checkAutoRun->isChecked());
     //Добавляем в автозагрузку пользователя
     QSettings autorun("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", QSettings::NativeFormat);
     if(ui->checkAutoRun->isChecked()) {
