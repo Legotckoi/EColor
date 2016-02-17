@@ -38,6 +38,14 @@ DEFINES += VER_PATHES=$${VER_PAT}
 TARGET = EColor
 TEMPLATE = app
 
+DESTDIR = ../bin
+MOC_DIR = ../build/moc
+RCC_DIR = ../build/rcc
+UI_DIR = ../build/ui
+unix:OBJECTS_DIR = ../build/o/unix
+win32:OBJECTS_DIR = ../build/o/win32
+macx:OBJECTS_DIR = ../build/o/mac
+
 win32: RC_ICONS = images/myappico.ico
 
 SOURCES += main.cpp\
