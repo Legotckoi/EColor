@@ -37,6 +37,7 @@ DEFINES += VER_PATHES=$${VER_PAT}
 
 TARGET = EColor
 TEMPLATE = app
+CONFIG += warn_on
 
 DESTDIR = ../bin
 MOC_DIR = ../build/moc
