@@ -465,7 +465,7 @@ void PopUpColor::coordinatePressed()
     QImage img = QApplication::primaryScreen()->grabWindow(0,tempX,tempY,1,1).toImage();
     QColor color;
     color.setRgb(img.pixel(0,0));
-    QImage imgPixmap = QApplication::primaryScreen()->grabWindow(0,tempX,tempY,24,24).toImage();
+    QImage imgPixmap = QApplication::primaryScreen()->grabWindow(0,tempX-12,tempY-12,24,24).toImage();
     imgPixmap = imgPixmap.scaled(72,72);
     imgPixmap.setPixelColor(36,36,QColor(Qt::red));
     imgPixmap.setPixelColor(36,37,QColor(Qt::red));
