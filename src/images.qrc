@@ -18,5 +18,7 @@
         <file>images/palette-black.png</file>
         <file>images/content-copy.png</file>
         <file>images/content-copy-black.png</file>
+        <file>images/loupe.png</file>
+        <file>images/loupe-black.png</file>
     </qresource>
 </RCC>

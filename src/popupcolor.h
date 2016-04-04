@@ -8,6 +8,7 @@
 #include <QPropertyAnimation>
 #include <QComboBox>
 #include <QSlider>
+#include <QLineEdit>
 
 #include "qglobalshortcut.h"
 #include "transparentwindow.h"
@@ -63,6 +64,7 @@ private slots:
     void changeSliders(const QColor &color);
     void slotCopyBuffer(const QColor &color);
     void setPreviousPosition(const QPoint &previousPosition);
+    void coordinatePressed();
 
 private:
     QPoint previousPosition() const;
@@ -71,13 +73,24 @@ private:
     float m_popupOpacity;
     QPropertyAnimation animation;
     QColor m_currentColor;
+    // Temporary variables
     QColor tempCurrentColor;
+    int tempX;
+    int tempY;
     // Interface
     QWidget popUpWidget;
     QGridLayout layoutPopUp;
+    // Row - 1
     QLabel label;
     QToolButton closeButton;
+    // Row - 2
+    QLabel labelX;
+    QLabel labelY;
+    QLineEdit lineEditX;
+    QLineEdit lineEditY;
+    // Row - 3
     QToolButton pickerButton;
+    QToolButton loupeButton;
     QToolButton gradationButton;
     QToolButton copyButton;
     QComboBox comboBox;
@@ -98,6 +111,10 @@ private:
     QWidget gradationWidget;
     QGridLayout layoutGradation;
     GradationLabel labelGradation[COUNT_GRADATION];
+    // Loupe Widget
+    QWidget loupeWidget;
+    QGridLayout loupeLayout;
+    QLabel loupeLabel;
 
     // Global Hot Key
     QGlobalShortcut gShortcutShow;

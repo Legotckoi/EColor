@@ -28,14 +28,31 @@ PopUpColor::PopUpColor(QWidget *parent) :
     layout.addWidget(&popUpWidget,0,0);
     popUpWidget.setLayout(&layoutPopUp);
     label.setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    layoutPopUp.addWidget(&label,0,0,1,4);
-    layoutPopUp.addWidget(&closeButton,0,4);
-    layoutPopUp.addWidget(&pickerButton,1,0);
-    layoutPopUp.addWidget(&gradationButton,1,1);
-    layoutPopUp.addWidget(&copyButton,1,2);
+    layoutPopUp.addWidget(&label,0,0,1,5);
+    layoutPopUp.addWidget(&closeButton,0,5);
+    layoutPopUp.addWidget(&labelX,1,0);
+    layoutPopUp.addWidget(&lineEditX,1,1,1,2);
+    layoutPopUp.addWidget(&labelY,1,3);
+    layoutPopUp.addWidget(&lineEditY,1,4,1,2);
+    auto coordMaxX = QApplication::desktop()->geometry().width();
+    auto coordMaxY = QApplication::desktop()->geometry().height();
+    lineEditX.setValidator(new QIntValidator(0,coordMaxX,this));
+    lineEditY.setValidator(new QIntValidator(0,coordMaxY,this));
+    lineEditX.setText("0");
+    lineEditY.setText("0");
+    layoutPopUp.addWidget(&pickerButton,2,0);
+    layoutPopUp.addWidget(&loupeButton,2,1);
+    layoutPopUp.addWidget(&gradationButton,2,2);
+    layoutPopUp.addWidget(&copyButton,2,3);
     comboBox.addItems(QStringList() << "HEX" << "RGB" << "CMYK" << "HSV" << "HSL");
     comboBox.setCurrentIndex(0);
-    layoutPopUp.addWidget(&comboBox,1,3,1,2);
+    layoutPopUp.addWidget(&comboBox,2,4,1,2);
+
+    layout.addWidget(&loupeWidget,0,1);
+    loupeWidget.setLayout(&loupeLayout);
+    loupeLayout.addWidget(&loupeLabel,0,0);
+    loupeLabel.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfLoupeLabel());
+    loupeLayout.setSpacing(6);
 
     layout.addWidget(&sliderWidget,1,0);
     sliderWidget.setLayout(&layoutSlider);
@@ -64,38 +81,82 @@ PopUpColor::PopUpColor(QWidget *parent) :
         layoutGradation.addWidget(&labelGradation[i],9-i,0);
     }
 
+    label.setToolTip(trUtf8("Текущее значение цвета"));
+    QString strCoord = trUtf8("Координата положения захваченного пикселя.\n") +
+                       trUtf8("X: от 0 до ") + QString::number(coordMaxX) + "\n" +
+                       trUtf8("Y: от 0 до ") + QString::number(coordMaxY);
+    labelX.setText(" X: ");
+    labelY.setText(" Y: ");
+    labelX.setToolTip(strCoord);
+    labelY.setToolTip(strCoord);
+    lineEditX.setToolTip(strCoord);
+    lineEditY.setToolTip(strCoord);
+    pickerButton.setToolTip(trUtf8("Пипетка для захвата пикселя"));
+    loupeButton.setToolTip(trUtf8("Лупа с областью захвата пикселя\nвокруг пипетки"));
+    gradationButton.setToolTip(trUtf8("Корректировка цвета"));
+    copyButton.setToolTip(trUtf8("Копировать цвет в буфер обмена"));
+    comboBox.setToolTip(trUtf8("Выбор кодировки цвета"));
+    imgHue.setToolTip(trUtf8("Тон"));
+    imgSaturation.setToolTip(trUtf8("Насыщенность"));
+    imgLightness.setToolTip(trUtf8("Яркость"));
+    sliderHue.setToolTip(trUtf8("Тон"));
+    sliderSaturation.setToolTip(trUtf8("Насыщенность"));
+    sliderLightness.setToolTip(trUtf8("Яркость"));
+
     connect(&comboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &PopUpColor::changeIndexComboBoxColor);
     connect(&closeButton, &QToolButton::clicked, this, &PopUpColor::slotHide);
     connect(&closeButton, &QToolButton::clicked, &dummyTransparentWindow, &TransparentWindow::hide);
     connect(&pickerButton, &QToolButton::clicked, [=](){tempCurrentColor = m_currentColor;
+                                                        tempX = lineEditX.text().toInt();
+                                                        tempY = lineEditY.text().toInt();
                                                         dummyTransparentWindow.showFullScreen();});
+    connect(&loupeButton, &QToolButton::clicked, [=](){loupeWidget.setVisible(!loupeWidget.isVisible());
+                                                       changeStyleSheets(m_currentColor);
+                                                       adjustSize();});
     connect(&gradationButton, &QToolButton::clicked, this, &PopUpColor::gradationButtonClicked);
     connect(&copyButton, &QToolButton::clicked, [=](){slotCopyBuffer(m_currentColor);});
     connect(this, &PopUpColor::currentColorChanged, this, &PopUpColor::changeLabelText);
     connect(this, &PopUpColor::currentColorChanged, this, &PopUpColor::changeStyleSheets);
     connect(this, &PopUpColor::currentColorChanged, this, &PopUpColor::changeSliders);
     connect(&dummyTransparentWindow, &TransparentWindow::changeColor, this, &PopUpColor::setCurrentColor);
-    connect(&dummyTransparentWindow, &TransparentWindow::backColor, [=](){setCurrentColor(tempCurrentColor);});
+    connect(&dummyTransparentWindow, &TransparentWindow::cursorX, &lineEditX, &QLineEdit::setText);
+    connect(&dummyTransparentWindow, &TransparentWindow::cursorY, &lineEditY, &QLineEdit::setText);
+    connect(&dummyTransparentWindow, &TransparentWindow::backColor, [=](){setCurrentColor(tempCurrentColor);
+                                                                          lineEditX.setText(QString::number(tempX));
+                                                                          lineEditY.setText(QString::number(tempY));
+                                                                          coordinatePressed();});
     connect(&dummyTransparentWindow, &TransparentWindow::saveColor, [=](){tempCurrentColor = m_currentColor;
+                                                                          tempX = lineEditX.text().toInt();
+                                                                          tempY = lineEditY.text().toInt();
                                                                           slotCopyBuffer(m_currentColor);});
     connect(&dummyTransparentWindow, &TransparentWindow::visibleChanged, [=](){changeStyleSheets(m_currentColor);});
+    connect(&dummyTransparentWindow, &TransparentWindow::loupeImage, &loupeLabel, &QLabel::setPixmap);
     connect(&sliderHue, &QSlider::valueChanged, this, &PopUpColor::setHue);
     connect(&sliderSaturation, &QSlider::valueChanged, this, &PopUpColor::setSaturation);
     connect(&sliderLightness, &QSlider::valueChanged, this, &PopUpColor::setLightness);
+    connect(&lineEditX, &QLineEdit::returnPressed, this, &PopUpColor::coordinatePressed);
+    connect(&lineEditY, &QLineEdit::returnPressed, this, &PopUpColor::coordinatePressed);
 
     for(int i=0; i<COUNT_GRADATION; ++i){
         connect(this, &PopUpColor::currentColorChanged, &labelGradation[i], &GradationLabel::setCurrentColor);
         connect(&labelGradation[i], &GradationLabel::colorForCopy, this, &PopUpColor::slotCopyBuffer);
         connect(&labelGradation[i], &GradationLabel::colorForSet, this, &PopUpColor::setCurrentColor);
+        labelGradation[i].setToolTip("Яркость цвета " + QString::number(10*(i + 1)) + "%\n"
+                                     "ЛКМ - копировать в буфер обмена\n"
+                                     "ПКМ - выбрать цвет");
     }
 
     connect(&gShortcutShow, &QGlobalShortcut::activated, this, &PopUpColor::onHotKeyShowPressed);
 
     gradationWidget.setVisible(false);
     sliderWidget.setVisible(false);
-    adjustSize();
+    loupeWidget.setVisible(false);
+    changeStyleSheets(QColor(Qt::white));
     setCurrentColor(QColor(Qt::white));
     tempCurrentColor = QColor(Qt::white);
+    tempX = 0;
+    tempY = 0;
+    adjustSize();
 }
 
 void PopUpColor::saveSettings()
@@ -117,16 +178,27 @@ QPoint PopUpColor::previousPosition() const
 void PopUpColor::onHotKeyShowPressed()
 {
     if(!dummyTransparentWindow.isVisible()){
-        QImage img = QApplication::primaryScreen()->grabWindow(0,QCursor::pos().x(), QCursor::pos().y(),1,1).toImage();
+        auto cursorPos = QCursor::pos();
+        QImage img = QApplication::primaryScreen()->grabWindow(0,cursorPos.x(), cursorPos.y(),1,1).toImage();
         QColor color;
         color.setRgb(img.pixel(0,0));
         setCurrentColor(color);
         tempCurrentColor = color;
         gradationWidget.setVisible(false);
         sliderWidget.setVisible(false);
+        loupeWidget.setVisible(false);
+        QImage imgPixmap = QApplication::primaryScreen()->grabWindow(0,cursorPos.x()-12, cursorPos.y()-12,24,24).toImage();
+        imgPixmap = imgPixmap.scaled(72,72);
+        imgPixmap.setPixelColor(36,36,QColor(Qt::red));
+        imgPixmap.setPixelColor(36,37,QColor(Qt::red));
+        imgPixmap.setPixelColor(37,36,QColor(Qt::red));
+        imgPixmap.setPixelColor(37,37,QColor(Qt::red));
+        loupeLabel.setPixmap(QPixmap::fromImage(imgPixmap));
         gradationButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradation(gradationWidget.isVisible(), m_currentColor));
+        lineEditX.setText(QString::number(cursorPos.x()));
+        lineEditY.setText(QString::number(cursorPos.y()));
         adjustSize();
-        (followCursor) ? showPos(QCursor::pos()) : showPos(posWin);
+        (followCursor) ? showPos(cursorPos) : showPos(posWin);
         slotCopyBuffer(m_currentColor);
         emit visibleChanged();
     }
@@ -229,12 +301,18 @@ void PopUpColor::changeStyleSheets(const QColor &color)
 {
     comboBox.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradationCombobox(color));
     label.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfCodeLabel(color));
+    labelX.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfCodeLabel(color));
+    labelY.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfCodeLabel(color));
+    lineEditX.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfLineEdit(color));
+    lineEditY.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfLineEdit(color));
+    loupeButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfLoupeButton(loupeWidget.isVisible(),color));
     pickerButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfPicker(dummyTransparentWindow.isVisible(), color));
     gradationButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradation(gradationWidget.isVisible(), color));
     copyButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfCopy(color));
     closeButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfCloseButton(color));
     sliderWidget.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfSliderWidget(color));
     gradationWidget.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradationWidget(color));
+    loupeWidget.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfLoupeWidget(color));
     popUpWidget.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfPopUpWidget(color));
     sliderHue.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfSlider(color));
     sliderLightness.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfSlider(color));
@@ -380,6 +458,26 @@ void PopUpColor::setPreviousPosition(const QPoint &previousPosition)
     emit previousPositionChanged(previousPosition);
 }
 
+void PopUpColor::coordinatePressed()
+{
+    tempX = lineEditX.text().toInt();
+    tempY = lineEditY.text().toInt();
+    QImage img = QApplication::primaryScreen()->grabWindow(0,tempX,tempY,1,1).toImage();
+    QColor color;
+    color.setRgb(img.pixel(0,0));
+    QImage imgPixmap = QApplication::primaryScreen()->grabWindow(0,tempX,tempY,24,24).toImage();
+    imgPixmap = imgPixmap.scaled(72,72);
+    imgPixmap.setPixelColor(36,36,QColor(Qt::red));
+    imgPixmap.setPixelColor(36,37,QColor(Qt::red));
+    imgPixmap.setPixelColor(37,36,QColor(Qt::red));
+    imgPixmap.setPixelColor(37,37,QColor(Qt::red));
+    loupeLabel.setPixmap(QPixmap::fromImage(imgPixmap));
+    setCurrentColor(color);
+    tempCurrentColor = color;
+    gradationButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradation(gradationWidget.isVisible(), m_currentColor));
+    slotCopyBuffer(m_currentColor);
+}
+
 float PopUpColor::popupOpacity() const
 {
     return m_popupOpacity;
@@ -396,6 +494,7 @@ void PopUpColor::slotHide()
     if(dummyTransparentWindow.isVisible()) setCurrentColor(tempCurrentColor);;
     gradationWidget.setVisible(false);
     sliderWidget.setVisible(false);
+    loupeWidget.setVisible(false);
     gradationButton.setStyleSheet(PopUpColorStyleSheetHelper::getStyleSheetOfGradation(gradationWidget.isVisible(), m_currentColor));
     adjustSize();
     hide();

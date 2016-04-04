@@ -25,7 +25,7 @@ win32-msvc*{
 
 VER_MAJ = 0
 VER_MIN = 1
-VER_PAT = 5
+VER_PAT = 6
 
 VERSION = $${VER_MAJ}.$${VER_MIN}.$${VER_PAT} # major.minor.patch
 

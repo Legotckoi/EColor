@@ -43,8 +43,6 @@ int main(int argc, char *argv[])
     darkPalette.setColor(QPalette::WindowText, textColor);
     darkPalette.setColor(QPalette::Base, QColor(25,25,25));
     darkPalette.setColor(QPalette::AlternateBase, QColor(53,53,53));
-    darkPalette.setColor(QPalette::ToolTipBase, textColor);
-    darkPalette.setColor(QPalette::ToolTipText, textColor);
     darkPalette.setColor(QPalette::Text, textColor);
     darkPalette.setColor(QPalette::Button, QColor(53,53,53));
     darkPalette.setColor(QPalette::ButtonText, textColor);
@@ -57,7 +55,11 @@ int main(int argc, char *argv[])
 
     a.setPalette(darkPalette);
 
-    a.setStyleSheet("QToolTip { color: #f2f2f2; background-color: #2a82da; border: 1px solid white; }");
+    a.setStyleSheet("QToolTip { color: #ffffff;"
+                    "background-color: rgba(0,0,0,75%);"
+                    "border: none;"
+                    "padding: 3px;"
+                    "border-radius: 2px; }");
 
     if(is_running){
         QMessageBox msgBox;

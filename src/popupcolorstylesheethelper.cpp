@@ -37,6 +37,39 @@ QString PopUpColorStyleSheetHelper::getStyleSheetOfPicker(const bool isActive, c
     }
 }
 
+QString PopUpColorStyleSheetHelper::getStyleSheetOfLoupeButton(const bool isActive, const QColor &color)
+{
+    QColor backgroundColor{correctedColor(color)};
+
+    if (isColorLight(color)) {
+        if (isActive)
+            backgroundColor = backgroundColor.darker();
+
+        return "QToolButton { image: url(:/images/loupe-black.png);"
+               "icon-size: 16px;"
+               "height: 16px;"
+               "width: 16px;"
+               "padding: 6px;"
+               "border: none;"
+               "border-radius: 2px;"
+               "background-color: " + backgroundColor.name() + "; }"
+               "QToolButton:pressed { background-color: transparent; }";
+    } else {
+        if (isActive)
+            backgroundColor = backgroundColor.lighter();
+
+        return "QToolButton { image: url(:/images/loupe.png);"
+               "icon-size: 16px;"
+               "height: 16px;"
+               "width: 16px;"
+               "padding: 6px;"
+               "border: none;"
+               "border-radius: 2px;"
+               "background-color: " + backgroundColor.name() + "; }"
+               "QToolButton:pressed { background-color: transparent; }";
+    }
+}
+
 QString PopUpColorStyleSheetHelper::getStyleSheetOfGradation(const bool isActive, const QColor &color)
 {
     QColor backgroundColor{correctedColor(color)};
@@ -183,6 +216,14 @@ QString PopUpColorStyleSheetHelper::getStyleSheetOfSlider(const QColor &color)
     }
 }
 
+QString PopUpColorStyleSheetHelper::getStyleSheetOfLoupeWidget(const QColor &color)
+{
+    return "QWidget { background-color: " + color.name() + ";"
+           "border: 1px solid " + correctedColor(color).name() + ";"
+           "margin-top: 6px;"
+           "margin-bottom: 6px;}";
+}
+
 QString PopUpColorStyleSheetHelper::getStyleSheetOfImageHue(const QColor &color)
 {
     if (isColorLight(color)) {
@@ -199,6 +240,28 @@ QString PopUpColorStyleSheetHelper::getStyleSheetOfImageLightness(const QColor &
     } else {
         return "QLabel {border: none; margin: 0; image: url(:/images/brightness.png);}";
     }
+}
+
+QString PopUpColorStyleSheetHelper::getStyleSheetOfLineEdit(const QColor &color)
+{
+    if (isColorLight(color)) {
+        return "QLineEdit { width: 56px;"
+               "height: 24px;"
+               "background: transparent;"
+               "color: #000000;"
+               "font-size: 16px;}";
+    } else {
+        return "QLineEdit { width: 56px;"
+               "height: 24px;"
+               "background: transparent;"
+               "color: #ffffff;"
+               "font-size: 16px;}";
+    }
+}
+
+QString PopUpColorStyleSheetHelper::getStyleSheetOfLoupeLabel()
+{
+    return "QLabel { width: 96px; height: 96px; }";
 }
 
 QString PopUpColorStyleSheetHelper::getStyleSheetOfImageSaturation(const QColor &color)
