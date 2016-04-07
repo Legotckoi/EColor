@@ -65,6 +65,11 @@ EColorCore::EColorCore(QObject *parent) : QObject(parent)
                     this->actionShow->setText(trUtf8("Показать")):
                     this->actionShow->setText(trUtf8("Скрыть"));});
     popUpColor->reloadSettings();
+
+    if (qApp->arguments().contains("-popup-show", Qt::CaseInsensitive)){
+        popUpColor->slotShow();
+    }
+
     PopUpMessage::information(qobject_cast<QWidget *>(this), trUtf8("Приложение EColor запущено"));
 }
 

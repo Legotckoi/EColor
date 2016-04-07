@@ -106,6 +106,13 @@ PopUpColor::PopUpColor(QWidget *parent) :
     connect(&comboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &PopUpColor::changeIndexComboBoxColor);
     connect(&closeButton, &QToolButton::clicked, this, &PopUpColor::slotHide);
     connect(&closeButton, &QToolButton::clicked, &dummyTransparentWindow, &TransparentWindow::hide);
+    connect(&closeButton, &QToolButton::clicked, [&](){
+        if (qApp->arguments().contains("-popup-terminate", Qt::CaseInsensitive)){
+            this->saveSettings();
+            qApp->quit();
+        }
+    });
+
     connect(&pickerButton, &QToolButton::clicked, [=](){tempCurrentColor = m_currentColor;
                                                         tempX = lineEditX.text().toInt();
                                                         tempY = lineEditY.text().toInt();
@@ -157,6 +164,10 @@ PopUpColor::PopUpColor(QWidget *parent) :
     tempX = 0;
     tempY = 0;
     adjustSize();
+
+    if (qApp->arguments().contains("-popup-gradation-open", Qt::CaseInsensitive)){
+        gradationButtonClicked();
+    }
 }
 
 void PopUpColor::saveSettings()
