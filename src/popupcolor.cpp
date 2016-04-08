@@ -145,12 +145,16 @@ PopUpColor::PopUpColor(QWidget *parent) :
     connect(&lineEditY, &QLineEdit::returnPressed, this, &PopUpColor::coordinatePressed);
 
     for(int i=0; i<COUNT_GRADATION; ++i){
-        connect(this, &PopUpColor::currentColorChanged, &labelGradation[i], &GradationLabel::setCurrentColor);
+        connect(this, &PopUpColor::currentColorChanged, [=](const QColor &color){
+            labelGradation[i].setCurrentColor(color);
+            qreal l = color.lightnessF()/(COUNT_GRADATION-i+1)*2;
+            labelGradation[i].setCurrentLightness(l);
+            labelGradation[i].setToolTip("ЛКМ - копировать в буфер обмена\n"
+                                         "ПКМ - выбрать цвет");
+        });
+
         connect(&labelGradation[i], &GradationLabel::colorForCopy, this, &PopUpColor::slotCopyBuffer);
         connect(&labelGradation[i], &GradationLabel::colorForSet, this, &PopUpColor::setCurrentColor);
-        labelGradation[i].setToolTip("Яркость цвета " + QString::number(10*(i + 1)) + "%\n"
-                                     "ЛКМ - копировать в буфер обмена\n"
-                                     "ПКМ - выбрать цвет");
     }
 
     connect(&gShortcutShow, &QGlobalShortcut::activated, this, &PopUpColor::onHotKeyShowPressed);
