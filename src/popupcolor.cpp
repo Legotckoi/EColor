@@ -152,7 +152,8 @@ PopUpColor::PopUpColor(QWidget *parent) :
             labelGradation[i].setToolTip("ЛКМ - копировать в буфер обмена\n"
                                          "ПКМ - выбрать цвет");
         });
-
+        connect(&comboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+                &labelGradation[i], &GradationLabel::setTypeCode);
         connect(&labelGradation[i], &GradationLabel::colorForCopy, this, &PopUpColor::slotCopyBuffer);
         connect(&labelGradation[i], &GradationLabel::colorForSet, this, &PopUpColor::setCurrentColor);
     }
@@ -268,6 +269,9 @@ void PopUpColor::reloadSettings()
     posWin.setY(settings.value(SETTINGS_POS_Y,0).toInt());
     gShortcutShow.setShortcut(QKeySequence(settings.value(KEY_SEQUENCE_PIXEL, QVariant()).toString()));
     comboBox.setCurrentIndex(typeCopyBuffer);
+    for(int i=0; i<COUNT_GRADATION; ++i){
+        labelGradation[i].setTypeCode(typeCopyBuffer);
+    }
 }
 
 void PopUpColor::hideAnimation()

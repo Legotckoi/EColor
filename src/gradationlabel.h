@@ -12,13 +12,13 @@ class GradationLabel : public QWidget
 
     Q_PROPERTY(QColor currentColor READ getCurrentColor WRITE setCurrentColor NOTIFY currentColorChanged)
     Q_PROPERTY(qreal currentLightness READ getCurrentLightness WRITE setCurrentLightness NOTIFY currentLightnessChanged)
-
-    QColor getCurrentColor() const;
-    qreal getCurrentLightness() const;
+    Q_PROPERTY(int typeCode READ typeCode WRITE setTypeCode NOTIFY typeCodeChanged)
 
 public:
     explicit GradationLabel(QWidget *parent = 0);
-
+    qreal getCurrentLightness() const;
+    QColor getCurrentColor() const;
+    int typeCode() const;
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -29,10 +29,12 @@ signals:
     void currentLightnessChanged(const qreal lightness);
     void colorForCopy(const QColor  &color);
     void colorForSet(const QColor &color);
+    void typeCodeChanged(int typeCode);
 
 public slots:
-    void setCurrentColor(QColor color);
-    void setCurrentLightness(qreal lightness);
+    void setCurrentLightness(const qreal currentLightness);
+    void setCurrentColor(const QColor currentColor);
+    void setTypeCode(int typeCode);
 
 private slots:
     void changeStyleSheets();
@@ -46,6 +48,7 @@ private:
     QGridLayout layout;
     QLabel lightnessLabel;
     QLabel codeLabel;
+    int    m_typeCode;
 };
 
 #endif // GRADATIONLABEL_H
