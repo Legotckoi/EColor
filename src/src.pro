@@ -25,7 +25,7 @@ win32-msvc*{
 
 VER_MAJ = 0
 VER_MIN = 1
-VER_PAT = 6
+VER_PAT = 7
 
 VERSION = $${VER_MAJ}.$${VER_MIN}.$${VER_PAT} # major.minor.patch
 
@@ -61,9 +61,6 @@ SOURCES += main.cpp\
     gradationlabel.cpp \
     popupcolorstylesheethelper.cpp
 
-win32: SOURCES += win/qglobalshortcut.cpp
-linux: SOURCES += x11/qglobalshortcut.cpp
-
 HEADERS  += \
     about.h \
     settings.h \
@@ -75,8 +72,9 @@ HEADERS  += \
     popupmessage.h \
     transparentwindow.h \
     gradationlabel.h \
-    popupcolorstylesheethelper.h \
-    qglobalshortcut.h
+    popupcolorstylesheethelper.h
+
+include(QGlobalShortcut/qglobalshortcut.pri)
 
 FORMS    += \
     about.ui \
@@ -85,3 +83,5 @@ FORMS    += \
 
 RESOURCES += \
     images.qrc
+
+DISTFILES +=
