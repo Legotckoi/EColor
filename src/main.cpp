@@ -3,6 +3,8 @@
 #include <QSharedMemory>
 #include <QMessageBox>
 #include <QFile>
+#include <QTranslator>
+#include <QLocale>
 
 #include "settings.h"
 #include "ecolorcore.h"
@@ -64,11 +66,14 @@ int main(int argc, char *argv[])
     if(is_running){
         QMessageBox msgBox;
         msgBox.setIcon(QMessageBox::Warning);
-        msgBox.setText(QObject::trUtf8("Приложение EColor уже запущено."
-                        "\r\nВы можете запустить только один экземпляр приложения."));
+        msgBox.setText(QObject::trUtf8("EColor application already running."
+                        "\r\nYou able to run only one instance of application."));
         msgBox.exec();
         return 1;
     }
+    QTranslator translator;
+    translator.load(":/translations/ecolor_" + QLocale::system().name());
+    qApp->installTranslator(&translator);
     EColorCore eColorCore;
 
     return a.exec();

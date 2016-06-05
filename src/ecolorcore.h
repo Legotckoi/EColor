@@ -3,8 +3,8 @@
 
 #include <QObject>
 #include <QSystemTrayIcon>
+#include "versionchecker.h"
 
-class VersionChecker;
 class PopUpColor;
 class PopUpMessage;
 class NativeEventFilter;
@@ -25,8 +25,8 @@ private slots:
 #endif
 
 private:
-    QSystemTrayIcon     *trayIcon;
-    VersionChecker      *versionChecker;
+    QSystemTrayIcon     trayIcon;
+    VersionChecker      versionChecker;
     PopUpColor          *popUpColor;
     QAction             *actionShow ;
 };

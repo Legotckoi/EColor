@@ -10,7 +10,7 @@ About::About(QWidget *parent) :
 {
     ui->setupUi(this);
     setModal(true);
-    ui->labelVersion->setText("EColor v" + QString(VER));
+    ui->labelVersion->setText("EColor v" + QString(APP_VERSION));
     connect(ui->label_2, &QLabel::linkActivated,[=](const QString &link){QDesktopServices::openUrl(QUrl(link));});
     connect(ui->label_3, &QLabel::linkActivated,[=](const QString &link){QDesktopServices::openUrl(QUrl(link));});
 }

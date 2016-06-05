@@ -26,9 +26,7 @@ VersionChecker::VersionChecker(QObject *parent) :
     checker->versionData = new VersionData();
 
     connect(checker->networkManager, &QNetworkAccessManager::finished, this, &VersionChecker::onResult);
-
-    timerCheck = new QTimer();
-    connect(timerCheck, &QTimer::timeout, this, &VersionChecker::slotUpdate);
+    connect(&timerCheck, &QTimer::timeout, this, &VersionChecker::slotUpdate);
 }
 
 VersionChecker::VersionChecker(QObject *parent, QString &softName, int majVersion, int minVersion, int patVersion) :
@@ -42,15 +40,25 @@ VersionChecker::VersionChecker(QObject *parent, QString &softName, int majVersio
     checker->versionData->setPatVersion(patVersion);
 
     connect(checker->networkManager, &QNetworkAccessManager::finished, this, &VersionChecker::onResult);
+    connect(&timerCheck, &QTimer::timeout, this, &VersionChecker::slotUpdate);
+}
 
-    timerCheck = new QTimer();
-    connect(timerCheck, &QTimer::timeout, this, &VersionChecker::slotUpdate);
+VersionChecker::VersionChecker(QObject *parent, QString &softName, QString fullVersion) :
+    QObject(parent),
+    checker(new VersionCheckerPrivate)
+{
+    checker->networkManager = new QNetworkAccessManager();
+    checker->versionData = new VersionData();
+    checker->versionData->setSoftName(softName);
+    setFullVersion(fullVersion);
+
+    connect(checker->networkManager, &QNetworkAccessManager::finished, this, &VersionChecker::onResult);
+    connect(&timerCheck, &QTimer::timeout, this, &VersionChecker::slotUpdate);
 }
 
 VersionChecker::~VersionChecker()
 {
     delete checker;
-    delete timerCheck;
 }
 
 void VersionChecker::setSoftName(QString softName)
@@ -73,6 +81,14 @@ void VersionChecker::setPatVersion(int patVersion)
     checker->versionData->setPatVersion(patVersion);
 }
 
+void VersionChecker::setFullVersion(QString fullVersion)
+{
+    QStringList list = fullVersion.split(".");
+    checker->versionData->setMajVersion(list.at(0).toInt());
+    checker->versionData->setMinVersion(list.at(1).toInt());
+    checker->versionData->setPatVersion(list.at(2).toInt());
+}
+
 void VersionChecker::setUrl(QUrl url)
 {
     checker->url = url;
@@ -85,18 +101,18 @@ void VersionChecker::setStringUrl(QString str)
 
 void VersionChecker::startChecker()
 {
-    timerCheck->start(50);
+    timerCheck.start(50);
 }
 
 void VersionChecker::stopChecker()
 {
-    timerCheck->stop();
+    timerCheck.stop();
 }
 
 void VersionChecker::slotUpdate()
 {
     getData();
-    timerCheck->start(20*60*1000);
+    timerCheck.start(20*60*1000);
 }
 
 void VersionChecker::onResult(QNetworkReply *reply)

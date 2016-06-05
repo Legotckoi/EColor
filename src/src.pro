@@ -30,6 +30,7 @@ VER_PAT = 7
 VERSION = $${VER_MAJ}.$${VER_MIN}.$${VER_PAT} # major.minor.patch
 
 VERSTR = '\\"$${VERSION}\\"'
+DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 DEFINES += VER=\"$${VERSTR}\"
 DEFINES += VER_MAJOR=$${VER_MAJ}
 DEFINES += VER_MINOR=$${VER_MIN}
@@ -47,7 +48,9 @@ unix:OBJECTS_DIR = ../build/o/unix
 win32:OBJECTS_DIR = ../build/o/win32
 macx:OBJECTS_DIR = ../build/o/mac
 
-win32: RC_ICONS = images/myappico.ico
+win32: RC_ICONS = $$PWD/images/myappico.ico
+
+TRANSLATIONS += $$PWD/translations/ecolor_ru.ts
 
 SOURCES += main.cpp\
     about.cpp \
@@ -82,6 +85,7 @@ FORMS    += \
     dialogupdate.ui
 
 RESOURCES += \
-    images.qrc
+    images.qrc \
+    translations.qrc
 
 DISTFILES +=

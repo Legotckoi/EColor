@@ -81,27 +81,27 @@ PopUpColor::PopUpColor(QWidget *parent) :
         layoutGradation.addWidget(&labelGradation[i],9-i,0);
     }
 
-    label.setToolTip(trUtf8("Текущее значение цвета"));
-    QString strCoord = trUtf8("Координата положения захваченного пикселя.\n") +
-                       trUtf8("X: от 0 до ") + QString::number(coordMaxX) + "\n" +
-                       trUtf8("Y: от 0 до ") + QString::number(coordMaxY);
+    label.setToolTip(trUtf8("Current value of color"));
+    QString strCoord = trUtf8("Coordinates of pixel.\n") +
+                       trUtf8("X: from 0 to ") + QString::number(coordMaxX) + "\n" +
+                       trUtf8("Y: from 0 to ") + QString::number(coordMaxY);
     labelX.setText(" X: ");
     labelY.setText(" Y: ");
     labelX.setToolTip(strCoord);
     labelY.setToolTip(strCoord);
     lineEditX.setToolTip(strCoord);
     lineEditY.setToolTip(strCoord);
-    pickerButton.setToolTip(trUtf8("Пипетка для захвата пикселя"));
-    loupeButton.setToolTip(trUtf8("Лупа с областью захвата пикселя\nвокруг пипетки"));
-    gradationButton.setToolTip(trUtf8("Корректировка цвета"));
-    copyButton.setToolTip(trUtf8("Копировать цвет в буфер обмена"));
-    comboBox.setToolTip(trUtf8("Выбор кодировки цвета"));
-    imgHue.setToolTip(trUtf8("Тон"));
-    imgSaturation.setToolTip(trUtf8("Насыщенность"));
-    imgLightness.setToolTip(trUtf8("Яркость"));
-    sliderHue.setToolTip(trUtf8("Тон"));
-    sliderSaturation.setToolTip(trUtf8("Насыщенность"));
-    sliderLightness.setToolTip(trUtf8("Яркость"));
+    pickerButton.setToolTip(trUtf8("Pipette for pixel grab"));
+    loupeButton.setToolTip(trUtf8("Magnifier with grip area of pixel \naround the pipette"));
+    gradationButton.setToolTip(trUtf8("Adjust color"));
+    copyButton.setToolTip(trUtf8("Copy to clipboard"));
+    comboBox.setToolTip(trUtf8("The select of color coding"));
+    imgHue.setToolTip(trUtf8("Hue"));
+    imgSaturation.setToolTip(trUtf8("Saturation"));
+    imgLightness.setToolTip(trUtf8("Lightness"));
+    sliderHue.setToolTip(trUtf8("Hue"));
+    sliderSaturation.setToolTip(trUtf8("Saturation"));
+    sliderLightness.setToolTip(trUtf8("Lightness"));
 
     connect(&comboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &PopUpColor::changeIndexComboBoxColor);
     connect(&closeButton, &QToolButton::clicked, this, &PopUpColor::slotHide);
@@ -149,8 +149,8 @@ PopUpColor::PopUpColor(QWidget *parent) :
             labelGradation[i].setCurrentColor(color);
             qreal l = color.lightnessF()/(COUNT_GRADATION-i+1)*2;
             labelGradation[i].setCurrentLightness(l);
-            labelGradation[i].setToolTip("ЛКМ - копировать в буфер обмена\n"
-                                         "ПКМ - выбрать цвет");
+            labelGradation[i].setToolTip(trUtf8("LMB - copy to clipboard\n"
+                                         "RMB - select a color"));
         });
         connect(&comboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
                 &labelGradation[i], &GradationLabel::setTypeCode);
@@ -420,7 +420,7 @@ void PopUpColor::slotCopyBuffer(const QColor &color)
         default:
             break;
         }
-        PopUpMessage::information(this, "Скопировано в буфер обмена");
+        PopUpMessage::information(this, trUtf8("Copied to clipboard"));
     }
 }
 

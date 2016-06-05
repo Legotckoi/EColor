@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Доступно обновление</string>
+   <string>Update is available</string>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
@@ -110,7 +110,7 @@
       <string notr="true"/>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Хотите перейти на сайт, &lt;br/&gt;чтобы скачать новую версию?&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Do you want to go the site, &lt;br/&gt;to download new version?&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="margin">
       <number>5</number>
@@ -129,7 +129,7 @@
       <string notr="true"/>
      </property>
      <property name="text">
-      <string>Доступна новая версия!</string>
+      <string>New version is available!</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

@@ -3,7 +3,6 @@
 #include "settings.h"
 #include "dialogsettings.h"
 #include "dialogupdate.h"
-#include "versionchecker.h"
 #include "popupcolor.h"
 #include "popupmessage.h"
 #include <QMenu>
@@ -21,23 +20,22 @@ EColorCore::EColorCore(QObject *parent) : QObject(parent)
         settings.sync();
     }
 
-    trayIcon = new QSystemTrayIcon(this);
-    trayIcon->setToolTip("EColor \n"
-                         "Приложение для захвата цвета пикселя \n"
-                         "на экране монитора");
-    trayIcon->setIcon(QIcon(":/images/ecolor.png"));
+    trayIcon.setToolTip(trUtf8("EColor \n"
+                                "Application for grab the pixel color \n"
+                                "on the screen"));
+    trayIcon.setIcon(QIcon(":/images/ecolor.png"));
 
     QMenu * menu = new QMenu();
-    actionShow = new QAction(trUtf8("Показать"), this);
-    QAction *actionConfig = new QAction(trUtf8("Настройки"), this);
-    QAction *actionAbout = new QAction(trUtf8("О Приложении"), this);
-    QAction *actionQuit = new QAction(trUtf8("Выход"), this);
+    actionShow = new QAction(trUtf8("Show"), this);
+    QAction *actionConfig = new QAction(trUtf8("Settings"), this);
+    QAction *actionAbout = new QAction(trUtf8("About program"), this);
+    QAction *actionQuit = new QAction(trUtf8("Exit"), this);
 
     connect(actionShow, &QAction::triggered, [=](){(popUpColor->isVisible())?
                     popUpColor->slotHide():popUpColor->slotShow();});
     connect(actionConfig, &QAction::triggered, this, &EColorCore::configTriggered);
     connect(actionAbout, &QAction::triggered, [=](){About about; about.exec();});
-    connect(actionQuit, &QAction::triggered, [=](){popUpColor->saveSettings();trayIcon->hide();exit(0);});
+    connect(actionQuit, &QAction::triggered, [=](){popUpColor->saveSettings();trayIcon.hide();exit(0);});
 
     menu->addAction(actionShow);
     menu->addAction(actionConfig);
@@ -45,40 +43,35 @@ EColorCore::EColorCore(QObject *parent) : QObject(parent)
     menu->addSeparator();
     menu->addAction(actionQuit);
 
-    trayIcon->setContextMenu(menu);
-    trayIcon->show();
+    trayIcon.setContextMenu(menu);
+    trayIcon.show();
 
 #ifdef Q_OS_WIN32
-    connect(trayIcon, &QSystemTrayIcon::activated, this, &EColorCore::iconActivated);
+    connect(&trayIcon, &QSystemTrayIcon::activated, this, &EColorCore::iconActivated);
 #endif
-    versionChecker = new VersionChecker();
-    connect(versionChecker, &VersionChecker::signalNewVersion, this, &EColorCore::showDialogUpdate);
-    versionChecker->setSoftName(APPLICATION_NAME);
-    versionChecker->setMajVersion(VER_MAJOR);
-    versionChecker->setMinVersion(VER_MINOR);
-    versionChecker->setPatVersion(VER_PATHES);
-    versionChecker->setUrl(QUrl("http://www.evileg.ru/software/ecolor/ecolor.json"));
-    versionChecker->startChecker();
+    connect(&versionChecker, &VersionChecker::signalNewVersion, this, &EColorCore::showDialogUpdate);
+    versionChecker.setSoftName(APPLICATION_NAME);
+    versionChecker.setFullVersion(APP_VERSION);
+    versionChecker.setUrl(QUrl("http://www.evileg.ru/software/ecolor/ecolor.json"));
+    versionChecker.startChecker();
 
     popUpColor = new PopUpColor();
     connect(popUpColor, &PopUpColor::visibleChanged, [=](){(!this->popUpColor->isVisible())?
-                    this->actionShow->setText(trUtf8("Показать")):
-                    this->actionShow->setText(trUtf8("Скрыть"));});
+                    this->actionShow->setText(trUtf8("Show")):
+                    this->actionShow->setText(trUtf8("Hide"));});
     popUpColor->reloadSettings();
 
     if (qApp->arguments().contains("-popup-show", Qt::CaseInsensitive)){
         popUpColor->slotShow();
     }
 
-    PopUpMessage::information(qobject_cast<QWidget *>(this), trUtf8("Приложение EColor запущено"));
+    PopUpMessage::information(qobject_cast<QWidget *>(this), trUtf8("Application EColor is running"));
 }
 
 EColorCore::~EColorCore()
 {
     delete popUpColor;
-    delete versionChecker;
     delete actionShow;
-    delete trayIcon;
 }
 
 void EColorCore::configTriggered()

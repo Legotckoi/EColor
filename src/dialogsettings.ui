@@ -29,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Настройки</string>
+   <string>Settings</string>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
@@ -44,7 +44,7 @@
       <string notr="true"/>
      </property>
      <property name="text">
-      <string>Автоматически запускать приложение при запуске системы</string>
+      <string>Automatically start the application at system startup</string>
      </property>
     </widget>
    </item>
@@ -70,7 +70,7 @@
       <string notr="true"/>
      </property>
      <property name="text">
-      <string>Поддерживаются модификаторы Ctrl, Shift, Alt</string>
+      <string>Supported modifiers Ctrl, Shift, Alt</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -118,7 +118,7 @@
       <string notr="true"/>
      </property>
      <property name="text">
-      <string>Захват пикселя</string>
+      <string>Grab the pixel</string>
      </property>
     </widget>
    </item>
@@ -128,7 +128,7 @@
       <string notr="true"/>
      </property>
      <property name="text">
-      <string>Копировать в буфер обмена</string>
+      <string>Copy to clipboard</string>
      </property>
     </widget>
    </item>
@@ -147,7 +147,7 @@
       <string notr="true"/>
      </property>
      <property name="text">
-      <string>Следовать за курсором</string>
+      <string>Follow the cursor</string>
      </property>
     </widget>
    </item>

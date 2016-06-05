@@ -46,11 +46,13 @@ class VersionChecker : public QObject
 public:
     explicit VersionChecker(QObject *parent = 0);
     VersionChecker(QObject *parent, QString &softName, int majVersion, int minVersion, int patVersion);
+    VersionChecker(QObject *parent, QString &softName, QString fullVersion);
     ~VersionChecker();
     void setSoftName(QString softName);
     void setMajVersion(int majVersion);
     void setMinVersion(int minVersion);
     void setPatVersion(int patVersion);
+    void setFullVersion(QString fullVersion);
     void setUrl(QUrl url);
     void setStringUrl(QString str);
 
@@ -67,8 +69,8 @@ private slots:
     void slotUpdate();
 
 private:
-    VersionCheckerPrivate *checker;
-    QTimer *timerCheck;
+    VersionCheckerPrivate   *checker;
+    QTimer                  timerCheck;
 };
 
 #endif // CHECKVERSION_H
