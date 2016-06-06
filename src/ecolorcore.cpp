@@ -26,22 +26,17 @@ EColorCore::EColorCore(QObject *parent) : QObject(parent)
     trayIcon.setIcon(QIcon(":/images/ecolor.png"));
 
     QMenu * menu = new QMenu();
-    actionShow = new QAction(trUtf8("Show"), this);
-    QAction *actionConfig = new QAction(trUtf8("Settings"), this);
-    QAction *actionAbout = new QAction(trUtf8("About program"), this);
-    QAction *actionQuit = new QAction(trUtf8("Exit"), this);
-
-    connect(actionShow, &QAction::triggered, [=](){(popUpColor->isVisible())?
-                    popUpColor->slotHide():popUpColor->slotShow();});
-    connect(actionConfig, &QAction::triggered, this, &EColorCore::configTriggered);
-    connect(actionAbout, &QAction::triggered, [=](){About about; about.exec();});
-    connect(actionQuit, &QAction::triggered, [=](){popUpColor->saveSettings();trayIcon.hide();exit(0);});
-
-    menu->addAction(actionShow);
-    menu->addAction(actionConfig);
-    menu->addAction(actionAbout);
+    actionShow = menu->addAction(trUtf8("Show"), [this](){
+        (popUpColor->isVisible()) ? popUpColor->slotHide() : popUpColor->slotShow();
+    });
+    menu->addAction(QIcon(":/images/settings.png"), trUtf8("Settings"), [this](){
+        DialogSettings dialogSettings;
+        connect(&dialogSettings, &DialogSettings::reloadKeySequence, popUpColor, &PopUpColor::reloadSettings);
+        dialogSettings.exec();
+    });
+    menu->addAction(QIcon(":/images/help.png"), trUtf8("About program"), [this](){ About about; about.exec(); });
     menu->addSeparator();
-    menu->addAction(actionQuit);
+    menu->addAction(QIcon(":/images/logout.png"), trUtf8("Exit"), [this](){ popUpColor->saveSettings(); trayIcon.hide(); exit(0); });
 
     trayIcon.setContextMenu(menu);
     trayIcon.show();
@@ -56,9 +51,9 @@ EColorCore::EColorCore(QObject *parent) : QObject(parent)
     versionChecker.startChecker();
 
     popUpColor = new PopUpColor();
-    connect(popUpColor, &PopUpColor::visibleChanged, [=](){(!this->popUpColor->isVisible())?
-                    this->actionShow->setText(trUtf8("Show")):
-                    this->actionShow->setText(trUtf8("Hide"));});
+    connect(popUpColor, &PopUpColor::visibleChanged, [this](){(!popUpColor->isVisible())?
+                    actionShow->setText(trUtf8("Show")):
+                    actionShow->setText(trUtf8("Hide"));});
     popUpColor->reloadSettings();
 
     if (qApp->arguments().contains("-popup-show", Qt::CaseInsensitive)){
@@ -72,13 +67,6 @@ EColorCore::~EColorCore()
 {
     delete popUpColor;
     delete actionShow;
-}
-
-void EColorCore::configTriggered()
-{
-    DialogSettings dialogSettings;
-    connect(&dialogSettings, &DialogSettings::reloadKeySequence, popUpColor, &PopUpColor::reloadSettings);
-    dialogSettings.exec();
 }
 
 #ifdef Q_OS_WIN32

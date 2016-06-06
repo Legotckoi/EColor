@@ -18,7 +18,6 @@ public:
     ~EColorCore();
 
 private slots:
-    void configTriggered();
     void showDialogUpdate(QString newVersion);
 #ifdef Q_OS_WIN32
     void iconActivated(QSystemTrayIcon::ActivationReason reason);

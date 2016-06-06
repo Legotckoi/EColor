@@ -20,5 +20,8 @@
         <file>images/content-copy-black.png</file>
         <file>images/loupe.png</file>
         <file>images/loupe-black.png</file>
+        <file>images/logout.png</file>
+        <file>images/settings.png</file>
+        <file>images/help.png</file>
     </qresource>
 </RCC>
